@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react'
+import { useNavigate } from "react-router-dom";  
 import AdminHeader from '../components/AdminHeader'
 import "./AdminPanel.css"
 
@@ -13,6 +14,17 @@ const sampleData = [
 ];
 
 function AdminPanel() {
+
+  const navigate = useNavigate(); 
+
+  const handleAction = (status) => {
+    if (status === "Pending Inspection" || status === "In Progress") {
+      navigate("/inspection");
+    } else if (status === "Completed") {
+      navigate("/reports");
+    }
+  };
+
   const [search, setSearch] = useState("")
   const [category, setCategory] = useState("All")
   const [status, setStatus] = useState("All") 
@@ -40,11 +52,14 @@ function AdminPanel() {
 
   const ActionButton = ({ status }) => {
     if (status === "Pending Inspection")
-      return <button className="view-btn">Start Inspection</button>
+      return <button className="view-btn" onClick={() => handleAction(status)}>Start Inspection</button>
+
     if (status === "In Progress")
-      return <button className="view-btn">Continue</button>
+      return <button className="view-btn" onClick={() => handleAction(status)}>Continue</button>
+
     if (status === "Completed")
-      return <button className="view-btn">View Report</button>
+      return <button className="view-btn" onClick={() => handleAction(status)}>View Report</button>
+
     return <span className="text-gray-500">—</span>
   }
 
@@ -55,6 +70,8 @@ function AdminPanel() {
       <div className="admin-wrapper">
         <h2 className="inspection-title">Inspection Queue</h2>
         <h5 className="inspection-para">Manage and track all items pending inspections.</h5>
+
+
 
         <div className="filter-bar-container">
           <input
@@ -124,7 +141,7 @@ function AdminPanel() {
                     </span>
                   </td>
                   <td>{item.officer}</td>
-                  <td className="text-center">
+                  <td className="text-center" >
                     <ActionButton status={item.status} />
                   </td>
                 </tr>
