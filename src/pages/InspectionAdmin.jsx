@@ -51,7 +51,6 @@ const InspectionAdmin = () => {
       
       <div className="left-section">
         <h1 className="page-title">Inspection Reviews</h1>
-{/* Top Single Image Card - Above Accordion */}
 <div className="top-image-card">
   <img src={images[0]} className="top-single-image" alt="vehicle" />
 
