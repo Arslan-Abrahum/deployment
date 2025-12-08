@@ -14,7 +14,6 @@
 .page-title {
   font-size: 40px;
   font-weight: 600;
-  margin-bottom: 50px;
 }
 
 .accordion-item {
@@ -22,6 +21,8 @@
   border: 1px solid #333;
   border-radius: 8px;
   margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
 }
 
 .accordion-header {
@@ -30,11 +31,13 @@
   display: flex;
   justify-content: space-between;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .accordion-body {
-  padding: 18px;
+  padding: 10px;
   border-top: 1px solid #333;
+  flex-grow: 1;
 }
 
 .label-text {
@@ -44,9 +47,9 @@
 
 .dark-input,
 .dark-select {
-  background: #111;
+  background: #000;
   border: 1px solid #444;
-  color: white;
+  color: #fff;
 }
 
 .dark-input:focus,
@@ -56,42 +59,41 @@
 }
 
 .right-section {
-  width: 40%;
+  width: 50%;
 }
 
 .image-card {
   background: #151515;
-  padding: 15px;
+  padding: 10px;
   border-radius: 12px;
-  border: 1px solid #ffffff6c;
+  border: 1px solid #978a8a36;
   margin-bottom: 20px;
-width: 550px;
-height: 450px;
-margin-top: 20px;
+  width: 90%;
+  height: 600px;
+  margin-top: 20px;
 }
 
 .big-image {
   width: 100%;
-  height: 230px;
-  object-fit: cover;
-  border-radius: 10px;
+  height: 400px;
+  border-radius: 12px;
   margin-bottom: 12px;
 }
 
 .thumbnail-row {
   display: flex;
-  gap: 20px;
+  gap: 10px;
   margin-bottom: 15px;
 }
 
 .thumb-img {
-  width: 55px;
-  height: 45px;
+  width: 60px;
+  height: 60px;
   object-fit: cover;
-  border-radius: 5px;
+  border-radius: 2px;
   cursor: pointer;
   opacity: 0.5;
-  border: 1px solid #333;
+  border: 1px solid #281515;
 }
 
 .thumb-img:hover {
@@ -104,64 +106,105 @@ margin-top: 20px;
 }
 
 .car-title {
-  font-size: 30px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: bold;
 }
+
 .car-meta {
   color: #fdfdfd;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .approve-btn {
   width: 20%;
   padding: 12px;
   font-size: 16px;
-  margin: 1px;
   margin-right: 5px;
-  margin-left: 44%;
-  
+  margin-left: 26%;
 }
 
 .reject-btn {
   width: 20%;
   padding: 12px;
   font-size: 16px;
-
 }
+
+/* Top Image Card */
 .top-image-card {
-  width: 50%;
+  width: 60%;
   background: #0f0f0f;
   border: 1px solid #222;
   border-radius: 12px;
   padding: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   margin-left: 20%;
 }
 
 .top-single-image {
   width: 100%;
-  height: 240px;
-
-  object-fit: contain;       
-  background-color: #000;   
-
+  height: auto;
+  max-height: 300px;
+  object-fit: contain;
+  background-color: #000;
   border-radius: 10px;
   border: 2px solid #333;
 }
-
 
 .top-image-details {
   margin-top: 10px;
 }
 
-.car-title {
+.car-title1 {
   color: #fff;
   font-size: 20px;
   font-weight: bold;
 }
 
-.car-meta {
+.car-meta1 {
   color: #aaa;
   font-size: 14px;
   margin: 2px 0;
+}
+
+/* ===== Accordion Grid Layout ===== */
+.custom-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.grid-row {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.grid-row .accordion-item {
+  width: 50%;
+}
+
+.full-width-row .accordion-item {
+  width: 100%;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 992px) {
+  .grid-row {
+    flex-direction: column;
+  }
+
+  .grid-row .accordion-item {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .accordion-header {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .accordion-body {
+    font-size: 14px;
+  }
 }

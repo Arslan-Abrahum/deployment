@@ -32,6 +32,8 @@ import Reports from './pages/Reports'
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import InspectionAdmin from "./pages/InspectionAdmin";
+import AuctionAdminPanel from './pages/AuctionAdminPanel'
+import AdminPublishNew from './pages/AdminPublishNew'
 
 function App() {
   return (
@@ -64,6 +66,12 @@ function App() {
               <Reports/>
             </>
           } />
+           <Route path="/auctiontab" element={
+            <>
+              <AdminHeader />
+              <AuctionAdminPanel/>
+            </>
+          } />
 
           <Route path="/admin-panel" element={
             <>
@@ -71,7 +79,12 @@ function App() {
               <AdminPanel />
             </>
           } />
-
+ <Route path="/publishnew" element={
+            <>
+              <AdminHeader />
+              <AdminPublishNew />
+            </>
+          } />
           <Route path="/inspection" element={
             <>
             <AdminHeader/>

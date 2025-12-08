@@ -25,150 +25,138 @@ const InspectionAdmin = () => {
   ];
 
   const handleApprove = () => {
-  const dataToSave = {
-    generalRating,
-    conditionSummary,
-    exteriorNotes,
-    interiorNotes,
-    finalNotes,
-    files: Array.from(files).map(file => file.name) 
-  };
+    const dataToSave = {
+      generalRating,
+      conditionSummary,
+      exteriorNotes,
+      interiorNotes,
+      finalNotes,
+      files: Array.from(files).map(file => file.name)
+    };
 
-  localStorage.setItem("inspectionData", JSON.stringify(dataToSave));
-  alert("Inspection data saved to localStorage!");
-
-  navigate("/admin-panel");
-};
-
-  const handleReject = () => {
+    localStorage.setItem("inspectionData", JSON.stringify(dataToSave));
+    alert("Inspection data saved to localStorage!");
     navigate("/admin-panel");
   };
 
-  return (
+  const handleReject = () => navigate("/admin-panel");
 
-    
+  return (
     <div className="inspection-container">
-      
       <div className="left-section">
         <h1 className="page-title">Inspection Reviews</h1>
-<div className="top-image-card">
-  <img src={images[0]} className="top-single-image" alt="vehicle" />
 
-  <div className="top-image-details">
-    <h4 className="car-title">2018 Toyota Hilux</h4>
-    <p className="car-meta">Item ID: GHI789</p>
-    <p className="car-meta">Category: Vehicles</p>
-  </div>
-</div>
+        <div className="top-image-card">
+          <img src={images[1]} className="top-single-image" alt="vehicle" />
+          <div className="top-image-details">
+            <h4 className="car-title1">2018 Toyota Hilux</h4>
+            <p className="car-meta1">Item ID: GHI789</p>
+            <p className="car-meta1">Category: Vehicles</p>
+          </div>
+        </div>
 
+        <div className="accordion-box custom-grid">
 
-        <div className="accordion-box">
-
-          <div className="accordion-item">
-            <div className="accordion-header" onClick={() => toggle(1)}>
-              <span>General Condition</span>
-              <span>{open === 1 ? "▲" : "▼"}</span>
-            </div>
-            {open === 1 && (
-              <div className="accordion-body">
-                <div className="row">
-                  <div className="col-md-6">
-                    <label className="label-text">Overall Rating: {generalRating}/10</label>
-                    <input
-                      type="range"
-                      className="form-range"
-                      min={0}
-                      max={10}
-                      value={generalRating}
-                      onChange={(e) => setGeneralRating(Number(e.target.value))}
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <label className="label-text">Condition Summary</label>
-                    <select
-                      className="form-select dark-select"
-                      value={conditionSummary}
-                      onChange={(e) => setConditionSummary(e.target.value)}
-                    >
-                      <option>Good</option>
-                      <option>Average</option>
-                      <option>Poor</option>
-                    </select>
-                  </div>
+          {/* Row 1 */}
+          <div className="grid-row">
+            <div className="accordion-item">
+              <div className="accordion-header" onClick={() => toggle(1)}>
+                <span>General Condition</span>
+                <span>{open === 1 ? "▲" : "▼"}</span>
+              </div>
+              {open === 1 && (
+                <div className="accordion-body">
+                  <label className="label-text">
+                    Overall Rating: {generalRating}/10
+                  </label>
+                  <input
+                    type="range"
+                    className="form-range"
+                    min={0}
+                    max={10}
+                    value={generalRating}
+                    onChange={(e) => setGeneralRating(Number(e.target.value))}
+                  />
                 </div>
+              )}
+            </div>
+
+            <div className="accordion-item">
+              <div className="accordion-header" onClick={() => toggle(2)}>
+                <span>Exterior / Cosmetic</span>
+                <span>{open === 2 ? "▲" : "▼"}</span>
               </div>
-            )}
+              {open === 2 && (
+                <div className="accordion-body">
+                  <textarea
+                    className="form-control dark-input"
+                    rows="3"
+                    placeholder="Exterior notes"
+                    value={exteriorNotes}
+                    onChange={(e) => setExteriorNotes(e.target.value)}
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="accordion-item">
-            <div className="accordion-header" onClick={() => toggle(2)}>
-              <span>Exterior / Cosmetic</span>
-              <span>{open === 2 ? "▲" : "▼"}</span>
-            </div>
-            {open === 2 && (
-              <div className="accordion-body">
-                <textarea
-                  className="form-control dark-input"
-                  rows="3"
-                  placeholder="Exterior notes"
-                  value={exteriorNotes}
-                  onChange={(e) => setExteriorNotes(e.target.value)}
-                ></textarea>
+          {/* Row 2 */}
+          <div className="grid-row">
+            <div className="accordion-item">
+              <div className="accordion-header" onClick={() => toggle(3)}>
+                <span>Interior / Mechanical</span>
+                <span>{open === 3 ? "▲" : "▼"}</span>
               </div>
-            )}
+              {open === 3 && (
+                <div className="accordion-body">
+                  <textarea
+                    className="form-control dark-input"
+                    rows="3"
+                    placeholder="Interior notes"
+                    value={interiorNotes}
+                    onChange={(e) => setInteriorNotes(e.target.value)}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="accordion-item">
+              <div className="accordion-header" onClick={() => toggle(4)}>
+                <span>Documentation & Attachments</span>
+                <span>{open === 4 ? "▲" : "▼"}</span>
+              </div>
+              {open === 4 && (
+                <div className="accordion-body">
+                  <input
+                    type="file"
+                    className="form-control dark-input"
+                    multiple
+                    onChange={(e) => setFiles(e.target.files)}
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="accordion-item">
-            <div className="accordion-header" onClick={() => toggle(3)}>
-              <span>Interior / Mechanical</span>
-              <span>{open === 3 ? "▲" : "▼"}</span>
-            </div>
-            {open === 3 && (
-              <div className="accordion-body">
-                <textarea
-                  className="form-control dark-input"
-                  rows="3"
-                  placeholder="Interior / mechanical notes"
-                  value={interiorNotes}
-                  onChange={(e) => setInteriorNotes(e.target.value)}
-                ></textarea>
+          {/* Row 3 */}
+          <div className="grid-row full-width-row">
+            <div className="accordion-item">
+              <div className="accordion-header" onClick={() => toggle(5)}>
+                <span>Final Notes</span>
+                <span>{open === 5 ? "▲" : "▼"}</span>
               </div>
-            )}
-          </div>
-
-          <div className="accordion-item">
-            <div className="accordion-header" onClick={() => toggle(4)}>
-              <span>Documentation & Attachments</span>
-              <span>{open === 4 ? "▲" : "▼"}</span>
+              {open === 5 && (
+                <div className="accordion-body">
+                  <textarea
+                    className="form-control dark-input"
+                    rows="2"
+                    placeholder="Final notes"
+                    value={finalNotes}
+                    onChange={(e) => setFinalNotes(e.target.value)}
+                  />
+                </div>
+              )}
             </div>
-            {open === 4 && (
-              <div className="accordion-body">
-                <input
-                  type="file"
-                  className="form-control dark-input"
-                  multiple
-                  onChange={(e) => setFiles(e.target.files)}
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="accordion-item">
-            <div className="accordion-header" onClick={() => toggle(5)}>
-              <span>Final Notes</span>
-              <span>{open === 5 ? "▲" : "▼"}</span>
-            </div>
-            {open === 5 && (
-              <div className="accordion-body">
-                <textarea
-                  className="form-control dark-input"
-                  rows="2"
-                  placeholder="Final notes"
-                  value={finalNotes}
-                  onChange={(e) => setFinalNotes(e.target.value)}
-                ></textarea>
-              </div>
-            )}
           </div>
 
         </div>

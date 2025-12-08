@@ -31,6 +31,8 @@ function AdminHeader() {
          <nav className="nav">
             <Link to="/admin-panel/" className={`nav-link ${location.pathname==="/"?"active":""}`}>Dashboard</Link>
             <Link to="/reports" className={`nav-link ${location.pathname.includes("reports")?"active":""}`}>Reports</Link>
+                        <Link to="/auctiontab" className={`nav-link ${location.pathname.includes("auctiontab")?"active":""}`}>Auction</Link>
+
           </nav>
         </div>
 
