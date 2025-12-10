@@ -32,8 +32,7 @@
   font-weight: bold;
   text-align: left;
   height: 130px;
-  border: 1px solid white;
-  border-color: white;
+  border-color: rgba(255, 242, 242, 0.321);
     text-align: center;
   justify-content: center;
 }

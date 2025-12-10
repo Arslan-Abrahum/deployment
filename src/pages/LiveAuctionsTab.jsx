@@ -143,8 +143,8 @@ export default function LiveAuctionsTab() {
       <td>
         <span
           style={{
-            color: item.status === "Winning" ? "#00ff00" : "#ffcc00",
-            fontWeight: "bold"
+            color: item.status === "Winning" ? "#00fe7bff" : "#e8e804fe",
+            fontWeight: "bold" ,backgroundColor:"#02f67845" , padding:5 ,borderRadius:30,borderColor:"white"
           }}
         >
           {item.status}
@@ -157,12 +157,7 @@ export default function LiveAuctionsTab() {
       </div>
 
       <div className="pagination-row">
-        <span>
-          Page {page} of {totalPages} — Showing{" "}
-          {startIndex + 1}–
-          {Math.min(startIndex + ROWS_PER_PAGE, filteredData.length)} of{" "}
-          {filteredData.length} results
-        </span>
+        
 
         <div className="pagination">
           <button disabled={page === 1} onClick={() => setPage(page - 1)}>
@@ -182,6 +177,7 @@ export default function LiveAuctionsTab() {
           <button disabled={page === totalPages} onClick={() => setPage(page + 1)}>
             Next
           </button>
+        
         </div>
       </div>
     </div>

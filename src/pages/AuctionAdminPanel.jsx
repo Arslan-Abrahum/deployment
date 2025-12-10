@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./AuctionAdminPanel.css";
+import "./AdminPanel.css"
 import { Link, useNavigate } from "react-router-dom";
 
 export default function AuctionPage() {
@@ -34,12 +35,11 @@ export default function AuctionPage() {
   const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
 
   return (
-    <div className="container-fluid p-4 min-vh-100 bg-black text-white">
+    <div className="container-fluid">
 
-      {/* Summary Cards */}
-      <div className="row g-3 mb-4 mt-4">
+      <div className="row g-3 mb-4 mt-4" >
         <div className="col-md-4">
-          <div className="card p-3 shadow dark-card">
+          <div className="card p-3 shadow dark-card" style={{backgroundColor:"black"}}>
             <p className="text-secondary mb-1">Active Bidders</p>
             <h2>1,204</h2>
             <small className="text-success">+5.2% vs last period</small>
@@ -47,7 +47,7 @@ export default function AuctionPage() {
         </div>
 
         <div className="col-md-4">
-          <div className="card p-3 shadow dark-card">
+          <div className="card p-3 shadow dark-card"style={{backgroundColor:"black"}}>
             <p className="text-secondary mb-1">Total Lots</p>
             <h2>850</h2>
             <small className="text-success">+1.8% vs last period</small>
@@ -55,7 +55,7 @@ export default function AuctionPage() {
         </div>
 
         <div className="col-md-4">
-          <div className="card p-3 shadow dark-card">
+          <div className="card p-3 shadow dark-card" style={{backgroundColor:"black"}}>
             <p className="text-secondary mb-1">Live Rooms</p>
             <h2>15</h2>
             <small className="text-success">+2 since yesterday</small>
@@ -63,8 +63,7 @@ export default function AuctionPage() {
         </div>
       </div>
 
-      {/* Table Card */}
-      <div className="card p-3 dark-card mt-3">
+      <div className="card p-3 dark-card mt-3"style={{backgroundColor:"black"}}>
 
         <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 mt-3">
           <h1 className="mt-2">All Auctions</h1>
