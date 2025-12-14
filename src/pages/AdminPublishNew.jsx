@@ -122,8 +122,8 @@ const AdminPublishNew = () => {
                 onChange={handleChange}
               >
                 <option value="">Select Auction</option>
-                <option value="Auction 1">Auction 1</option>
-                <option value="Auction 2">Auction 2</option>
+                <option value="Auction 1">Vehicle</option>
+                <option value="Auction 2">Building</option>
               </select>
             </div>
 

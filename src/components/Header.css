@@ -8,7 +8,6 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* MAIN CONTAINER */
 .header-container {
   max-width: 1400px;
   margin: 0 auto;
@@ -19,7 +18,6 @@
   gap: 1.5rem;
 }
 
-/* LEFT SECTION */
 .header-left {
   display: flex;
   align-items: center;
@@ -27,7 +25,6 @@
   flex: 0 0 auto;
 }
 
-/* LOGO */
 .logo {
   display: flex;
   align-items: center;

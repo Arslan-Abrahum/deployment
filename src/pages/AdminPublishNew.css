@@ -190,3 +190,91 @@ body {
     font-size: 0.85rem;
   }
 }
+
+html, body {
+  overflow-x: hidden;
+}
+
+
+@media (max-width: 1024px) {
+  .header-title {
+    margin-left: 0;
+    text-align: left;
+  }
+
+  .admin-page {
+    padding: 18px;
+  }
+}
+
+
+@media (max-width: 900px) {
+  .admin-header {
+    gap: 10px;
+  }
+
+  .row.g-4 {
+    row-gap: 20px;
+  }
+
+  .preview-img {
+    width: 72px;
+    height: 72px;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .admin-page {
+    padding: 16px;
+  }
+
+  .drop-area {
+    padding: 18px;
+  }
+
+  .drop-area-text {
+    font-size: 14px;
+  }
+
+  .preview-img {
+    width: 64px;
+    height: 64px;
+  }
+
+  .badge {
+    min-width: 120px;
+    font-size: 10px;
+  }
+}
+
+
+@media (max-width: 480px) {
+  .admin-page {
+    padding: 14px;
+  }
+
+  .admin-card {
+    padding: 14px;
+  }
+
+  .drop-area {
+    padding: 14px;
+  }
+
+  .drop-area-text {
+    font-size: 13px;
+  }
+
+  .preview-img {
+    width: 58px;
+    height: 58px;
+  }
+
+  .btn-draft,
+  .btn-publish,
+  .btn-preview {
+    height: 38px;
+    font-size: 0.8rem;
+  }
+}

@@ -264,3 +264,76 @@
     font-size: 0.8125rem;
   }
 }
+@media (max-width: 1024px) {
+  .auction-details-content,
+  .live-auction-content,
+  .live-auction-bottom-panels,
+  .bid-status-box {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .auction-details-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .auction-title,
+  .live-auction-title {
+    font-size: 1.5rem;
+  }
+
+  .thumbnail {
+    width: 80px;
+    height: 60px;
+  }
+
+  .info-tabs .tab {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+  }
+
+  .current-bid-amount {
+    font-size: 2rem;
+  }
+
+  .custom-bid-form {
+    flex-direction: column;
+  }
+
+  .custom-bid-button,
+  .quick-bid-button {
+    width: 100%;
+  }
+
+  .image-thumbnails {
+    gap: 0.5rem;
+  }
+
+  .timer-value {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .auction-details-page {
+    padding: 1rem;
+  }
+
+  .auction-title {
+    font-size: 1.25rem;
+  }
+
+  .lot-number {
+    font-size: 0.75rem;
+  }
+
+  .timer-label,
+  .timer-label-small {
+    font-size: 0.625rem;
+  }
+
+  .bid-status-item {
+    font-size: 0.8125rem;
+  }
+}

@@ -238,3 +238,95 @@ body {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(140,198,63,0.3);
 }
+
+html, body {
+  overflow-x: hidden;
+}
+
+
+@media (max-width: 1024px) {
+  .inspection-title {
+    font-size: 26px;
+  }
+
+  .filter-bar-container {
+    gap: 10px;
+  }
+
+  .inspection-table {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 900px) {
+  .filter-bar-container {
+    flex-wrap: wrap;
+  }
+
+  .search-input {
+    flex: 1 1 100%;
+  }
+
+  .filter-select {
+    flex: 1 1 48%;
+  }
+
+  .apply-btn,
+  .clear-btn {
+    flex: 1 1 48%;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .inspection-title {
+    font-size: 22px;
+    margin-left: 10px;
+  }
+
+  .admin-wrapper {
+    padding: 16px;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .inspection-table {
+    min-width: 900px;
+  }
+
+  .pagination-bar1 {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .inspection-title {
+    font-size: 20px;
+  }
+
+  .filter-bar-container {
+    padding: 10px;
+  }
+
+  .search-input,
+  .filter-select,
+  .apply-btn,
+  .clear-btn {
+    width: 100%;
+  }
+
+  .view-btn {
+    width: 120px;
+    font-size: 13px;
+  }
+
+  .pagination-bar1 button {
+    height: 34px;
+    font-size: 13px;
+    padding: 0 10px;
+  }
+}

@@ -467,3 +467,50 @@
   }
 }
 
+
+html, body {
+  overflow-x: hidden;
+}
+
+
+@media (max-width: 480px) {
+  .register-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .register-logo span {
+    font-size: 0.95rem;
+  }
+
+  .register-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .register-image-section {
+    min-height: 320px;
+  }
+
+  .register-image-title {
+    font-size: 1.5rem;
+  }
+
+  .register-image-description {
+    font-size: 0.875rem;
+  }
+
+  .register-form-wrapper {
+    max-width: 100%;
+  }
+
+  .submit-button {
+    padding: 0.7rem 1.25rem;
+  }
+}
+
+
+@media (max-height: 650px) {
+  .register-image-section {
+    min-height: 300px;
+  }
+}
+
