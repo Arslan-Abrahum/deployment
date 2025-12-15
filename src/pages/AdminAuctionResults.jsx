@@ -23,10 +23,7 @@ export default function AdminAuctionResults() {
         item.item.toLowerCase().includes(search.toLowerCase()) ||
         item.bidder.toLowerCase().includes(search.toLowerCase()) ||
         item.lot.toLowerCase().includes(search.toLowerCase());
-
-      const statusMatch =
-        statusFilter === "All" || item.status === statusFilter;
-
+      const statusMatch = statusFilter === "All" || item.status === statusFilter;
       return searchMatch && statusMatch;
     });
   }, [search, statusFilter]);
@@ -50,13 +47,8 @@ export default function AdminAuctionResults() {
   return (
     <div className="results-wrapper">
 
-      <h1 className="title">
-        Auction Results: Vintage Watch Collection - 24 Oct 2024
-      </h1>
-
-      <p className="subtitle">
-        Review winning bids, financial status, and next steps for the auction.
-      </p>
+      <h1 className="title">Auction Results: Vintage Watch Collection - 24 Oct 2024</h1>
+      <p className="subtitle">Review winning bids, financial status, and next steps for the auction.</p>
 
       <div className="stats-row">
         <div className="stat-card">$1,245,600<br /><span>Total Hammer Price</span></div>
@@ -66,43 +58,33 @@ export default function AdminAuctionResults() {
       </div>
 
       <div className="filter-row">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="🔍 Search by Lot, Item Name, or Bidder..."
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+        />
 
-        <div className="search-box">
-          <span className="search-icon">🔍</span>
-          <input
-            type="text"
-            placeholder="Search by Lot, Item Name, or Bidder..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-          />
-        </div>
-
-        <button className="export-btn" onClick={exportResults}>
+        <button className="createBtn export-btn" onClick={exportResults}>
           Export Results
         </button>
 
-        <div className="status-buttons">
+<div className="btn-group filter-btn-group status-buttons">
           {["All", "Payment Received", "Invoice Sent", "Payment Pending", "Unsold"].map((s) => (
             <button
               key={s}
-              className={statusFilter === s ? "active" : ""}
-              onClick={() => {
-                setStatusFilter(s);
-                setPage(1);
-              }}
+              className={`custom-filter-btn ${statusFilter === s ? "active" : ""}`}
+              onClick={() => { setStatusFilter(s); setPage(1); }}
             >
               {s}
             </button>
           ))}
         </div>
-
       </div>
 
       <div className="table-box">
-        <table>
+        <table className="table-dark">
           <thead>
             <tr>
               <th>LOT</th>
@@ -114,7 +96,6 @@ export default function AdminAuctionResults() {
               <th></th>
             </tr>
           </thead>
-
           <tbody>
             {rows.map((row, i) => (
               <tr key={i}>
@@ -123,26 +104,39 @@ export default function AdminAuctionResults() {
                 <td>{row.bid ? `$${row.bid.toLocaleString()}` : "—"}</td>
                 <td>{row.bidder}</td>
                 <td>
-                  <span className={row.reserve === "Met" ? "met" : "not-met"}>
+                  <span className={`badgecustomadmin ${row.reserve === "Met" ? "bg-live" : "bg-draft"}`}>
                     {row.reserve}
                   </span>
                 </td>
                 <td>
-                  <span className="status-pill">{row.status}</span>
+                  <span className={`badgecustomadmin
+                    ${row.status === "Payment Received" ? "bg-live" :
+                    row.status === "Invoice Sent" ? "bg-upcoming" :
+                    row.status === "Payment Pending" ? "bg-ended" :
+                    "bg-draft"}`}>
+                    {row.status}
+                  </span>
                 </td>
-                <td className="dots">⋯</td>
+                <td className="dots">⋮</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <div className="pagination-row">
-        <button disabled={page === 1} onClick={() => setPage(page - 1)}>Prev</button>
-        <span>Page {page} of {totalPages}</span>
-        <button disabled={page === totalPages} onClick={() => setPage(page + 1)}>Next</button>
+      <div className="pagination-bar3">
+        <button disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
+        {[...Array(totalPages)].map((_, i) => (
+          <button
+            key={i}
+            className={page === i + 1 ? "active" : ""}
+            onClick={() => setPage(i + 1)}
+          >
+            {i + 1}
+          </button>
+        ))}
+        <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Next</button>
       </div>
-
     </div>
   );
 }

@@ -105,8 +105,8 @@ export default function AuctionControlPanel() {
                 <span
                   className={`badge ${
                     bidder.status === "Active"
-                      ? "bg-success"
-                      : "bg-warning text-dark"
+                      ? "bg-active"
+                      : "bg-watching"
                     
                   }`}
                 >
@@ -149,32 +149,32 @@ export default function AuctionControlPanel() {
               </li>
             </ul>
 
-      <div className="dispute-box">
+  <div className="custom-dispute-box">
   <strong>Dispute #8812 - BidMasterFlex</strong>
 
-  <div className="d-flex align-items-center mt-2">
-    <p className="small text-white mb-0 flex-grow-1">
+  <div className="custom-dispute-content">
+    <p className="custom-dispute-text">
       Claim: "Accidental double-click bid."
     </p>
 
-    <div className="d-flex gap-2 ms-3">
-      <button className="btn-void">Void Bid</button>
-      <button className="btn-resolve">Resolve</button>
+    <div className="custom-dispute-buttons">
+      <button className="custom-btn-void">Void Bid</button>
+      <button className="custom-btn-resolve">Resolve</button>
     </div>
   </div>
 </div>
 
-<div className="dispute-box">
+<div className="custom-dispute-box">
   <strong>Dispute #8809 - User_7891</strong>
 
-  <div className="d-flex align-items-center mt-2">
-    <p className="small text-white mb-0 flex-grow-1">
+  <div className="custom-dispute-content">
+    <p className="custom-dispute-text">
       Claim: "Bid did not register in time."
     </p>
 
-    <div className="d-flex gap-2 ms-3">
-      <button className="btn-void">Void Bid</button>
-      <button className="btn-resolve">Resolve</button>
+    <div className="custom-dispute-buttons">
+      <button className="custom-btn-void">Void Bid</button>
+      <button className="custom-btn-resolve">Resolve</button>
     </div>
   </div>
 </div>

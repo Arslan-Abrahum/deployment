@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import "./AdminPanel.css";
+import "./Reports.css";
 import { toast } from "react-toastify";
 
 const sampleData = [
@@ -53,7 +53,7 @@ function Report() {
         <input
           type="text"
           className="search-input"
-          placeholder="Search inspections"
+          placeholder="🔍 Search inspections"
           value={search}
           onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
         />
@@ -106,12 +106,11 @@ function Report() {
                   <td>{item.asset}</td>
                   <td>{item.date}</td>
                   <td>{item.officer}</td>
-                <td className="text-center">
-  <span className={`badge rounded-pill px-2 py-1 ${
-    item.status === "Approved" ? "bg-success" :
-    item.status === "Rejected" ? "bg-danger" :
-    item.status === "In Progress" ? "bg-warning text-dark" :
-    "bg-primary" // Pending or others
+               <td className="text-center">
+  <span className={`badge-custom ${
+    item.status === "Approved" ? "badge-approved" :
+    item.status === "Rejected" ? "badge-rejected" : 
+    item.status === "Pending" ? "badge-pending1" : ""
   }`}>
     {item.status}
   </span>
@@ -145,7 +144,7 @@ function Report() {
         </table>
       </div>
 
-      <div className="pagination-bar1">
+      <div className="pagination-bar2">
         <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="btn border rounded px-3">Prev</button>
 
         {[...Array(totalPages)].map((_, i) => (
@@ -153,7 +152,7 @@ function Report() {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`btn border rounded px-3 ${currentPage === i + 1 ? "bg-blue-800 text-white border-0" : ""}`}
+              className={`btn border rounded px-3 ${currentPage === i + 1 ? "bg-black-800 text-white border-0" : ""}`}
             >
               {i + 1}
             </button>

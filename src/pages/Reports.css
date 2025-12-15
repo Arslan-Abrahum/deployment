@@ -179,7 +179,7 @@ body {
   white-space: nowrap;
 }
 
-.badge-custom1 {
+.badge-custom {
   display: inline-block;
   font-size: 12px;
   font-weight: 700;
@@ -188,28 +188,26 @@ body {
   padding: 6px 12px; 
   white-space: nowrap;
   overflow: hidden;
-  width: 50%;
+  width: 100%;
 }
 
-.badge-pending {
-  background-color: #4b79f712;  
-  color: #018dfff0;
-  border: 1px solid #4b79f793; 
-}
 
-.badge-inprogress {
-  background-color: #cfd2161d;  
-  color: #d6d836e1;
-  border: 1px solid #cfd21671; 
-}
 
-.badge-completed {
-  background-color: #28a74620;   
+.badge-rejected {
+  background-color: #ea060619; 
+  color: #dc3546fc;
+  border: 1px solid #dc354662; 
+}
+.badge-approved{
+ background-color: #28a74615; 
   color: #28a746;
-  border: 1px solid #28a7467d;  
+  border: 1px solid #28a74652; 
 }
-
-
+.badge-pending1{
+ background-color: #cfd2160a; 
+  color: #cfd216ea;
+  border: 1px solid #cfd2163f; 
+}
 
 .row-selected {
   background-color: rgba(140, 198, 63, 0.1);
@@ -219,8 +217,8 @@ body {
   font-weight: bold;
 }
 
-.pagination-bar1 {
-  display: flex;
+.pagination-bar2 {
+   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1rem;
@@ -229,8 +227,8 @@ body {
   flex-wrap: wrap;
 }
 
-.pagination-bar1 button {
-    padding: 0.6rem 1.25rem;
+.pagination-bar2 button {
+     padding: 0.6rem 1.25rem;
   background-color: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
@@ -241,8 +239,8 @@ body {
   text-align: center;
 }
 
-.pagination-bar1 .active-page {
-  background-color: rgba(59, 130, 246, 0.15);
+.pagination-bar2 .active-page {
+   background-color: rgba(59, 130, 246, 0.15);
   border-color: rgba(59, 130, 246, 0.4);
   color: #3B82F6;
   font-weight: 600;
@@ -250,7 +248,8 @@ body {
 
 .pagination-bar1 button:hover:not([disabled]) {
  background-color: rgba(255, 255, 255, 0.06);
-   border-color: rgba(59, 130, 246, 0.4);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
   transform: translateY(-1px);
 }
 .pagination-bar button[disabled] {

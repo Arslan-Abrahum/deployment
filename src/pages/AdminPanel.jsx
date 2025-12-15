@@ -75,7 +75,7 @@ function AdminPanel() {
           <input
             type="text"
             className="search-input"
-            placeholder="Search by Item ID or Seller..."
+            placeholder="🔍 Search by Item ID or Seller..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -130,13 +130,13 @@ function AdminPanel() {
                   <td>{item.category}</td>
                   <td>{item.seller}</td>
                   <td className="text-center">
-                    <span className={`badge rounded-pill ${
-                      item.status === "Completed" ? "bg-success" :
-                      item.status === "In Progress" ? "bg-warning text-dark" :
-                      "bg-primary"
-                    }`}>
-                      {item.status}
-                    </span>
+                   <span className={`badge-custom1 ${
+  item.status === "Pending Inspection" ? "badge-pending" :
+  item.status === "In Progress" ? "badge-inprogress" :
+  item.status === "Completed" ? "badge-completed" : ""
+}`}>
+  {item.status}
+</span>
                   </td>
                   <td>{item.officer}</td>
                   <td className="text-center">

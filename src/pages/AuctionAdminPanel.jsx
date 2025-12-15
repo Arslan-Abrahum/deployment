@@ -1,12 +1,24 @@
 import React, { useState } from "react";
 import "./AuctionAdminPanel.css";
 import "./AdminPanel.css"
+
 import { Link, useNavigate } from "react-router-dom";
+const PaymentsIcon = (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <path
+      d="M12 2V22M17 5H9.5C8.57174 5 7.6815 5.36875 7.02513 6.02513C6.36875 6.6815 6 7.57174 6 8.5C6 9.42826 6.36875 10.3185 7.02513 10.9749C7.6815 11.6312 8.57174 12 9.5 12H14.5C15.4283 12 16.3185 12.3687 16.9749 13.0251C17.6312 13.6815 18 14.5717 18 15.5C18 16.4283 17.6312 17.3185 16.9749 17.9749C16.3185 18.6312 15.4283 19 14.5 19H6"
+      stroke="currentColor"
+      strokeWidth="4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      
+    />
+  </svg>
+)
 
 export default function AuctionPage() {
 
   const navigate = useNavigate();
-
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -37,46 +49,46 @@ export default function AuctionPage() {
   return (
     <div className="container-fluid">
 
-      <div className="row g-3 mb-4 mt-4" >
+      <div className="row g-3 mb-4 mt-4 cards-row" >
         <div className="col-md-4">
           <div className="card p-3 shadow dark-card" style={{backgroundColor:"black"}}>
-            <p className="text-secondary mb-1">Active Bidders</p>
-            <h2>1,204</h2>
-            <small className="text-success">+5.2% vs last period</small>
-          </div>
-        </div>
-
-        <div className="col-md-4">
-          <div className="card p-3 shadow dark-card"style={{backgroundColor:"black"}}>
-            <p className="text-secondary mb-1">Total Lots</p>
-            <h2>850</h2>
-            <small className="text-success">+1.8% vs last period</small>
+            <p className="text-Primary mb-1">Active Bidders</p>
+            <h2>{PaymentsIcon}1,204</h2>
+            <small className="text-card">+5.2% vs last period</small>
           </div>
         </div>
 
         <div className="col-md-4">
           <div className="card p-3 shadow dark-card" style={{backgroundColor:"black"}}>
-            <p className="text-secondary mb-1">Live Rooms</p>
-            <h2>15</h2>
-            <small className="text-success">+2 since yesterday</small>
+            <p className="text-Primary mb-1"> Total Lots</p>
+            <h2>{PaymentsIcon}850</h2>
+            <small className="text-card">+1.8% vs last period</small>
+          </div>
+        </div>
+
+        <div className="col-md-4">
+          <div className="card p-3 shadow dark-card" style={{backgroundColor:"black"}}>
+            <p className="text-Primary mb-1">Live Rooms</p>
+            <h2>{PaymentsIcon}15</h2>
+            <small className="text-card">+2 since yesterday</small>
           </div>
         </div>
       </div>
 
-      <div className="card p-3 dark-card mt-3"style={{backgroundColor:"black"}}>
+      <div className="card p-3 dark-card mt-3" style={{backgroundColor:"black"}}>
 
-        <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 mt-3">
-          <h1 className="mt-2">All Auctions</h1>
+        <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 mt-3 mobile-flex-column">
+          <h1 className="mt-2" style={{marginLeft:20}}>All Auctions</h1>
 
-          <div className="d-flex flex-wrap gap-2 align-items-center">
+          <div className="d-flex flex-wrap gap-2 align-items-center full-width-mobile">
             <Link to="/publishnew">
-              <button className="createBtn">+ Create New Auction</button>
+              <button className="createBtn full-width-mobile-btn">+ Create New Auction</button>
             </Link>
 
             <input
               type="text"
               className="form-control bg-dark text-white border-secondary search-input"
-              placeholder="Search by Name or ID"
+              placeholder=" 🔍 Search by Name or ID"
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -84,8 +96,8 @@ export default function AuctionPage() {
               }}
             />
 
-            <div className="btn-group ms-2">
-              <button className="btn custom-filter-btn">All</button>
+            <div className="btn-group ms-2 filter-btn-group">
+              <button  className="btn custom-filter-btn active " >All</button>
               <button className="btn custom-filter-btn">Live</button>
               <button className="btn custom-filter-btn">Upcoming</button>
               <button className="btn custom-filter-btn">Ended</button>
@@ -95,7 +107,7 @@ export default function AuctionPage() {
         </div>
 
         <div className="table-responsive1">
-          <table className="table table-dark  align-middle">
+          <table className="table table-dark align-middle">
             <thead>
               <tr>
                 <th>Auction Name / ID</th>
@@ -107,7 +119,6 @@ export default function AuctionPage() {
                 <th>Actions</th>
               </tr>
             </thead>
-
             <tbody>
               {paginatedData.map((item, index) => (
                 <tr
@@ -121,12 +132,12 @@ export default function AuctionPage() {
                   </td>
 
                   <td>
-                    <span className={`badge 
-                      ${item.status === "Live" ? "bg-success" :
-                      item.status === "Upcoming" ? "bg-info text-dark" :
-                      item.status === "Ended" ? "bg-danger" :
-                      "bg-warning text-dark"}
-                    `}>
+                    <span className={`badgecustomadmin 
+                      ${item.status === "Live" ? "bg-live" :
+                      item.status === "Upcoming" ? "bg-upcoming" :
+                      item.status === "Ended" ? "bg-ended" :
+                      "bg-draft"
+                      }`}>
                       {item.status}
                     </span>
                   </td>
@@ -159,45 +170,32 @@ export default function AuctionPage() {
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="d-flex justify-content-between align-items-center mt-3">
-          <small className="text-secondary">
-            Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredData.length)} of {filteredData.length}
-          </small>
+        <div className="d-flex justify-content-center mt-3 pagination-bar3">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(p => p - 1)}
+            className="btn border rounded px-3"
+          >
+            Prev
+          </button>
 
-          <div className="pagination-bar d-flex gap-2 align-items-center">
-
+          {[...Array(totalPages)].map((_, i) => (
             <button
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(p => p - 1)}
-              className="btn border rounded px-3"
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`btn border rounded px-3 ${currentPage === i + 1 ? "active" : ""}`}
             >
-              Prev
+              {i + 1}
             </button>
+          ))}
 
-            {[...Array(totalPages)].map((_, i) => (
-              i < 3 && (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`btn border rounded px-3 ${currentPage === i + 1 ? "active" : ""}`}
-                >
-                  {i + 1}
-                </button>
-              )
-            ))}
-
-            {totalPages > 3 && <span className="px-2 text-black">...</span>}  
-
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(p => p + 1)}
-              className="btn border rounded px-3"
-            >
-              Next
-            </button>
-
-          </div>
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(p => p + 1)}
+            className="btn border rounded px-3"
+          >
+            Next
+          </button>
         </div>
 
       </div>

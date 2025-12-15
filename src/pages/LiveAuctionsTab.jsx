@@ -140,16 +140,16 @@ export default function LiveAuctionsTab() {
       <td>{item.user}</td>
       <td>${item.amount.toLocaleString()}</td>
       <td>{item.time}</td>
-      <td>
-        <span
-          style={{
-            color: item.status === "Winning" ? "#00fe7bff" : "#e8e804fe",
-            fontWeight: "bold" ,backgroundColor:"#02f67845" , padding:5 ,borderRadius:30,borderColor:"white"
-          }}
-        >
-          {item.status}
-        </span>
-      </td>
+    <td>
+                    <span className={`statusbadge
+                      ${item.status === "Winning" ? "bg-winning" :
+                      item.status === "Outbid" ? "bg-outbid" :
+                      item.status === "Ended" ? "bg-end" :
+                      "bg-draft"
+                      }`}>
+                      {item.status}
+                    </span>
+                  </td>
     </tr>
   ))}
 </tbody>

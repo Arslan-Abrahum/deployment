@@ -71,27 +71,25 @@
 }
 
 .export-btn {
-  background-color: #8CC63F;
-  color: #000;
-  border: none;
-  padding: 0 20px;
-  height: 42px;
-  border-radius: 8px;
-  font-size: 14px;
+  background-color: #8CC63F !important; /* new color */
+  color: #000000 !important; /* text color */
+  border: none !important;
+  padding: 0.75rem 1.75rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  transition: all 0.2s;
 }
 
 .export-btn:hover {
-  background-color: #35B24A;
+  background-color: #35B24A !important;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(140, 198, 63, 0.3);
+  box-shadow: 0 4px 12px rgba(32, 230, 25, 0.3);
+    color: #000000 !important; /* text color */
+
 }
+
 
 .table-box {
   width: 100%;
@@ -149,44 +147,40 @@
 }
 
 .pagination-row {
-  display: flex;
+display: flex;
   align-items: center;
-  margin-top: 5px;
-  color: #888;
-  font-size: 14px;
+  justify-content: center;
+  gap: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   flex-wrap: wrap;
-  gap: 15px;
 }
 
-.pagination {
-  display: flex;
-  gap: 10px;
-}
+
 
 .pagination button {
-  height: 36px;
-  min-width: 36px;
-  padding: 0 12px;
+  padding: 0.6rem 1.25rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
-  background: #111;
-  border: 1px solid #333;
-  color: #ccc;
-  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
   cursor: pointer;
   transition: all 0.2s;
+  font-size: 0.875rem;
+  text-align: center;
 }
 
 .pagination button:hover:not(:disabled) {
-  background-color: #222;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.25);
   color: #fff;
-  border-color: #555;
+  transform: translateY(-1px);
 }
 
 .pagination button.active {
-  background-color: #000000;
-  color: #fffdfd;
-  border-color: #ffffff;
-  font-weight: 700;
+background-color: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.4);
+  color: #3B82F6;
+  font-weight: 600;
 }
 
 .pagination button:disabled {
@@ -228,33 +222,44 @@
   }
   
 }
-.status-badge {
-  padding: 6px 12px;
+.statusbadge {
+   display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
   border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #fff !important;
-  display: inline-block;
-  background-color: white;
+  padding: 6px 12px; 
+  white-space: nowrap;
+  overflow: hidden;
+  width: 50%;
 }
 
 
-.status-badge.live {
-  background-color: #d9534f !important; 
+.bg-winning {
+  background-color: #00fd3b36;
+  color: #00fd3b;
+  border: 1px solid #00fd3b88; /* Correct syntax */
+}
+
+.bg-outbid {
+  background-color: #d7fd0036;
+  color: #d7fd00;
+  border: 1px solid #d7fd006a;
+}
+
+.bg-end {
+  background-color: #fd000040;
+  color: #fd0000;
+  border: 1px solid #fd0000;
+}
+
+.bg-draft {
+  background-color: #6c757d25;
+  color: #6c757d;
+  border: 1px solid #6c757d;
 }
 
 
-.status-badge.upcoming {
-  background-color: #0275d8 !important; 
-}
-
-.status-badge.ended {
-  background-color: #5cb85c !important; 
-}
-
-.status-badge.draft {
-  background-color: #6c757d !important; 
-}
 
 html, body {
   overflow-x: hidden;
