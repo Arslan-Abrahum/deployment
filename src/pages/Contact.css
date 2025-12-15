@@ -223,4 +223,45 @@
 }
 
 
+* {
+  box-sizing: border-box;
+}
 
+
+@media (max-width: 1024px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .contact-hero {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .contact-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+
+  }
+
+  .submit-btn {
+    width: 100%;
+    align-self: stretch;
+  }
+}
+
+
+@media (max-width: 480px) {
+  .contact-detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .contact-form-wrapper {
+    padding: 1.25rem;
+  }
+}

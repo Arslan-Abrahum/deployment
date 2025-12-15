@@ -1,7 +1,19 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #000;
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+}
 
 .admin-page {
   min-height: 100vh;
-  background-color: #000;
   padding: 20px;
 }
 
@@ -18,25 +30,60 @@
   margin-left: 20px;
 }
 
-.btn-draft {
-   background-color: #8CC63F;
-  color: #000000;
-  border: none;
+.btn-publish,
+.btn-preview {
+  height: 44px;       
+  min-width: 100%;  
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
-height: 44px;
-width: 200px;  
+  transition: all 0.2s ease;
+  text-align: center;
+  display: inline-block;
+  margin: 5px;
+}
+.btn-draft{
+ height: 44px;        
+  min-width: 100px;   
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  display: inline-block;
+  margin: 5px;
+
 }
 
-.btn-draft:hover {
-   background-color: #35B24A;
+.btn-draft,
+.btn-publish {
+  background-color: #8CC63F;
+  color: #000;
+  border: none;
+}
+
+.btn-draft:hover,
+.btn-publish:hover {
+  background-color: #35B24A;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(140, 198, 63, 0.3);
 }
 
+.btn-preview {
+  background-color: transparent;
+  color: #35B24A;
+  border: 1px solid #00ff3c;
+}
+
+.btn-preview:hover {
+  background-color: #000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(120, 210, 1, 0.3);
+}
+
+/* Cards */
 .admin-card {
   background-color: #0c0c0c;
   padding: 20px;
@@ -63,6 +110,12 @@ width: 200px;
   border-radius: 10px;
   cursor: pointer;
   background-color: #0c0c0c;
+  transition: all 0.2s ease;
+}
+
+.drop-area:hover {
+  border-color: #8CC63F;
+  box-shadow: 0 4px 12px rgba(140, 198, 63, 0.2);
 }
 
 .drop-area-text {
@@ -78,34 +131,150 @@ width: 200px;
   border: 1px solid #333;
 }
 
-.btn-publish {
-  width: 100%;
-  background-color: #8CC63F;
-  color: #000000;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  margin-bottom: 10px;
-  cursor: pointer;
+.badge {
+  display: inline-block;
+  min-width: 140px; 
+  padding: 5px 0;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.2s ease;
 }
 
-.btn-publish:hover {
-  background-color: #35B24A;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(140, 198, 63, 0.3);
+.badge:hover {
+  opacity: 0.85;
 }
 
-.btn-preview {
-  width: 100%;
-  background-color: transparent;
-  color: #35B24A;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #00ff3c;
-  cursor: pointer;
+.bg-primary { background-color: #0d6efd; color: #fff; }
+.bg-success { background-color: #198754; color: #fff; }
+.bg-danger { background-color: #dc3545; color: #fff; }
+.bg-warning { background-color: #ffc107; color: #000; }
+
+@media (max-width: 1024px) {
+  .admin-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .btn-draft,
+  .btn-publish,
+  .btn-preview {
+    width: 100%;
+    min-width: unset;
+  }
 }
 
-.btn-preview:hover {
-  background-color: #000000;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(120, 210, 1, 0.3);}
+@media (max-width: 768px) {
+  .admin-card {
+    padding: 15px;
+  }
+
+  .drop-area {
+    padding: 20px;
+  }
+
+  .preview-img {
+    width: 70px;
+    height: 70px;
+  }
+
+  .btn-draft,
+  .btn-publish,
+  .btn-preview {
+    height: 40px;
+    font-size: 0.85rem;
+  }
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+
+@media (max-width: 1024px) {
+  .header-title {
+    margin-left: 0;
+    text-align: left;
+  }
+
+  .admin-page {
+    padding: 18px;
+  }
+}
+
+
+@media (max-width: 900px) {
+  .admin-header {
+    gap: 10px;
+  }
+
+  .row.g-4 {
+    row-gap: 20px;
+  }
+
+  .preview-img {
+    width: 72px;
+    height: 72px;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .admin-page {
+    padding: 16px;
+  }
+
+  .drop-area {
+    padding: 18px;
+  }
+
+  .drop-area-text {
+    font-size: 14px;
+  }
+
+  .preview-img {
+    width: 64px;
+    height: 64px;
+  }
+
+  .badge {
+    min-width: 120px;
+    font-size: 10px;
+  }
+}
+
+
+@media (max-width: 480px) {
+  .admin-page {
+    padding: 14px;
+  }
+
+  .admin-card {
+    padding: 14px;
+  }
+
+  .drop-area {
+    padding: 14px;
+  }
+
+  .drop-area-text {
+    font-size: 13px;
+  }
+
+  .preview-img {
+    width: 58px;
+    height: 58px;
+  }
+
+  .btn-draft,
+  .btn-publish,
+  .btn-preview {
+    height: 38px;
+    font-size: 0.8rem;
+  }
+}

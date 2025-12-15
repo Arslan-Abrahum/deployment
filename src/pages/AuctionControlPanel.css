@@ -1,7 +1,7 @@
 body {
   background-color: #0e1624;
   color: #ffffff;
-  
+  font-family: 'Inter', sans-serif;
 }
 
 .auction-container {
@@ -11,14 +11,27 @@ body {
 
 .header h2 {
   font-weight: bold;
+  margin-bottom: 0;
 }
 
+.live-text {
+  font-size: 14px;
+  display: inline-block;
+  margin-top: 2px;
+}
 
 .dark-card {
-  background-color: #1a2233;
-  border: 1px solid #2f3a50;
+  background-color: #0c0c0c;
+  border: 1px solid #222;
   border-radius: 12px;
   padding: 20px;
+  margin-bottom: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dark-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .timer {
@@ -26,6 +39,7 @@ body {
   font-weight: bold;
   text-align: center;
   margin: 10px 0;
+  color: #fff;
 }
 
 .bidder-row {
@@ -44,21 +58,29 @@ body {
   border-radius: 10px;
   margin-top: 10px;
 }
-    
+
 .price {
   color: #d4af37;
   font-weight: bold;
+}
+
+.text {
+  color: rgba(227, 227, 227, 0.516);
 }
 
 .dark-tabs .nav-link {
   background: transparent;
   color: #ffffffbc;
   border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all 0.2s;
 }
 
 .dark-tabs .nav-link.active {
-  color: #ffffff;
-  border-bottom: 2px solid #0d6efd;
+  color: #fff;
+  border-bottom: 2px solid #2563eb;
 }
 
 .dispute-box {
@@ -68,38 +90,201 @@ body {
   margin-top: 10px;
   color: white;
 }
+
 .dispute-box .flex-grow-1 {
   min-width: 0;
 }
-.text{
-    color: rgba(227, 227, 227, 0.516);
-}
-.btn-void , .btn-resolve{
-width: 80px;
+
+.btn-void,
+.btn-resolve {
+  width: 80px; 
+  height: 36px; 
   background-color: #8CC63F;
-  color: #000000;
+  color: #000;
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  height: 33px;
   text-align: center;
-  justify-content: center;
-  margin: 0.2px;
+  font-weight: 600;
+  transition: all 0.2s;
 }
-.btn-void:hover , .btn-resolve:hover{
-    background-color: #35B24A;
+
+.btn-void:hover,
+.btn-resolve:hover {
+  background-color: #35B24A;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(140, 198, 63, 0.3);
 }
-.btn-timer{
-    width: 100%;
-    border-radius: 1rem;
-    border: 2px solid white;
-    border-color: #000000;
-      background-color: #8CC63F;
-  color: #000000;
+
+.btn-timer {
+  width: 100%;
+  max-width: 120px; 
+  border-radius: 8px;
+  border: none;
+  background-color: #8CC63F;
+  color: #000;
   cursor: pointer;
   text-align: center;
-  height:40px;
+  height: 40px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
 
+.btn-timer:hover {
+  background-color: #35B24A;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(140, 198, 63, 0.3);
+}
+
+.badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  min-width: 70px;
+  text-align: center;
+}
+
+.bg-success {
+  background-color: #198754 !important;
+  color: #fff !important;
+}
+
+.bg-warning {
+  background-color: #ffc107 !important; 
+  color: #000 !important;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .dark-tabs .nav-link {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .btn-timer {
+    max-width: 100%;
+  }
+
+  .bid-row,
+  .bidder-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dispute-box .d-flex {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .dispute-box .d-flex .btn-void,
+  .dispute-box .d-flex .btn-resolve {
+    width: 100%;
+  }
+}
+.badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  min-width: 100px;     
+  text-align: center;   
+  white-space: nowrap;  
+}
+
+.bg-success {
+  background-color: #198754 !important; 
+  color: #fff !important;
+}
+
+.bg-warning {
+  background-color: #ffc107 !important; 
+  color: #000 !important;
+}
+
+@media (max-width: 576px) {
+  .badge {
+    min-width: 60px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 992px) {
+  .header.d-flex {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .header .d-flex.gap-2 {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .bid-row,
+  .bidder-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .bid-row .text-end {
+    text-align: left;
+  }
+
+  .btn-timer {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .dispute-box .d-flex {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .dispute-box .d-flex .btn-void,
+  .dispute-box .d-flex .btn-resolve {
+    width: 100%;
+  }
+
+  .dark-tabs .nav-link {
+    font-size: 12px;
+    padding: 6px 10px;
+    text-align: center;
+  }
+
+  .timer {
+    font-size: 36px;
+  }
+}
+
+
+@media (max-width: 576px) {
+  .badge {
+    min-width: 60px;
+    font-size: 10px;
+  }
+
+  .bid-row,
+  .bidder-row {
+    gap: 4px;
+  }
+
+  .header h2 {
+    font-size: 20px;
+  }
+
+  .live-text {
+    font-size: 12px;
+  }
 }

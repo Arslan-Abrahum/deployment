@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from "react-router-dom";  
-import AdminHeader from '../components/AdminHeader'
-import "./AdminPanel.css"
+import AdminHeader from '../components/AdminHeader';
+import "./AdminPanel.css";
 
 const sampleData = [
   { id: "VH-24351", category: "Vehicle", seller: "Johnathan Doe", status: "Pending Inspection", officer: "Walter White", date: "2025-12-01" },
@@ -25,53 +25,51 @@ function AdminPanel() {
     }
   };
 
-  const [search, setSearch] = useState("")
-  const [category, setCategory] = useState("All")
-  const [status, setStatus] = useState("All") 
-  const [currentPage, setCurrentPage] = useState(1)
-  const [selectedRow, setSelectedRow] = useState(null)
-  const itemsPerPage = 5 
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All");
+  const [status, setStatus] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const itemsPerPage = 5;
 
   const sortedData = useMemo(() => {
-    return [...sampleData].sort((a, b) => new Date(b.date) - new Date(a.date))
-  }, [])
+    return [...sampleData].sort((a, b) => new Date(b.date) - new Date(a.date));
+  }, []);
 
   const filtered = useMemo(() => {
     return sortedData.filter(item => {
       const matchSearch =
         item.id.toLowerCase().includes(search.toLowerCase()) ||
-        item.seller.toLowerCase().includes(search.toLowerCase())
-      const matchCategory = category === "All" || item.category === category
-      const matchStatus = status === "All" || item.status === status
-      return matchSearch && matchCategory && matchStatus
-    })
-  }, [search, category, status, sortedData])
+        item.seller.toLowerCase().includes(search.toLowerCase());
+      const matchCategory = category === "All" || item.category === category;
+      const matchStatus = status === "All" || item.status === status;
+      return matchSearch && matchCategory && matchStatus;
+    });
+  }, [search, category, status, sortedData]);
 
-  const totalPages = Math.ceil(filtered.length / itemsPerPage)
-  const paginatedData = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const paginatedData = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const ActionButton = ({ status }) => {
     if (status === "Pending Inspection")
-      return <button className="view-btn" onClick={() => handleAction(status)}>Start Inspection</button>
+      return <button className="view-btn" onClick={() => handleAction(status)}>Start Inspection</button>;
 
     if (status === "In Progress")
-      return <button className="view-btn" onClick={() => handleAction(status)}>Continue</button>
+      return <button className="view-btn" onClick={() => handleAction(status)}>Continue</button>;
 
     if (status === "Completed")
-      return <button className="view-btn" onClick={() => handleAction(status)}>View Report</button>
+      return <button className="view-btn" onClick={() => handleAction(status)}>View Report</button>;
 
-    return <span className="text-gray-500">—</span>
+    return <span className="text-gray-500">—</span>;
   }
 
-  const applyFilters = () => setCurrentPage(1)
+  const applyFilters = () => setCurrentPage(1);
 
   return (
     <>
       <div className="admin-wrapper">
         <h2 className="inspection-title">Inspection Queue</h2>
         <h5 className="inspection-para">Manage and track all items pending inspections.</h5>
-
-
 
         <div className="filter-bar-container">
           <input
@@ -132,7 +130,7 @@ function AdminPanel() {
                   <td>{item.category}</td>
                   <td>{item.seller}</td>
                   <td className="text-center">
-                    <span className={`badge rounded-pill text-xs px-2 py-1 ${
+                    <span className={`badge rounded-pill ${
                       item.status === "Completed" ? "bg-success" :
                       item.status === "In Progress" ? "bg-warning text-dark" :
                       "bg-primary"
@@ -141,7 +139,7 @@ function AdminPanel() {
                     </span>
                   </td>
                   <td>{item.officer}</td>
-                  <td className="text-center" >
+                  <td className="text-center">
                     <ActionButton status={item.status} />
                   </td>
                 </tr>
@@ -155,14 +153,14 @@ function AdminPanel() {
         </div>
 
         <div className="pagination-bar1">
-          <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="btn border rounded px-3">Prev</button>
+          <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>Prev</button>
 
           {[...Array(totalPages)].map((_, i) => (
             i < 3 && (
               <button
                 key={i}
                 onClick={() => setCurrentPage(i + 1)}
-                className={`btn border rounded px-3 ${currentPage === i + 1 ? "bg-blue-800 text-white border-0" : ""}`}
+                className={`btn ${currentPage === i + 1 ? "active-page" : ""}`}
               >
                 {i + 1}
               </button>
@@ -171,11 +169,11 @@ function AdminPanel() {
 
           {totalPages > 3 && <span className="px-2">...</span>}
 
-          <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="btn border rounded px-3">Next</button>
+          <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>Next</button>
         </div>
       </div>
     </>
   )
 }
 
-export default AdminPanel
+export default AdminPanel;

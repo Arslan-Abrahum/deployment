@@ -129,7 +129,6 @@
   font-size: 16px;
 }
 
-/* Top Image Card */
 .top-image-card {
   width: 60%;
   background: #0f0f0f;
@@ -166,7 +165,6 @@
   margin: 2px 0;
 }
 
-/* ===== Accordion Grid Layout ===== */
 .custom-grid {
   display: flex;
   flex-direction: column;
@@ -187,7 +185,6 @@
   width: 100%;
 }
 
-/* ===== Responsive ===== */
 @media (max-width: 992px) {
   .grid-row {
     flex-direction: column;
@@ -206,5 +203,95 @@
 
   .accordion-body {
     font-size: 14px;
+  }
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+
+@media (max-width: 1024px) {
+  .inspection-container {
+    flex-direction: column;
+  }
+
+  .left-section,
+  .right-section {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .top-image-card {
+    width: 80%;
+    margin-left: 10%;
+  }
+
+  .image-card {
+    width: 100%;
+    height: auto;
+  }
+
+  .big-image {
+    height: auto;
+    max-height: 420px;
+    object-fit: contain;
+  }
+
+  .approve-btn,
+  .reject-btn {
+    width: 40%;
+    margin-left: 0;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .inspection-container {
+    padding: 20px;
+  }
+
+  .page-title {
+    font-size: 32px;
+  }
+
+  .top-image-card {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .thumbnail-row {
+    flex-wrap: wrap;
+  }
+
+  .thumb-img {
+    width: 52px;
+    height: 52px;
+  }
+
+  .approve-btn,
+  .reject-btn {
+    width: 100%;
+    margin: 8px 0 0 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 26px;
+  }
+
+  .accordion-header {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .image-card {
+    padding: 8px;
+  }
+
+  .thumb-img {
+    width: 48px;
+    height: 48px;
   }
 }

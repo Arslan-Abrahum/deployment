@@ -180,14 +180,14 @@ export default function AuctionPage() {
                 <button
                   key={i}
                   onClick={() => setCurrentPage(i + 1)}
-                  className={`btn border rounded px-3 ${currentPage === i + 1 ? "bg-black text-white border-0" : ""}`}
+                  className={`btn border rounded px-3 ${currentPage === i + 1 ? "active" : ""}`}
                 >
                   {i + 1}
                 </button>
               )
             ))}
 
-            {totalPages > 3 && <span className="px-2 text-black">...</span>}
+            {totalPages > 3 && <span className="px-2 text-black">...</span>}  
 
             <button
               disabled={currentPage === totalPages}

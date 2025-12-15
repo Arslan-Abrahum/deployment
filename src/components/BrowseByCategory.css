@@ -32,6 +32,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .category-tab:hover {
@@ -54,18 +55,52 @@
   .browse-section {
     padding: 2rem 1rem;
   }
-  
+
   .browse-title {
     font-size: 1rem;
+    text-align: center;
   }
-  
+
   .category-tabs {
+    justify-content: center;
     gap: 0.5rem;
   }
-  
+
   .category-tab {
-    padding: 0.5rem 1rem;
+    padding: 0.45rem 0.9rem;
     font-size: 0.75rem;
   }
 }
 
+
+@media (max-width: 576px) {
+  .category-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 0.6rem;
+    padding-bottom: 5px;
+  }
+
+  .category-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .browse-title {
+    text-align: center;
+    font-size: 0.95rem;
+  }
+
+  .category-tab {
+    flex-shrink: 0;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.7rem;
+  }
+}
+
+
+@media (max-width: 400px) {
+  .category-tab {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.68rem;
+  }
+}

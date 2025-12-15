@@ -57,7 +57,6 @@ const InspectionAdmin = () => {
 
         <div className="accordion-box custom-grid">
 
-          {/* Row 1 */}
           <div className="grid-row">
             <div className="accordion-item">
               <div className="accordion-header" onClick={() => toggle(1)}>
@@ -100,7 +99,6 @@ const InspectionAdmin = () => {
             </div>
           </div>
 
-          {/* Row 2 */}
           <div className="grid-row">
             <div className="accordion-item">
               <div className="accordion-header" onClick={() => toggle(3)}>
@@ -138,7 +136,6 @@ const InspectionAdmin = () => {
             </div>
           </div>
 
-          {/* Row 3 */}
           <div className="grid-row full-width-row">
             <div className="accordion-item">
               <div className="accordion-header" onClick={() => toggle(5)}>
