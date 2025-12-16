@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -10,9 +11,10 @@ html, body {
   width: 100% !important;
   border-bottom: 2px solid #222;
   height: 90px;
-  position: relative;
+  <<<<<<< HEAD position: relative;
   margin: 0;
   padding: 0;
+  =======>>>>>>>4d800f2bac973a1f0bc23e8ad448bbeb0635e1e9
 }
 
 .admin-header .header-container {
@@ -23,6 +25,20 @@ html, body {
   align-items: center;
   justify-content: space-between;
   flex-wrap: nowrap;
+}
+
+.admin-header .header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 0 0 auto;
+}
+
+.admin-header .header-center {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .header-left {
@@ -62,9 +78,9 @@ html, body {
 
 .admin-header .nav {
   display: flex;
-  gap: 12px;
-  flex-wrap: nowrap;
-  white-space: nowrap;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .admin-header .nav-link {
@@ -80,18 +96,20 @@ html, body {
   color: white;
 }
 
-.header-right {
+.admin-header .nav-link.active {
+  color: white;
+  font-weight: 600;
+}
+
+.admin-header .header-right {
   display: flex;
   align-items: center;
   gap: 12px;
-  position: absolute;     
-  right: 30px;             
-  top: 50%;               
-  transform: translateY(-50%);
+  flex: 0 0 auto;
+  margin-left: 20px;
 }
 
-
-.header-icon-button {
+.admin-header .header-icon-button {
   background: #111;
   border: 1px solid #333;
   padding: 7px 10px;
@@ -99,11 +117,139 @@ html, body {
   color: #aaa;
   cursor: pointer;
   transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.header-icon-button:hover {
+.admin-header .header-icon-button:hover {
   color: white;
   border-color: white;
+}
+
+.admin-header .profile-button {
+  background: rgba(140, 198, 63, 0.1);
+  border: 1px solid rgba(140, 198, 63, 0.3);
+}
+
+.admin-header .profile-button:hover {
+  background: rgba(140, 198, 63, 0.2);
+  border-color: #8cc63f;
+  color: #8cc63f;
+}
+
+
+@media (max-width: 992px) {
+
+  .admin-header .header-container {
+    padding: 0 15px;
+  }
+
+  .admin-header .nav {
+    gap: 10px;
+  }
+
+  .admin-header .logo-text {
+    font-size: 18px;
+  }
+
+  .admin-header .header-icon-button {
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .admin-header .header-container {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .admin-header .header-center {
+    width: 100%;
+    order: 3;
+  }
+
+  .admin-header .nav {
+    overflow-x: auto;
+    white-space: nowrap;
+    width: 100%;
+    padding-bottom: 5px;
+    justify-content: center;
+  }
+
+  .admin-header .nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-header .header-left {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    order: 1;
+  }
+
+  .admin-header .logo-text {
+    font-size: 17px;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: center;
+    order: 2;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .admin-header .logo-icon img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .admin-header .logo-text {
+    font-size: 20px;
+  }
+
+  .admin-header .header-icon-button {
+    padding: 5px 7px;
+  }
+
+  .admin-header .nav-link {
+    font-size: 13px;
+    padding: 4px 6px;
+  }
+}
+
+
+@media (max-width: 768px) {
+
+  .admin-header .header-center {
+    display: block;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background: black;
+    border-top: 1px solid #222;
+
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .admin-header .header-center.open {
+    max-height: 300px;
+
+  }
+}
+
+@media (max-width: 992px) {
+  .admin-header .header-right {
+    display: flex;
+  }
 }
 
 .mobile-menu-btn {
@@ -120,8 +266,8 @@ html, body {
     margin-left: auto;
   }
 
-  .header-right {
-    display: none;
+  .admin-header .header-right {
+    display: flex;
   }
 
   .header-center {
@@ -139,11 +285,5 @@ html, body {
   .header-center.open {
     max-height: 500px;
   }
-
-  .admin-header .nav {
-    flex-direction: column;
-    align-items: center;
-    padding: 16px 0;
-    gap: 14px;
-  }
 }
+
