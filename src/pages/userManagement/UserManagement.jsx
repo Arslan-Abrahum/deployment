@@ -119,7 +119,6 @@ const UserManagement = () => {
                   {user.lastLogin}
                 </td>
 
-                {/* Actions column NOT clickable */}
                 <td className="actions2">•••</td>
               </tr>
             ))}
