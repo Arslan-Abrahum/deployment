@@ -24,7 +24,7 @@
   margin-bottom: 35px;
 }
 .stat-card {
-  background: #000;
+  background: #b29898;
   padding: 45px;
   margin: 10px;
   border-radius: 14px;
@@ -36,7 +36,7 @@
 }
 .stat-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 12px rgba(206, 198, 198, 0.3);
 }
 
 .filter-row {
