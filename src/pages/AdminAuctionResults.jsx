@@ -29,8 +29,11 @@ export default function AdminAuctionResults() {
   }, [search, statusFilter]);
 
   const totalPages = Math.ceil(filteredData.length / ROWS_PER_PAGE);
-  const startIndex = (page - 1) * ROWS_PER_PAGE;
-  const rows = filteredData.slice(startIndex, startIndex + ROWS_PER_PAGE);
+
+  const paginatedRows = useMemo(() => {
+    const startIndex = (page - 1) * ROWS_PER_PAGE;
+    return filteredData.slice(startIndex, startIndex + ROWS_PER_PAGE);
+  }, [filteredData, page]);
 
   const exportResults = () => {
     const headers = ["Lot", "Item", "Bid", "Bidder", "Reserve", "Status"];
@@ -46,7 +49,6 @@ export default function AdminAuctionResults() {
 
   return (
     <div className="results-wrapper">
-
       <h1 className="title">Auction Results: Vintage Watch Collection - 24 Oct 2024</h1>
       <p className="subtitle">Review winning bids, financial status, and next steps for the auction.</p>
 
@@ -65,12 +67,11 @@ export default function AdminAuctionResults() {
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
         />
-
         <button className="createBtn export-btn" onClick={exportResults}>
           Export Results
         </button>
 
-<div className="btn-group filter-btn-group status-buttons">
+        <div className="btn-group filter-btn-group status-buttons">
           {["All", "Payment Received", "Invoice Sent", "Payment Pending", "Unsold"].map((s) => (
             <button
               key={s}
@@ -97,8 +98,8 @@ export default function AdminAuctionResults() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, i) => (
-              <tr key={i}>
+            {paginatedRows.map((row) => (
+              <tr key={row.lot}>
                 <td>{row.lot}</td>
                 <td>{row.item}</td>
                 <td>{row.bid ? `$${row.bid.toLocaleString()}` : "—"}</td>
@@ -111,9 +112,9 @@ export default function AdminAuctionResults() {
                 <td>
                   <span className={`badgecustomadmin
                     ${row.status === "Payment Received" ? "bg-live" :
-                    row.status === "Invoice Sent" ? "bg-upcoming" :
-                    row.status === "Payment Pending" ? "bg-ended" :
-                    "bg-draft"}`}>
+                      row.status === "Invoice Sent" ? "bg-upcoming" :
+                        row.status === "Payment Pending" ? "bg-ended" :
+                          "bg-draft"}`}>
                     {row.status}
                   </span>
                 </td>
@@ -124,19 +125,42 @@ export default function AdminAuctionResults() {
         </table>
       </div>
 
-      <div className="pagination-bar3">
-        <button disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
-        {[...Array(totalPages)].map((_, i) => (
-          <button
-            key={i}
-            className={page === i + 1 ? "active" : ""}
-            onClick={() => setPage(i + 1)}
-          >
-            {i + 1}
-          </button>
-        ))}
-        <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Next</button>
-      </div>
+      {/* Pagination Bottom Left & Right */}
+      {filteredData.length > 0 && (
+        <div className="table-pagination">
+          <div className="pagination-info">
+            Page {page} of {totalPages}
+          </div>
+
+          <div className="pagination-controls">
+            <button style={{color:"black"}}
+              className="pagination-btn prev"
+              onClick={() => setPage(p => Math.max(p - 1, 1))}
+              disabled={page === 1}
+            >
+              .
+            </button>
+
+            {[...Array(totalPages)].map((_, i) => (
+              <button
+                key={i}
+                className={`page-number ${page === i + 1 ? "active" : ""}`}
+                onClick={() => setPage(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button style={{color:"black"}}
+              className="pagination-btn next"
+              onClick={() => setPage(p => Math.min(p + 1, totalPages))}
+              disabled={page === totalPages}
+            >
+              .
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
