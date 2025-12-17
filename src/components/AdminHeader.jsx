@@ -67,7 +67,7 @@ function AdminHeader() {
             <Link to="/auctiontab" onClick={() => setMobileMenuOpen(false)} className={`nav-link ${location.pathname.includes("auctiontab") ? "active" : ""}`}>Auction</Link>
             <Link to="/livetab" onClick={() => setMobileMenuOpen(false)} className={`nav-link ${location.pathname.includes("livetab") ? "active" : ""}`}>Live Auctions</Link>
             <Link to="/finance" onClick={() => setMobileMenuOpen(false)} className={`nav-link ${location.pathname.includes("finance") ? "active" : ""}`}>Finance</Link>
-            <Link to="/admin/category-management" onClick={() => setMobileMenuOpen(false)} className={`nav-link ${location.pathname.includes("admin/category-management") ? "active" : ""}`}>Field Management</Link>
+            <Link to="/admin/category" onClick={() => setMobileMenuOpen(false)} className={`nav-link ${location.pathname.includes("admin/category") ? "active" : ""}`}>Field Management</Link>
             <Link to="/admin/user-management" onClick={() => setMobileMenuOpen(false)} className={`nav-link ${location.pathname.includes("admin/user-management") ? "active" : ""}`}>User Management</Link>
           </nav>
         </div>

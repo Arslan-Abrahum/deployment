@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './CategoryManagement.css';
 
 export default function CategoryManagement() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isAddingCategory, setIsAddingCategory] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [newCategoryDesc, setNewCategoryDesc] = useState('');
-  const [editCategoryId, setEditCategoryId] = useState(null);
   const [categories, setCategories] = useState([
     { id: 1, name: 'Industrial Machinery', items: 142, status: true, description: 'Heavy machinery and industrial equipment', icon: '🏭' },
     { id: 2, name: 'Vehicles & Fleet', items: 88, status: true, description: 'Cars, trucks, and commercial vehicles', icon: '🚗' },
@@ -25,6 +21,7 @@ export default function CategoryManagement() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
+  const navigate = useNavigate();
 
   const handleStatusToggle = (id) => {
     setCategories(categories.map(cat => 
@@ -33,54 +30,14 @@ export default function CategoryManagement() {
   };
 
   const handleEdit = (id) => {
-    const category = categories.find(cat => cat.id === id);
-    if (category) {
-      setNewCategoryName(category.name);
-      setNewCategoryDesc(category.description);
-      setEditCategoryId(id);
-      setIsAddingCategory(true);
-    }
+    console.log('Edit category:', id);
+    // Add edit logic here
   };
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this category? This action cannot be undone.')) {
       setCategories(categories.filter(cat => cat.id !== id));
     }
-  };
-
-  const handleSaveCategory = () => {
-    if (newCategoryName.trim()) {
-      if (editCategoryId) {
-        // Edit existing category
-        setCategories(categories.map(cat => 
-          cat.id === editCategoryId 
-            ? { ...cat, name: newCategoryName, description: newCategoryDesc }
-            : cat
-        ));
-      } else {
-        // Add new category
-        const newCategory = {
-          id: categories.length + 1,
-          name: newCategoryName,
-          items: 0,
-          status: true,
-          description: newCategoryDesc,
-          icon: '📁'
-        };
-        setCategories([...categories, newCategory]);
-      }
-      setNewCategoryName('');
-      setNewCategoryDesc('');
-      setEditCategoryId(null);
-      setIsAddingCategory(false);
-    }
-  };
-
-  const handleCancel = () => {
-    setIsAddingCategory(false);
-    setNewCategoryName('');
-    setNewCategoryDesc('');
-    setEditCategoryId(null);
   };
 
   const filteredCategories = categories.filter(cat =>
@@ -135,63 +92,31 @@ export default function CategoryManagement() {
   };
 
   return (
-    <div className="dashboard-page">
-      {/* Main Content */}
-      <main className="dashboard-main">
-        <div className="dashboard-container">
-          {/* Page Header */}
-          <div className="section-header">
-            <div className="header-content">
-              <h1 className="page-title">Category Management</h1>
-              <p className="page-subtitle">Manage auction categories and their visibility status</p>
+    <div className="category-dashboard-page">
+      <main className="category-dashboard-main">
+        <div className="category-dashboard-container">
+          <div className="category-section-header">
+            <div className="category-header-content">
+              <h1 className="category-page-title">Category Management</h1>
+              <p className="category-page-subtitle">Manage auction categories and their visibility status</p>
             </div>
-            <div className="header-actions">
-              {!isAddingCategory ? (
-                <button className="primary-action-btn" onClick={() => setIsAddingCategory(true)}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                  </svg>
-                  New Category
-                </button>
-              ) : (
-                <div className="quick-action-form">
-                  <div className="form-row">
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="Category name"
-                      value={newCategoryName}
-                      onChange={(e) => setNewCategoryName(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleSaveCategory()}
-                    />
-                    <input
-                      type="text"
-                      className="form-input"
-                      placeholder="Description (optional)"
-                      value={newCategoryDesc}
-                      onChange={(e) => setNewCategoryDesc(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleSaveCategory()}
-                    />
-                  </div>
-                  <div className="form-actions">
-                    <button className="secondary-btn" onClick={handleCancel}>
-                      Cancel
-                    </button>
-                    <button className="primary-btn" onClick={handleSaveCategory}>
-                      {editCategoryId ? 'Update' : 'Add'} Category
-                    </button>
-                  </div>
-                </div>
-              )}
+            <div className="category-header-actions">
+              <button className="category-primary-action-btn" onClick={
+                ()=> navigate('/admin/add-category')
+              }>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+                New Category
+              </button>
             </div>
           </div>
 
-          {/* Category Stats */}
           <div className="category-stats-grid">
-            <div className="stat-card">
-              <div className="card-bg-gradient" style={{ background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.05) 100%)' }}></div>
-              <div className="card-icon-container">
-                <div className="card-icon" style={{ backgroundColor: 'rgba(59, 130, 246, 0.15)' }}>
+            <div className="category-stat-card">
+              <div className="category-card-bg-gradient" style={{ background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.05) 100%)' }}></div>
+              <div className="category-card-icon-container">
+                <div className="category-card-icon" style={{ backgroundColor: 'rgba(59, 130, 246, 0.15)' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     <path d="M2 17L12 22L22 17" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -199,68 +124,70 @@ export default function CategoryManagement() {
                   </svg>
                 </div>
               </div>
-              <div className="card-content">
-                <span className="card-label">Total Categories</span>
-                <h3 className="card-value">{categories.length}</h3>
-                <span className="card-change positive">+12%</span>
+              <div className="category-card-content">
+                <span className="category-card-label">Total Categories</span>
+                <h3 className="category-card-value">{categories.length}</h3>
+                <span className="category-card-change positive">+12%</span>
               </div>
             </div>
 
-            <div className="stat-card">
-              <div className="card-bg-gradient" style={{ background: 'linear-gradient(135deg, rgba(140, 198, 63, 0.2) 0%, rgba(140, 198, 63, 0.05) 100%)' }}></div>
-              <div className="card-icon-container">
-                <div className="card-icon" style={{ backgroundColor: 'rgba(140, 198, 63, 0.15)' }}>
+            <div className="category-stat-card">
+              <div className="category-card-bg-gradient" style={{ background: 'linear-gradient(135deg, rgba(140, 198, 63, 0.2) 0%, rgba(140, 198, 63, 0.05) 100%)' }}></div>
+              <div className="category-card-icon-container">
+                <div className="category-card-icon" style={{ backgroundColor: 'rgba(140, 198, 63, 0.15)' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M6 9L12 15L18 9" stroke="#8CC63F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="#8CC63F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="#8CC63F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <polyline points="22 4 12 14.01 9 11.01" stroke="#8CC63F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </div>
               </div>
-              <div className="card-content">
-                <span className="card-label">Active Categories</span>
-                <h3 className="card-value">{categories.filter(cat => cat.status).length}</h3>
-                <span className="card-change positive">+8%</span>
+              <div className="category-card-content">
+                <span className="category-card-label">Active Categories</span>
+                <h3 className="category-card-value">{categories.filter(cat => cat.status).length}</h3>
+                <span className="category-card-change positive">+8%</span>
               </div>
             </div>
 
-            <div className="stat-card">
-              <div className="card-bg-gradient" style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0.05) 100%)' }}></div>
-              <div className="card-icon-container">
-                <div className="card-icon" style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)' }}>
+            <div className="category-stat-card">
+              <div className="category-card-bg-gradient" style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0.05) 100%)' }}></div>
+              <div className="category-card-icon-container">
+                <div className="category-card-icon" style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path d="M18 6L6 18M6 6L18 18" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </div>
               </div>
-              <div className="card-content">
-                <span className="card-label">Inactive Categories</span>
-                <h3 className="card-value">{categories.filter(cat => !cat.status).length}</h3>
-                <span className="card-change negative">-3%</span>
+              <div className="category-card-content">
+                <span className="category-card-label">Inactive Categories</span>
+                <h3 className="category-card-value">{categories.filter(cat => !cat.status).length}</h3>
+                <span className="category-card-change negative">-3%</span>
               </div>
             </div>
 
-            <div className="stat-card">
-              <div className="card-bg-gradient" style={{ background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(168, 85, 247, 0.05) 100%)' }}></div>
-              <div className="card-icon-container">
-                <div className="card-icon" style={{ backgroundColor: 'rgba(168, 85, 247, 0.15)' }}>
+            <div className="category-stat-card">
+              <div className="category-card-bg-gradient" style={{ background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(168, 85, 247, 0.05) 100%)' }}></div>
+              <div className="category-card-icon-container">
+                <div className="category-card-icon" style={{ backgroundColor: 'rgba(168, 85, 247, 0.15)' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <rect x="3" y="3" width="7" height="7" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <rect x="14" y="3" width="7" height="7" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <rect x="14" y="14" width="7" height="7" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <rect x="3" y="14" width="7" height="7" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </div>
               </div>
-              <div className="card-content">
-                <span className="card-label">Total Items</span>
-                <h3 className="card-value">{categories.reduce((sum, cat) => sum + cat.items, 0)}</h3>
-                <span className="card-change positive">+24%</span>
+              <div className="category-card-content">
+                <span className="category-card-label">Total Items</span>
+                <h3 className="category-card-value">{categories.reduce((sum, cat) => sum + cat.items, 0)}</h3>
+                <span className="category-card-change positive">+24%</span>
               </div>
             </div>
           </div>
 
-          {/* Search and Filter */}
-          <div className="data-table-section">
-            <div className="table-header">
-              <div className="search-container">
-                <div className="search-input-wrapper">
+          <div className="category-data-table-section">
+            <div className="category-table-header">
+              <div className="category-search-container">
+                <div className="category-search-input-wrapper">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                     <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                     <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -270,11 +197,11 @@ export default function CategoryManagement() {
                     placeholder="Search categories..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="search-input"
+                    className="category-search-input"
                   />
                   {searchQuery && (
                     <button 
-                      className="clear-search"
+                      className="category-clear-search"
                       onClick={() => setSearchQuery('')}
                       aria-label="Clear search"
                     >
@@ -285,16 +212,15 @@ export default function CategoryManagement() {
                   )}
                 </div>
               </div>
-              <div className="table-info">
-                <span className="table-count">
-                  Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredCategories.length)} of {filteredCategories.length} categories
+              <div className="category-table-info">
+                <span className="category-table-count">
+                  Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredCategories.length)} of {filteredCategories.length}
                 </span>
               </div>
             </div>
 
-            {/* Categories Table */}
-            <div className="table-wrapper">
-              <table className="data-table">
+            <div className="category-table-wrapper">
+              <table className="category-data-table">
                 <thead>
                   <tr>
                     <th>Category</th>
@@ -307,11 +233,11 @@ export default function CategoryManagement() {
                 <tbody>
                   {currentCategories.length > 0 ? (
                     currentCategories.map((category) => (
-                      <tr key={category.id} className="table-row">
+                      <tr key={category.id} className="category-table-row">
                         <td>
                           <div className="category-info">
-                            <div className="category-icon">
-                              <span className="icon">{category.icon}</span>
+                            <div className="category-icon-cell">
+                              <span className="category-icon-emoji">{category.icon}</span>
                             </div>
                             <div className="category-details">
                               <h4 className="category-name">{category.name}</h4>
@@ -320,50 +246,50 @@ export default function CategoryManagement() {
                           </div>
                         </td>
                         <td>
-                          <div className="description-cell">
-                            <p className="description-text">{category.description}</p>
+                          <div className="category-description-cell">
+                            <p className="category-description-text">{category.description}</p>
                           </div>
                         </td>
                         <td>
-                          <div className="items-cell">
-                            <div className="items-count-badge">
-                              <span className="count">{category.items}</span>
+                          <div className="category-items-cell">
+                            <div className="category-items-count-badge">
+                              <span className="category-count">{category.items}</span>
                             </div>
                           </div>
                         </td>
                         <td>
-                          <div className="status-cell">
+                          <div className="category-status-cell">
                             <div 
-                              className={`status-toggle ${category.status ? 'active' : ''}`}
+                              className={`category-status-toggle ${category.status ? 'active' : ''}`}
                               onClick={() => handleStatusToggle(category.id)}
                             >
-                              <div className="toggle-handle"></div>
+                              <div className="category-toggle-handle"></div>
                             </div>
-                            <span className={`status-label ${category.status ? 'active' : 'inactive'}`}>
+                            <span className={`category-status-label ${category.status ? 'active' : 'inactive'}`}>
                               {category.status ? 'Active' : 'Inactive'}
                             </span>
                           </div>
                         </td>
                         <td>
-                          <div className="action-buttons">
+                          <div className="category-action-buttons">
                             <button
-                              className="action-btn edit-btn"
+                              className="category-action-btn category-edit-btn"
                               onClick={() => handleEdit(category.id)}
                               title="Edit category"
                             >
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                               </svg>
                             </button>
                             <button
-                              className="action-btn delete-btn"
+                              className="category-action-btn category-delete-btn"
                               onClick={() => handleDelete(category.id)}
                               title="Delete category"
                             >
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                                 <polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                               </svg>
                             </button>
                           </div>
@@ -373,8 +299,8 @@ export default function CategoryManagement() {
                   ) : (
                     <tr>
                       <td colSpan="5">
-                        <div className="empty-state">
-                          <div className="empty-icon">
+                        <div className="category-empty-state">
+                          <div className="category-empty-icon">
                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
                               <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                               <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -391,49 +317,45 @@ export default function CategoryManagement() {
               </table>
             </div>
 
-            {/* Pagination */}
-            {filteredCategories.length > 0 && (
-              <div className="table-pagination">
-                <div className="pagination-info">
-                  Page {currentPage} of {totalPages}
+            {filteredCategories.length > itemsPerPage && (
+              <div className="category-pagination">
+                <button 
+                  className="category-pagination-btn category-prev-btn"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Previous
+                </button>
+                
+                <div className="category-page-numbers">
+                  {generatePageNumbers().map((page, index) => (
+                    page === '...' ? (
+                      <span key={`dots-${index}`} className="category-page-dots">...</span>
+                    ) : (
+                      <button
+                        key={page}
+                        className={`category-page-number ${currentPage === page ? 'active' : ''}`}
+                        onClick={() => handlePageChange(page)}
+                      >
+                        {page}
+                      </button>
+                    )
+                  ))}
                 </div>
-                <div className="pagination-controls">
-                  <button 
-                    className="pagination-btn prev"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                  
-                  <div className="page-numbers">
-                    {generatePageNumbers().map((page, index) => (
-                      page === '...' ? (
-                        <span key={`dots-${index}`} className="page-dots">...</span>
-                      ) : (
-                        <button
-                          key={page}
-                          className={`page-number ${currentPage === page ? 'active' : ''}`}
-                          onClick={() => handlePageChange(page)}
-                        >
-                          {page}
-                        </button>
-                      )
-                    ))}
-                  </div>
-                  
-                  <button 
-                    className="pagination-btn next"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                </div>
+                
+                <button 
+                  className="category-pagination-btn category-next-btn"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
               </div>
             )}
           </div>

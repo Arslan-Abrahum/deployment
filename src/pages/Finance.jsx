@@ -194,42 +194,22 @@ const FinanceDashboard = () => {
       'Payment Received': {
         color: '#8CC63F',
         bg: 'rgba(140, 198, 63, 0.15)',
-        border: 'rgba(140, 198, 63, 0.4)',
-        // icon: (
-        //   <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-        //     <path d="M12 2V22M17 5H9.5C8.57174 5 7.6815 5.36875 7.02513 6.02513C6.36875 6.6815 6 7.57174 6 8.5C6 9.42826 6.36875 10.3185 7.02513 10.9749C7.6815 11.6312 8.57174 12 9.5 12H14.5C15.4283 12 16.3185 12.3687 16.9749 13.0251C17.6312 13.6815 18 14.5717 18 15.5C18 16.4283 17.6312 17.3185 16.9749 17.9749C16.3185 18.6312 15.4283 19 14.5 19H6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        //   </svg>
-        // )
+        border: 'rgba(140, 198, 63, 0.4)'
       },
       'Refund Processed': {
         color: '#3B82F6',
         bg: 'rgba(59, 130, 246, 0.15)',
-        border: 'rgba(59, 130, 246, 0.4)',
-        // icon: (
-        //   <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-        //     <path d="M20 12H4M4 12L10 18M4 12L10 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        //   </svg>
-        // )
+        border: 'rgba(59, 130, 246, 0.4)'
       },
       'Fee Adjusted': {
         color: '#8B5CF6',
         bg: 'rgba(139, 92, 246, 0.15)',
-        border: 'rgba(139, 92, 246, 0.4)',
-        // icon: (
-        //   <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-        //     <path d="M12 8V16M8 12H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-        //   </svg>
-        // )
+        border: 'rgba(139, 92, 246, 0.4)'
       },
       'Payment Failed': {
         color: '#EF4444',
         bg: 'rgba(239, 68, 68, 0.15)',
-        border: 'rgba(239, 68, 68, 0.4)',
-        // icon: (
-        //   <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-        //     <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        //   </svg>
-        // )
+        border: 'rgba(239, 68, 68, 0.4)'
       }
     }
 
@@ -237,17 +217,16 @@ const FinanceDashboard = () => {
 
     return (
       <span 
-        className="action-badge"
+        className="finance-action-badge"
         style={{
           backgroundColor: actionConfig.bg,
           color: actionConfig.color,
           border: `1px solid ${actionConfig.border}`
         }}
       >
-        {actionConfig.icon}
         {action}
         {status === 'pending' && (
-          <span className="pending-dot"></span>
+          <span className="finance-pending-dot"></span>
         )}
       </span>
     )
@@ -276,7 +255,7 @@ const FinanceDashboard = () => {
 
     return (
       <span 
-        className="status-badge"
+        className="finance-status-badge"
         style={{
           backgroundColor: statusConfig.bg,
           color: statusConfig.color,
@@ -315,16 +294,10 @@ const FinanceDashboard = () => {
     return true
   })
 
-  console.log('filteredLogs: ', filteredLogs);
-  
-
   const totalPages = Math.ceil(filteredLogs.length / itemsPerPage)
-  console.log('totalPages: ', totalPages);
-  
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
   const currentLogs = filteredLogs.slice(startIndex, endIndex)
-  console.log('current Logs: ', currentLogs);
   
   const handlePageChange = (page) => {
     setCurrentPage(page)
@@ -338,7 +311,6 @@ const FinanceDashboard = () => {
 
   return (
     <div className="dashboard-page">
-
       <main className="dashboard-main">
         <div className="dashboard-container">
           <div className="dashboard-welcome">
@@ -426,9 +398,9 @@ const FinanceDashboard = () => {
           </div>
 
           <div className="finance-filters-section">
-            <div className="filters-container">
-              <div className="search-section">
-                <div className="search-input-wrapper">
+            <div className="finance-filters-container">
+              <div className="finance-search-section">
+                <div className="finance-search-input-wrapper">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                     <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                     <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -438,28 +410,17 @@ const FinanceDashboard = () => {
                     placeholder="Search logs by details or officer..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="search-input"
+                    className="finance-search-input"
                   />
-                  {/* {searchTerm && (
-                    <button 
-                      className="clear-search"
-                      onClick={() => setSearchTerm('')}
-                      aria-label="Clear search"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
-                  )} */}
                 </div>
               </div>
 
-              <div className="filter-controls">
-                <div className="filter-group">
-                  <label className="filter-label">Filter By Action</label>
-                  <div className="filter-select-wrapper">
+              <div className="finance-filter-controls">
+                <div className="finance-filter-group">
+                  <label className="finance-filter-label">Filter By Action</label>
+                  <div className="finance-filter-select-wrapper">
                     <select 
-                      className="filter-select"
+                      className="finance-filter-select"
                       value={actionFilter}
                       onChange={(e) => setActionFilter(e.target.value)}
                     >
@@ -472,11 +433,11 @@ const FinanceDashboard = () => {
                   </div>
                 </div>
 
-                <div className="filter-group">
-                  <label className="filter-label">Select Date Range</label>
-                  <div className="filter-select-wrapper">
+                <div className="finance-filter-group">
+                  <label className="finance-filter-label">Select Date Range</label>
+                  <div className="finance-filter-select-wrapper">
                     <select 
-                      className="filter-select"
+                      className="finance-filter-select"
                       value={dateRange}
                       onChange={(e) => setDateRange(e.target.value)}
                     >
@@ -495,12 +456,12 @@ const FinanceDashboard = () => {
           <div className="finance-table-section">
             <div className="section-header">
               <h2 className="section-title">Financial Activity Logs</h2>
-              <div className="results-info">
+              <div className="finance-results-info">
                 Showing {startIndex + 1}-{Math.min(endIndex, filteredLogs.length)} of {filteredLogs.length} entries
               </div>
             </div>
 
-            <div className="table-container">
+            <div className="finance-table-container">
               <div className="finance-table-wrapper">
                 <table className="finance-table">
                   <thead>
@@ -512,48 +473,10 @@ const FinanceDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {currentLogs.length == 0 ? (
-                      financeLogs.map((log) => (
-                        <tr key={log.id} className="table-row">
-                          <td>
-                            <div className="action-cell">
-                              {getActionBadge(log.action, log.status)}
-                            </div>
-                          </td>
-                          <td>
-                            <div className="details-cell">
-                              <div className="details-text">{log.details}</div>
-                            </div>
-                          </td>
-                        
-                          <td>
-                            <div className="officer-cell">
-                              <div className="officer-avatar">
-                                {log.officer.startsWith('System') ? (
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                                  </svg>
-                                ) : (
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                    <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                  </svg>
-                                )}
-                              </div>
-                              <span className="officer-name">{log.officer}</span>
-                            </div>
-                          </td>
-                          <td>
-                            <div className="datetime-cell">
-                              <span className="date-text">{formatDateTime(log.dateTime)}</span>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
+                    {currentLogs.length === 0 ? (
                       <tr>
-                        <td colSpan="6">
-                          <div className="empty-state">
+                        <td colSpan="4">
+                          <div className="finance-empty-state">
                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
                               <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                               <path d="M14 2V8H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -566,17 +489,53 @@ const FinanceDashboard = () => {
                           </div>
                         </td>
                       </tr>
+                    ) : (
+                      currentLogs.map((log) => (
+                        <tr key={log.id} className="finance-table-row">
+                          <td>
+                            <div className="finance-action-cell">
+                              {getActionBadge(log.action, log.status)}
+                            </div>
+                          </td>
+                          <td>
+                            <div className="finance-details-cell">
+                              <div className="finance-details-text">{log.details}</div>
+                            </div>
+                          </td>
+                          <td>
+                            <div className="finance-officer-cell">
+                              <div className="finance-officer-avatar">
+                                {log.officer.startsWith('System') ? (
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                    <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                  </svg>
+                                ) : (
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                    <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                  </svg>
+                                )}
+                              </div>
+                              <span className="finance-officer-name">{log.officer}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div className="finance-datetime-cell">
+                              <span className="finance-date-text">{formatDateTime(log.dateTime)}</span>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
                     )}
                   </tbody>
                 </table>
               </div>
             </div>
 
-            {/* Pagination */}
-            {/* {filteredLogs.length > itemsPerPage && (
-              <div className="pagination">
+            {filteredLogs.length > itemsPerPage && (
+              <div className="finance-pagination">
                 <button 
-                  className="pagination-button prev"
+                  className="finance-pagination-button prev"
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
                 >
@@ -586,7 +545,7 @@ const FinanceDashboard = () => {
                   Previous
                 </button>
 
-                <div className="pagination-pages">
+                <div className="finance-pagination-pages">
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     let pageNum
                     if (totalPages <= 5) {
@@ -604,7 +563,7 @@ const FinanceDashboard = () => {
                     return (
                       <button
                         key={pageNum}
-                        className={`pagination-page ${currentPage === pageNum ? 'active' : ''}`}
+                        className={`finance-pagination-page ${currentPage === pageNum ? 'active' : ''}`}
                         onClick={() => handlePageChange(pageNum)}
                       >
                         {pageNum}
@@ -614,9 +573,9 @@ const FinanceDashboard = () => {
 
                   {totalPages > 5 && currentPage < totalPages - 2 && (
                     <>
-                      <span className="pagination-ellipsis">...</span>
+                      <span className="finance-pagination-ellipsis">...</span>
                       <button
-                        className="pagination-page"
+                        className="finance-pagination-page"
                         onClick={() => handlePageChange(totalPages)}
                       >
                         {totalPages}
@@ -626,7 +585,7 @@ const FinanceDashboard = () => {
                 </div>
 
                 <button 
-                  className="pagination-button next"
+                  className="finance-pagination-button next"
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
                 >
@@ -636,7 +595,7 @@ const FinanceDashboard = () => {
                   </svg>
                 </button>
               </div>
-            )} */}
+            )}
           </div>
         </div>
       </main>
@@ -644,4 +603,4 @@ const FinanceDashboard = () => {
   )
 }
 
-export default FinanceDashboard;
+export default FinanceDashboard

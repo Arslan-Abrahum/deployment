@@ -44,6 +44,10 @@ import PaymentVerification from './pages/paymentVerification/PaymentVerification
 import CategoryManagement from './pages/categoryManagement/CategoryManagement'
 import UserManagement from './pages/userManagement/UserManagement'
 import KycVerification from './pages/userManagement/KycVerification'
+import SellerProfile from './pages/sellerProfile/SellerProfile'
+import SellerHeader from './components/SellerHeader'
+import CreateCategory from './pages/createCategory/CreateCategory'
+import ManageProductFields from './pages/manageProductFields/ManageProductFields'
 
 function App() {
   return (
@@ -104,6 +108,12 @@ function App() {
             </>
 
           } />
+          <Route path="/seller/profile" element={
+            <>
+              <SellerHeader />
+              <SellerProfile />
+            </>
+          } />
           <Route path="/finance/manual/payments-authorization" element={
             <>
               <AdminHeader />
@@ -154,10 +164,22 @@ function App() {
               <InspectionAdmin />
             </>
           } />
-          <Route path="/admin/category-management" element={
+          <Route path="/admin/category" element={
             <>
               <AdminHeader />
               <CategoryManagement />
+            </>
+          } />
+          <Route path="/admin/add-category" element={
+            <>
+              <AdminHeader />
+              <CreateCategory />
+            </>
+          } />
+          <Route path="/admin/product-fields" element={
+            <>
+              <AdminHeader />
+              <ManageProductFields />
             </>
           } />
           <Route path="/admin/user-management" element={
