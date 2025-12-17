@@ -51,12 +51,7 @@
 
 .category-primary-action-btn:hover {
   background-color: #7BB337;
-  transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(140, 198, 63, 0.3);
-}
-
-.category-primary-action-btn:active {
-  transform: translateY(0);
 }
 
 .category-stats-grid {
@@ -64,6 +59,7 @@
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1rem;
   margin-bottom: 1.5rem;
+  padding: 0 1.5rem;
 }
 
 .category-stat-card {

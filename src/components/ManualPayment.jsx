@@ -212,7 +212,7 @@ export default function ManualPaymentEntry() {
                     )}
                   </div>
 
-                  <div className="form-group">
+                  <div>
                     <label className="form-label required">Payment Method</label>
                     <select
                       name="paymentMethod"
@@ -230,7 +230,7 @@ export default function ManualPaymentEntry() {
                     </select>
                   </div>
 
-                  <div className="form-group">
+                  <div>
                     <label className="form-label required">Payment Amount</label>
                     <div className="amount-input-wrapper">
                       <span className="currency-symbol">$</span>

@@ -49,8 +49,14 @@ import SellerHeader from './components/SellerHeader'
 import CreateCategory from './pages/createCategory/CreateCategory'
 import ManageProductFields from './pages/manageProductFields/ManageProductFields'
 
+import { Provider } from 'react-redux'
+import { store } from './store';
+
+
 function App() {
+  
   return (
+    <Provider store={store}>
     <Router>
       <div className="app">
         <Routes>
@@ -75,7 +81,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
 
 
-<Route path="/kycverification" element={
+          <Route path="/kycverification" element={
             <>
               <AdminHeader />
               <KycVerification />
@@ -228,6 +234,7 @@ function App() {
         <ToastContainer />
       </div>
     </Router>
+    </Provider>
   )
 }
 

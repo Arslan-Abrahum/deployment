@@ -27,7 +27,6 @@ function AdminHeader() {
   return (
     <header className="admin-header4">
       <div className="header-container4" ref={menuRef}>
-
         <div className="header-left4">
           <Link to="/" className="logo">
             <div className="logo-icon">
@@ -35,28 +34,26 @@ function AdminHeader() {
             </div>
             <span className="logo-text">Hammers & Tongues</span>
           </Link>
-
           <button
             className="mobile-menu-btn"
             onClick={() => setMobileMenuOpen(prev => !prev)}
           >
-           <svg
-  xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 24 24"
-  fill="none"
-  stroke="#35B24A"
-  strokeWidth="4"
-  strokeLinecap="round"
-  strokeLinejoin="round"
-  width="30"
-  height="30"
-  
->
-  <line x1="3" y1="6" x2="21" y2="6" />
-  <line x1="3" y1="12" x2="21" y2="12" />
-  <line x1="3" y1="18" x2="21" y2="18" />
-</svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#35B24A"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              width="30"
+              height="30"
 
+            >
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
           </button>
         </div>
 
@@ -67,7 +64,7 @@ function AdminHeader() {
             <Link to="/auctiontab" onClick={() => setMobileMenuOpen(false)} className={`nav-link ${location.pathname.includes("auctiontab") ? "active" : ""}`}>Auction</Link>
             <Link to="/livetab" onClick={() => setMobileMenuOpen(false)} className={`nav-link ${location.pathname.includes("livetab") ? "active" : ""}`}>Live Auctions</Link>
             <Link to="/finance" onClick={() => setMobileMenuOpen(false)} className={`nav-link ${location.pathname.includes("finance") ? "active" : ""}`}>Finance</Link>
-            <Link to="/admin/category" onClick={() => setMobileMenuOpen(false)} className={`nav-link ${location.pathname.includes("admin/category") ? "active" : ""}`}>Field Management</Link>
+            <Link to="/admin/category" onClick={() => setMobileMenuOpen(false)} className={`nav-link ${location.pathname.includes("admin/category") ? "active" : ""}`}>Category Management</Link>
             <Link to="/admin/user-management" onClick={() => setMobileMenuOpen(false)} className={`nav-link ${location.pathname.includes("admin/user-management") ? "active" : ""}`}>User Management</Link>
           </nav>
         </div>

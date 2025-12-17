@@ -5,7 +5,7 @@ import './ManageProductFields.css';
 const ManageProductFields = () => {
   const { categoryId } = useParams();
   const navigate = useNavigate();
-  
+
   const [category, setCategory] = useState({
     id: categoryId,
     name: 'Vehicles',
@@ -62,17 +62,17 @@ const ManageProductFields = () => {
 
   const validateField = (field) => {
     const newErrors = {};
-    
+
     if (!field.name.trim()) {
       newErrors.name = 'Field name is required';
     } else if (field.name.length < 2) {
       newErrors.name = 'Field name must be at least 2 characters';
     }
-    
+
     if (field.type === 'select' && !field.options.trim()) {
       newErrors.options = 'Options are required for dropdown fields';
     }
-    
+
     return newErrors;
   };
 
@@ -90,7 +90,7 @@ const ManageProductFields = () => {
       required: newField.required,
       placeholder: newField.placeholder,
       sortOrder: fields.length + 1,
-      ...(newField.type === 'select' && { 
+      ...(newField.type === 'select' && {
         options: newField.options.split(',').map(opt => opt.trim()).filter(opt => opt)
       })
     };
@@ -126,18 +126,18 @@ const ManageProductFields = () => {
       return;
     }
 
-    setFields(prev => prev.map(field => 
-      field.id === editingField.id 
+    setFields(prev => prev.map(field =>
+      field.id === editingField.id
         ? {
-            ...field,
-            name: newField.name,
-            type: newField.type,
-            required: newField.required,
-            placeholder: newField.placeholder,
-            ...(newField.type === 'select' && { 
-              options: newField.options.split(',').map(opt => opt.trim()).filter(opt => opt)
-            })
-          }
+          ...field,
+          name: newField.name,
+          type: newField.type,
+          required: newField.required,
+          placeholder: newField.placeholder,
+          ...(newField.type === 'select' && {
+            options: newField.options.split(',').map(opt => opt.trim()).filter(opt => opt)
+          })
+        }
         : field
     ));
 
@@ -170,17 +170,17 @@ const ManageProductFields = () => {
   const handleDrop = (e, newIndex) => {
     e.preventDefault();
     const oldIndex = e.dataTransfer.getData('text/plain');
-    
+
     if (oldIndex !== newIndex) {
       const newFields = [...fields];
       const [movedField] = newFields.splice(oldIndex, 1);
       newFields.splice(newIndex, 0, movedField);
-      
+
       const updatedFields = newFields.map((field, index) => ({
         ...field,
         sortOrder: index + 1
       }));
-      
+
       setFields(updatedFields);
     }
   };
@@ -206,33 +206,25 @@ const ManageProductFields = () => {
       <main className="dashboard-main">
         <div className="dashboard-container">
           <div className="manage-fields-header">
-            <div className="category-info">
-              <div 
-                className="category-icon-large"
-                style={{ backgroundColor: `${category.iconColor}20`, color: category.iconColor }}
-              >
-                <span className="icon-display">{category.icon}</span>
-              </div>
-              <div className="category-details">
-                <h1 className="page-title">Manage Product Fields</h1>
-                <p className="page-subtitle">
-                  Configure custom fields for products in <strong>{category.name}</strong> category
-                </p>
-              </div>
+            <div className="category-details">
+              <h1 className="manage-field-page-title">Manage Product Fields</h1>
+              <p className="manage-field-page-subtitle">
+                Configure custom fields for products in <strong>{category.name}</strong> category
+              </p>
             </div>
             <div className="header-actions">
-              <button 
+              <button
                 className="secondary-btn"
                 onClick={() => navigate('/admin/category')}
               >
                 Back to Categories
               </button>
-              <button 
+              <button
                 className="primary-action-btn"
                 onClick={handleSaveFields}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 Save All Changes
               </button>
@@ -250,7 +242,7 @@ const ManageProductFields = () => {
 
               <div className="fields-list">
                 {fields.map((field, index) => (
-                  <div 
+                  <div
                     key={field.id}
                     className="field-item"
                     draggable
@@ -260,7 +252,7 @@ const ManageProductFields = () => {
                   >
                     <div className="field-drag-handle">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M8 7H20M8 12H20M8 17H20M4 7V7.01M4 12V12.01M4 17V17.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M8 7H20M8 12H20M8 17H20M4 7V7.01M4 12V12.01M4 17V17.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                     <div className="field-icon">
@@ -292,23 +284,23 @@ const ManageProductFields = () => {
                     </div>
                     <div className="field-actions">
                       <button
-                        className="action-btn edit-btn"
+                        className="field-action-btn field-edit-btn"
                         onClick={() => handleEditField(field)}
                         title="Edit field"
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       </button>
                       <button
-                        className="action-btn delete-btn"
+                        className="field-action-btn field-delete-btn"
                         onClick={() => handleDeleteField(field.id)}
                         title="Delete field"
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                          <polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       </button>
                     </div>
@@ -324,12 +316,12 @@ const ManageProductFields = () => {
                     {editingField ? 'Edit Field' : 'Add New Field'}
                   </h3>
                   {!showFieldForm && (
-                    <button 
+                    <button
                       className="add-field-btn"
                       onClick={() => setShowFieldForm(true)}
                     >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                       </svg>
                       Add New Field
                     </button>
@@ -361,9 +353,8 @@ const ManageProductFields = () => {
                             <button
                               key={type.value}
                               type="button"
-                              className={`field-type-item ${
-                                newField.type === type.value ? 'selected' : ''
-                              }`}
+                              className={`field-type-item ${newField.type === type.value ? 'selected' : ''
+                                }`}
                               onClick={() => setNewField(prev => ({ ...prev, type: type.value }))}
                             >
                               <span className="type-icon">{type.icon}</span>
@@ -428,7 +419,7 @@ const ManageProductFields = () => {
                     </div>
 
                     <div className="form-actions">
-                      <button 
+                      <button
                         type="button"
                         className="secondary-action-btn"
                         onClick={() => {
@@ -446,13 +437,13 @@ const ManageProductFields = () => {
                       >
                         Cancel
                       </button>
-                      <button 
+                      <button
                         type="button"
                         className="primary-action-btn"
                         onClick={editingField ? handleUpdateField : handleAddField}
                       >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                          <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                         {editingField ? 'Update Field' : 'Add Field'}
                       </button>
@@ -476,7 +467,7 @@ const ManageProductFields = () => {
                     <h4 className="preview-title">Add New Product - {category.name}</h4>
                     <p className="preview-subtitle">Required fields are marked with *</p>
                   </div>
-                  
+
                   <div className="preview-fields">
                     {fields.map(field => (
                       <div key={field.id} className="preview-field">

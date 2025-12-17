@@ -44,8 +44,8 @@ body {
 }
 
 .logo-text {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 500;
   white-space: nowrap;
 }
 
@@ -81,7 +81,6 @@ body {
   gap: 12px;
 }
 
-/* ICON BUTTONS */
 .header-icon-button {
   background: #111;
   border: 1px solid #333;

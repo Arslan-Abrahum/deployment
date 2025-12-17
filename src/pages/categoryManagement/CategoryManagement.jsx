@@ -24,7 +24,7 @@ export default function CategoryManagement() {
   const navigate = useNavigate();
 
   const handleStatusToggle = (id) => {
-    setCategories(categories.map(cat => 
+    setCategories(categories.map(cat =>
       cat.id === id ? { ...cat, status: !cat.status } : cat
     ));
   };
@@ -53,7 +53,7 @@ export default function CategoryManagement() {
   const generatePageNumbers = () => {
     const pages = [];
     const maxVisible = 5;
-    
+
     if (totalPages <= maxVisible) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
@@ -81,7 +81,7 @@ export default function CategoryManagement() {
         pages.push(totalPages);
       }
     }
-    
+
     return pages;
   };
 
@@ -102,10 +102,10 @@ export default function CategoryManagement() {
             </div>
             <div className="category-header-actions">
               <button className="category-primary-action-btn" onClick={
-                ()=> navigate('/admin/add-category')
+                () => navigate('/admin/add-category')
               }>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
                 New Category
               </button>
@@ -118,14 +118,14 @@ export default function CategoryManagement() {
               <div className="category-card-icon-container">
                 <div className="category-card-icon" style={{ backgroundColor: 'rgba(59, 130, 246, 0.15)' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M2 17L12 22L22 17" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M2 12L12 17L22 12" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M2 17L12 22L22 17" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M2 12L12 17L22 12" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
               </div>
               <div className="category-card-content">
-                <span className="category-card-label">Total Categories</span>
+                <span className="card-label">Total Categories</span>
                 <h3 className="category-card-value">{categories.length}</h3>
                 <span className="category-card-change positive">+12%</span>
               </div>
@@ -136,13 +136,13 @@ export default function CategoryManagement() {
               <div className="category-card-icon-container">
                 <div className="category-card-icon" style={{ backgroundColor: 'rgba(140, 198, 63, 0.15)' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="#8CC63F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <polyline points="22 4 12 14.01 9 11.01" stroke="#8CC63F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="#8CC63F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <polyline points="22 4 12 14.01 9 11.01" stroke="#8CC63F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
               </div>
               <div className="category-card-content">
-                <span className="category-card-label">Active Categories</span>
+                <span className="card-label">Active Categories</span>
                 <h3 className="category-card-value">{categories.filter(cat => cat.status).length}</h3>
                 <span className="category-card-change positive">+8%</span>
               </div>
@@ -153,12 +153,12 @@ export default function CategoryManagement() {
               <div className="category-card-icon-container">
                 <div className="category-card-icon" style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M18 6L6 18M6 6L18 18" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M18 6L6 18M6 6L18 18" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
               </div>
               <div className="category-card-content">
-                <span className="category-card-label">Inactive Categories</span>
+                <span className="card-label">Inactive Categories</span>
                 <h3 className="category-card-value">{categories.filter(cat => !cat.status).length}</h3>
                 <span className="category-card-change negative">-3%</span>
               </div>
@@ -169,15 +169,15 @@ export default function CategoryManagement() {
               <div className="category-card-icon-container">
                 <div className="category-card-icon" style={{ backgroundColor: 'rgba(168, 85, 247, 0.15)' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <rect x="3" y="3" width="7" height="7" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <rect x="14" y="3" width="7" height="7" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <rect x="14" y="14" width="7" height="7" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <rect x="3" y="14" width="7" height="7" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <rect x="3" y="3" width="7" height="7" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <rect x="14" y="3" width="7" height="7" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <rect x="14" y="14" width="7" height="7" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <rect x="3" y="14" width="7" height="7" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
               </div>
               <div className="category-card-content">
-                <span className="category-card-label">Total Items</span>
+                <span className="card-label">Total Items</span>
                 <h3 className="category-card-value">{categories.reduce((sum, cat) => sum + cat.items, 0)}</h3>
                 <span className="category-card-change positive">+24%</span>
               </div>
@@ -189,8 +189,8 @@ export default function CategoryManagement() {
               <div className="category-search-container">
                 <div className="category-search-input-wrapper">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
                   <input
                     type="text"
@@ -200,13 +200,13 @@ export default function CategoryManagement() {
                     className="category-search-input"
                   />
                   {searchQuery && (
-                    <button 
+                    <button
                       className="category-clear-search"
                       onClick={() => setSearchQuery('')}
                       aria-label="Clear search"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </button>
                   )}
@@ -259,7 +259,7 @@ export default function CategoryManagement() {
                         </td>
                         <td>
                           <div className="category-status-cell">
-                            <div 
+                            <div
                               className={`category-status-toggle ${category.status ? 'active' : ''}`}
                               onClick={() => handleStatusToggle(category.id)}
                             >
@@ -278,8 +278,8 @@ export default function CategoryManagement() {
                               title="Edit category"
                             >
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
                             </button>
                             <button
@@ -288,8 +288,8 @@ export default function CategoryManagement() {
                               title="Delete category"
                             >
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                                <polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
                             </button>
                           </div>
@@ -302,9 +302,9 @@ export default function CategoryManagement() {
                         <div className="category-empty-state">
                           <div className="category-empty-icon">
                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                           </div>
                           <h3>No categories found</h3>
@@ -319,17 +319,17 @@ export default function CategoryManagement() {
 
             {filteredCategories.length > itemsPerPage && (
               <div className="category-pagination">
-                <button 
+                <button
                   className="category-pagination-btn category-prev-btn"
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   Previous
                 </button>
-                
+
                 <div className="category-page-numbers">
                   {generatePageNumbers().map((page, index) => (
                     page === '...' ? (
@@ -345,15 +345,15 @@ export default function CategoryManagement() {
                     )
                   ))}
                 </div>
-                
-                <button 
+
+                <button
                   className="category-pagination-btn category-next-btn"
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
                 >
                   Next
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
               </div>

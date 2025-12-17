@@ -81,8 +81,8 @@ const CreateCategory = () => {
                 <div className="dashboard-container">
                     <div className="add-category-header">
                         <div className="header-content">
-                            <h1 className="page-title">Create New Category</h1>
-                            <p className="page-subtitle">Add a new auction category with custom settings and product fields</p>
+                            <h1 className="add-category-page-title">Create New Category</h1>
+                            <p className="add-category-page-subtitle">Add a new auction category with custom settings and product fields</p>
                         </div>
                         <div className="header-actions">
                             <button className="secondary-btn" onClick={() => navigate('/admin/category')}>

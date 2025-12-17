@@ -315,11 +315,11 @@ const FinanceDashboard = () => {
         <div className="dashboard-container">
           <div className="dashboard-welcome">
             <div className="welcome-content">
-              <h1 className="welcome-title">Finance Dashboard</h1>
-              <p className="welcome-subtitle">Welcome back, here is your financial overview for today.</p>
+              <h1 className="finance-page-title">Finance Dashboard</h1>
+              <p className="finance-page-subtitle">Welcome back, here is your financial overview for today.</p>
             </div>
             <div className="welcome-actions">
-              <button className="action-button primary" onClick={handleNewManualEntry}>
+              <button className="finance-primary-action-btn" onClick={handleNewManualEntry}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
@@ -330,7 +330,8 @@ const FinanceDashboard = () => {
 
           <div className="summary-cards">
             {financialSummary.map((stat) => (
-              <div key={stat.id} className="summary-card">
+              // <div key={stat.id} className="summary-card">
+              <div key={stat.id} className="finance-stat-card">
                 <div className="card-background-gradient" style={{ 
                   background: stat.trend === 'up' 
                     ? 'linear-gradient(135deg, rgba(140, 198, 63, 0.15) 0%, rgba(140, 198, 63, 0.05) 100%)'
@@ -338,7 +339,7 @@ const FinanceDashboard = () => {
                     ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%)'
                     : 'linear-gradient(135deg, rgba(156, 163, 175, 0.15) 0%, rgba(156, 163, 175, 0.05) 100%)'
                 }}></div>
-                <div className="card-icon" style={{ 
+                <div className="finance-card-icon" style={{ 
                   backgroundColor: stat.trend === 'up' 
                     ? 'rgba(140, 198, 63, 0.2)'
                     : stat.trend === 'down'
@@ -383,12 +384,7 @@ const FinanceDashboard = () => {
                   <span className="card-value">
                     {stat.title.includes('Total') ? formatCurrency(stat.amount) : stat.amount}
                   </span>
-                  <span className="card-sublabel" style={{ 
-                    color: stat.trend === 'up' 
-                      ? '#8CC63F'
-                      : stat.trend === 'down'
-                      ? '#EF4444'
-                      : 'rgba(255, 255, 255, 0.5)'
+                  <span className="finance-card-change" style={{ color: stat.trend === 'up' ? '#8CC63F' : stat.trend === 'down' ? '#EF4444' : 'rgba(255, 255, 255, 0.5)', backgroundColor: stat.trend === 'up' ? 'rgba(140, 198, 63, 0.15)' : stat.trend === 'down' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.15)'
                   }}>
                     {stat.change}
                   </span>
