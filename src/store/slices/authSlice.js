@@ -1,9 +1,7 @@
-
 import { createSlice } from '@reduxjs/toolkit';
 import { cookieStorage } from '../../utils/cookieStorage';
 import { registerUser, loginUser, verifyOtp, resendOtp, refreshAccessToken, requestPasswordReset, verifyPasswordOtp, confirmPasswordReset } from '../actions/authActions';
 
-// Initial State
 const initialState = {
   user: cookieStorage.getItem(cookieStorage.AUTH_KEYS.USER) || null,
   token: cookieStorage.getItem(cookieStorage.AUTH_KEYS.TOKEN) || null,
@@ -11,18 +9,15 @@ const initialState = {
   isAuthenticated: !!cookieStorage.getItem(cookieStorage.AUTH_KEYS.TOKEN),
   isLoading: false,
   error: null,
-  
-  // Registration state
+
   registrationData: null,
   isRegistering: false,
   registrationError: null,
-  
-  // OTP state
+
   isVerifyingOtp: false,
   otpError: null,
   isResendingOtp: false,
-  
-  // Password reset state
+
   isRequestingReset: false,
   resetRequestError: null,
   resetToken: null,
@@ -30,8 +25,6 @@ const initialState = {
   isConfirmingReset: false,
 };
 
-
-// Auth Slice
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -45,19 +38,19 @@ const authSlice = createSlice({
       cookieStorage.clear();
       toast.info('Logged out successfully');
     },
-    
+
     clearError: (state) => {
       state.error = null;
       state.registrationError = null;
       state.otpError = null;
       state.resetRequestError = null;
     },
-    
+
     clearRegistrationData: (state) => {
       state.registrationData = null;
       state.registrationError = null;
     },
-    
+
     clearResetToken: (state) => {
       state.resetToken = null;
     },
@@ -113,7 +106,6 @@ const authSlice = createSlice({
       })
       .addCase(verifyOtp.fulfilled, (state, action) => {
         state.isVerifyingOtp = false;
-        // If OTP verification returns tokens, authenticate the user
         if (action.payload.access && action.payload.refresh) {
           state.user = action.payload.user;
           state.token = action.payload.access;

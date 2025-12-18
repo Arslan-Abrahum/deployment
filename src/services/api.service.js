@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { API_CONFIG } from '../config/api.config';
 import { cookieStorage } from '../utils/cookieStorage';
-import store from '../store';
+import store from '../store/store';
 import { logout } from '../store/slices/authSlice';
 import { refreshAccessToken } from '../store/actions/authActions';
 
