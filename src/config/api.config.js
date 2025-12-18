@@ -1,9 +1,17 @@
+// export const API_CONFIG = {
+//   BASE_URL: import.meta.env.PROD ? 'http://207.180.233.44:8001' : '',
+//   TIMEOUT: 30000,
+//   RETRY_ATTEMPTS: 3,
+//   RETRY_DELAY: 1000,
+// };
+
 export const API_CONFIG = {
-  BASE_URL: 'http://207.180.233.44:8001',
+  BASE_URL: import.meta.env.DEV
+    ? '' // 👈 proxy works only with relative URL
+    : 'http://207.180.233.44:8001',
   TIMEOUT: 30000,
-  RETRY_ATTEMPTS: 3,
-  RETRY_DELAY: 1000,
 };
+
 
 export const API_ROUTES = {
   // Authentication

@@ -11,6 +11,7 @@ export const authService = {
     const { data } = await apiClient.post(API_ROUTES.REGISTER, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
+    console.log('data: ', data);
     return data;
   },
 

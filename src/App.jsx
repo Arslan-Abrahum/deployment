@@ -50,7 +50,7 @@ import CreateCategory from './pages/createCategory/CreateCategory'
 import ManageProductFields from './pages/manageProductFields/ManageProductFields'
 
 import { Provider } from 'react-redux'
-import { store } from './store/store';
+import store from './store/store';
 
 
 function App() {
@@ -231,7 +231,18 @@ function App() {
               </>
             } />
           </Routes>
-          <ToastContainer />
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={true}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
         </div>
       </Router>
     </Provider>

@@ -6,11 +6,16 @@ import { toast } from 'react-toastify';
 export const registerUser = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
+    console.log('UserData in Actions: ', userData);
     try {
       const response = await authService.register(userData);
       toast.success('Registration successful! Please verify your OTP.');
+      console.log("response: ", response);
+      
       return response;
     } catch (error) {
+      console.log('errors in actions: ', error);
+      
       const message = error.response?.data?.message || 
                      error.response?.data?.error ||
                      'Registration failed';

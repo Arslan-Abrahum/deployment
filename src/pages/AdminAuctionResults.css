@@ -382,14 +382,6 @@
   cursor: not-allowed;
 }
 
-<<<<<<< HEAD
-@media (max-width: 1024px) {
-  .stats-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-=======
->>>>>>> 07390773f89eb72b7a261b15d4a394ca8518ba05
 
 @media (max-width: 768px) {
   .results-wrapper {

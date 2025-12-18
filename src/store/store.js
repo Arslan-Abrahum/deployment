@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
 import profileReducer from './slices/profileSlice';
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     auth: authReducer,
     profile: profileReducer,
@@ -20,3 +20,6 @@ export const store = configureStore({
   //   }),
   // devTools: process.env.NODE_ENV !== 'production',
 });
+
+export { store };
+export default store;
