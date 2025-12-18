@@ -94,9 +94,9 @@ function Report() {
               <th>Item Category</th>
               <th>Date & Time</th>
               <th>Auction Officer</th>
-              <th>Status</th>
+              <th className="text-center">Status</th>
               <th>Decision Comments</th>
-              <th>Actions</th>
+              <th className="text-center">Actions</th>
             </tr>
           </thead>
 

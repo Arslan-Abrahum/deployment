@@ -8,7 +8,7 @@ function SellerHeader() {
       <div className="dashboard-header-container">
         <Link to="/seller-dashboard" className="dashboard-logo">
           <img src={logo} alt="Hammers & Tongues Logo" />
-          <span>Hammers & Tongues</span>
+          <span className='logo-text'>Hammers & Tongues</span>
         </Link>
 
         <nav className="dashboard-nav">

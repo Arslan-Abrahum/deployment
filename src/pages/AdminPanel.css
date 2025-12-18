@@ -142,7 +142,9 @@ body {
   overflow-x: auto;
   border-radius: 12px;
   background: #0d0d0d;
-  padding: 2px;
+  padding: 1px;
+  border: 1px solid #222;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .inspection-table {
@@ -156,28 +158,59 @@ body {
 
 .inspection-table thead {
   background: #161616;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 .inspection-table thead th {
-  padding: 14px 16px;
+  padding: 16px;
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.7px;
   border-bottom: 1px solid #333;
   white-space: nowrap;
+  vertical-align: middle;
+}
+
+.inspection-table thead th.text-center {
+  text-align: center;
 }
 
 .inspection-table tbody tr {
   background: #0f0f0f;
-  transition: 0.2s;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
+
 .inspection-table tbody tr:hover {
   background: #1a1a1a;
+  transform: scale(1.001);
+}
+
+.inspection-table tbody tr:last-child td {
+  border-bottom: none;
 }
 .inspection-table tbody td {
-  padding: 14px 16px;
+  padding: 16px;
   border-bottom: 1px solid #222;
   white-space: nowrap;
+  vertical-align: middle;
+}
+
+.inspection-table .text-center {
+  text-align: center;
+}
+
+.inspection-table tbody td.text-center {
+  text-align: center;
+}
+
+.inspection-table tbody tr td[colspan] {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
 }
 
 .badge-custom1 {
@@ -188,8 +221,7 @@ body {
   border-radius: 20px;
   padding: 6px 12px;
   white-space: nowrap;
-  overflow: hidden;
-  width: 50%;
+  min-width: fit-content;
 }
 
 .badge-pending {
@@ -306,7 +338,7 @@ body {
 
 .search-input:focus,
 .filter-select:focus {
-  border: 1px solid #8cc63f !important; /* change to custom border */
+  border: 1px solid #8cc63f !important; 
   background-color: #111;
 }
 
@@ -379,14 +411,15 @@ body {
   background-color: #8cc63f;
   color: #000;
   border: none;
-  padding: 0.625rem 1rem;
+  padding: 0.625rem 1.25rem;
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  width: 140px;
+  min-width: 140px;
   text-align: center;
+  white-space: nowrap;
 }
 
 .view-btn:hover {

@@ -1,10 +1,10 @@
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
 }
 
-/* HEADER WRAPPER */
 .admin-header4 {
   background: black;
   color: white;
@@ -14,17 +14,15 @@ html, body {
   position: relative;
 }
 
-/* FLEX CONTAINER */
 .header-container4 {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   box-sizing: border-box;
-  padding: 0 5px; /* 5px left + right margin requirement */
+  padding: 0 5px;
 }
 
-/* LEFT (20%) */
 .header-left4 {
   flex: 0 0 20%;
   display: flex;
@@ -32,7 +30,6 @@ html, body {
   gap: 8px;
 }
 
-/* LOGO */
 .admin-header4 .logo {
   display: flex;
   align-items: center;
@@ -47,19 +44,17 @@ html, body {
 }
 
 .logo-text {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 500;
   white-space: nowrap;
 }
 
-/* CENTER (60%) */
 .header-center4 {
   flex: 0 0 60%;
   display: flex;
   justify-content: center;
 }
 
-/* NAV */
 .admin-header4 .nav {
   display: flex;
   gap: 12px;
@@ -78,7 +73,6 @@ html, body {
   color: white;
 }
 
-/* RIGHT (20%) */
 .header-right4 {
   flex: 0 0 20%;
   display: flex;
@@ -87,7 +81,6 @@ html, body {
   gap: 12px;
 }
 
-/* ICON BUTTONS */
 .header-icon-button {
   background: #111;
   border: 1px solid #333;
@@ -96,14 +89,16 @@ html, body {
   color: #aaa;
   cursor: pointer;
   transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.header-icon-button:hover {
+.admin-header .header-icon-button:hover {
   color: white;
   border-color: white;
 }
 
-/* MOBILE MENU BUTTON */
 .mobile-menu-btn {
   display: none;
   background: none;
@@ -111,7 +106,6 @@ html, body {
   cursor: pointer;
 }
 
-/* ================= MOBILE ================= */
 @media (max-width: 768px) {
 
   .mobile-menu-btn {

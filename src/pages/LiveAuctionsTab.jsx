@@ -92,9 +92,9 @@ export default function LiveAuctionsTab() {
             <tr>
               <th>Bid ID</th>
               <th>User</th>
-              <th>Bid Amount</th>
+              <th className="text-right">Bid Amount</th>
               <th>Time Stamp</th>
-              <th>Status</th>
+              <th className="text-center">Status</th>
             </tr>
           </thead>
           <tbody>

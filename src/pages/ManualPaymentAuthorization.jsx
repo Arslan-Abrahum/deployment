@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import "./ManualPaymentAuthorization.css";
 
 const ManualPaymentAuthorization = () => {
@@ -9,8 +10,8 @@ const ManualPaymentAuthorization = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [payments, setPayments] = useState([]);
   const itemsPerPage = 5;
+  const navigate = useNavigate();
 
-  // Initial data
   const initialData = [
     {
       id: 1,
@@ -61,13 +62,10 @@ const ManualPaymentAuthorization = () => {
       status: "Pending",
     },
   ];
-
-  // Initialize data
   useEffect(() => {
     setPayments(initialData);
   }, []);
 
-  // Filter payments based on all criteria
   const filteredPayments = useMemo(() => {
     return payments.filter((payment) => {
       const matchesSearch =
@@ -83,18 +81,15 @@ const ManualPaymentAuthorization = () => {
     });
   }, [payments, searchQuery, statusFilter, officerFilter, dateFilter]);
 
-  // Get unique officers for filter dropdown
   const uniqueOfficers = useMemo(() => {
     const officers = payments.map((p) => p.officer);
     return [...new Set(officers)];
   }, [payments]);
 
-  // Calculate pagination
   const totalPages = Math.ceil(filteredPayments.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedPayments = filteredPayments.slice(startIndex, startIndex + itemsPerPage);
 
-  // Handle status update
   const handleStatusUpdate = (id, newStatus) => {
     setPayments((prev) =>
       prev.map((payment) =>
@@ -142,7 +137,9 @@ const ManualPaymentAuthorization = () => {
           </p>
         </div>
         <div className="welcome-actions">
-          <button className="action-button primary">
+          <button className="action-button primary" onClick={
+            ()=> navigate('/finance/manual-payments')
+          }>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
