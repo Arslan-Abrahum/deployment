@@ -10,6 +10,13 @@ const DATA = [
   { lot: "006", item: "Cartier Tank", bid: 14000, bidder: "BIDDER-X882", reserve: "Met", status: "Invoice Sent" },
 ];
 
+const CARD_IMAGES = [
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTt3WpWd9ggi9EY-ZecKXm326Zwf_OQW4BHhw&s",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqKtPikqGQLSttXbrMpROp-psrJgi_-cykwA&s",
+  "https://png.pngtree.com/png-vector/20220521/ourmid/pngtree-icon-live-streaming-vector-png-image_4643886.png",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTt3WpWd9ggi9EY-ZecKXm326Zwf_OQW4BHhw&s",
+];
+
 const ROWS_PER_PAGE = 5;
 
 export default function AdminAuctionResults() {
@@ -47,18 +54,35 @@ export default function AdminAuctionResults() {
     link.click();
   };
 
+  // Stats cards data
+  const statsCards = [
+    { title: "Total Hammer Price", value: "$1,245,600", iconUrl: CARD_IMAGES[0] },
+    { title: "Sell-Through Rate", value: "92%", iconUrl: CARD_IMAGES[1] },
+    { title: "Total Lots Sold", value: "138", iconUrl: CARD_IMAGES[2] },
+    { title: "Lots Unsold", value: "12", iconUrl: CARD_IMAGES[3] },
+  ];
+
   return (
     <div className="results-wrapper">
       <h1 className="title">Auction Results: Vintage Watch Collection - 24 Oct 2024</h1>
       <p className="subtitle">Review winning bids, financial status, and next steps for the auction.</p>
 
+      {/* Horizontal Cards */}
       <div className="stats-row">
-        <div className="stat-card">$1,245,600<br /><span>Total Hammer Price</span></div>
-        <div className="stat-card">92%<br /><span>Sell-Through Rate</span></div>
-        <div className="stat-card">138<br /><span>Total Lots Sold</span></div>
-        <div className="stat-card">12<br /><span>Lots Unsold</span></div>
+        {statsCards.map((card, index) => (
+          <div className="category-card-horizontal" key={index}>
+            <div className="category-card-icon-wrapper">
+              <img src={card.iconUrl} alt={card.title} className="category-card-icon-img" />
+            </div>
+            <div className="category-card-content">
+              <h4>{card.title}</h4>
+              <p>{card.value}</p>
+            </div>
+          </div>
+        ))}
       </div>
 
+      {/* Filter row */}
       <div className="filter-row">
         <input
           type="text"
@@ -84,6 +108,7 @@ export default function AdminAuctionResults() {
         </div>
       </div>
 
+      {/* Table */}
       <div className="table-box">
         <table className="table-dark">
           <thead>
@@ -125,7 +150,7 @@ export default function AdminAuctionResults() {
         </table>
       </div>
 
-      {/* Pagination Bottom Left & Right */}
+      {/* Pagination Bottom */}
       {filteredData.length > 0 && (
         <div className="table-pagination">
           <div className="pagination-info">
@@ -133,16 +158,12 @@ export default function AdminAuctionResults() {
           </div>
 
           <div className="pagination-controls">
-            <button style={{color:"black"}}
-              className="pagination-btn prev"
-              onClick={() => setPage(p => Math.max(p - 1, 1))}
-              disabled={page === 1}
-            >
+            <button className="pagination-btn prev" style={{ color:"black",backgroundColor:"black"}} onClick={() => setPage(p => Math.max(p - 1, 1))} disabled={page === 1}>
               .
             </button>
 
             {[...Array(totalPages)].map((_, i) => (
-              <button
+              <button 
                 key={i}
                 className={`page-number ${page === i + 1 ? "active" : ""}`}
                 onClick={() => setPage(i + 1)}
@@ -151,11 +172,7 @@ export default function AdminAuctionResults() {
               </button>
             ))}
 
-            <button style={{color:"black"}}
-              className="pagination-btn next"
-              onClick={() => setPage(p => Math.min(p + 1, totalPages))}
-              disabled={page === totalPages}
-            >
+            <button className="pagination-btn next" style={{ color:"black",backgroundColor:"black"}} onClick={() => setPage(p => Math.min(p + 1, totalPages))} disabled={page === totalPages}>
               .
             </button>
           </div>

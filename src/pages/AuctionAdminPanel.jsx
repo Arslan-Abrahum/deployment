@@ -1,26 +1,35 @@
 import React, { useState } from "react";
 import "./AuctionAdminPanel.css";
-import "./AdminPanel.css"
-
+import "./AdminPanel.css";
 import { Link, useNavigate } from "react-router-dom";
-const PaymentsIcon = (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <path
-      d="M12 2V22M17 5H9.5C8.57174 5 7.6815 5.36875 7.02513 6.02513C6.36875 6.6815 6 7.57174 6 8.5C6 9.42826 6.36875 10.3185 7.02513 10.9749C7.6815 11.6312 8.57174 12 9.5 12H14.5C15.4283 12 16.3185 12.3687 16.9749 13.0251C17.6312 13.6815 18 14.5717 18 15.5C18 16.4283 17.6312 17.3185 16.9749 17.9749C16.3185 18.6312 15.4283 19 14.5 19H6"
-      stroke="currentColor"
-      strokeWidth="4"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-)
 
 export default function AuctionPage() {
-
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+
+  // Card data – replace iconUrl with your links
+  const cardData = [
+    {
+      title: "Active Bidders",
+      value: "1,204",
+      change: "+5.2% vs last period",
+      iconUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTt3WpWd9ggi9EY-ZecKXm326Zwf_OQW4BHhw&s"
+    },
+    {
+      title: "Total Lots",
+      value: "850",
+      change: "+1.8% vs last period",
+      iconUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqKtPikqGQLSttXbrMpROp-psrJgi_-cykwA&s"
+    },
+    {
+      title: "Live Rooms",
+      value: "15",
+      change: "+2 since yesterday",
+      iconUrl: "https://png.pngtree.com/png-vector/20220521/ourmid/pngtree-icon-live-streaming-vector-png-image_4643886.png"
+    },
+  ];
 
   const tableData = [
     { name: "Vintage Watch Collection", id: "#VW-10234", status: "Live", start: "Oct 25, 2023", end: "Nov 01, 2023", lots: 45, value: "$15,420" },
@@ -64,33 +73,26 @@ export default function AuctionPage() {
   return (
     <div className="container-fluid">
 
-      <div className="row g-3 mb-4 mt-4 cards-row">
-        <div className="col-md-4">
-          <div className="card p-3 shadow dark-card" style={{backgroundColor:"black"}}>
-            <p className="text-Primary mb-1">Active Bidders</p>
-            <h2>{PaymentsIcon}1,204</h2>
-            <small className="text-card">+5.2% vs last period</small>
-          </div>
-        </div>
-
-        <div className="col-md-4">
-          <div className="card p-3 shadow dark-card" style={{backgroundColor:"black"}}>
-            <p className="text-Primary mb-1"> Total Lots</p>
-            <h2>{PaymentsIcon}850</h2>
-            <small className="text-card">+1.8% vs last period</small>
-          </div>
-        </div>
-
-        <div className="col-md-4">
-          <div className="card p-3 shadow dark-card" style={{backgroundColor:"black"}}>
-            <p className="text-Primary mb-1">Live Rooms</p>
-            <h2>{PaymentsIcon}15</h2>
-            <small className="text-card">+2 since yesterday</small>
-          </div>
-        </div>
+      {/* Cards - Modified like CategoryManagement */}
+      {/* Cards - Horizontal layout like CategoryManagement */}
+<div className="cards-container">
+  {cardData.map((card, index) => (
+    <div className="category-card-horizontal" key={index}>
+      <div className="category-card-icon-wrapper">
+        <img src={card.iconUrl} alt={card.title} className="category-card-icon-img"/>
       </div>
+      <div className="category-card-content">
+        <h4>{card.title}</h4>
+        <p>{card.value}</p>
+        <span>{card.change}</span>
+      </div>
+    </div>
+  ))}
+</div>
 
-      <div className="card p-3 dark-card mt-3" style={{backgroundColor:"black"}}>
+
+      {/* Table Section */}
+      <div className="card p-3 dark-card mt-3">
 
         <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 mt-3 mobile-flex-column">
           <h1 className="mt-2" style={{marginLeft:20}}>All Auctions</h1>
@@ -105,14 +107,11 @@ export default function AuctionPage() {
               className="form-control bg-dark text-white border-secondary search-input"
               placeholder=" 🔍 Search by Name or ID"
               value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setCurrentPage(1);
-              }}
+              onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
             />
 
             <div className="btn-group ms-2 filter-btn-group">
-              <button  className="btn custom-filter-btn active " >All</button>
+              <button  className="btn custom-filter-btn active" >All</button>
               <button className="btn custom-filter-btn">Live</button>
               <button className="btn custom-filter-btn">Upcoming</button>
               <button className="btn custom-filter-btn">Ended</button>
@@ -136,11 +135,7 @@ export default function AuctionPage() {
             </thead>
             <tbody>
               {paginatedData.map((item, index) => (
-                <tr
-                  key={index}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => navigate("/controlpanel")}
-                >
+                <tr key={index} onClick={() => navigate("/controlpanel")}>
                   <td>
                     <strong>{item.name}</strong><br />
                     <small className="text-secondary">{item.id}</small>
@@ -185,54 +180,55 @@ export default function AuctionPage() {
           </table>
         </div>
 
-       {/* Updated Pagination */}
-{filteredData.length > 0 && (
-  <div className="table-pagination">
-    <div className="pagination-info">
-      Page {currentPage} of {totalPages}
-    </div>
-    <div className="pagination-controls">
-      <button
-        className="pagination-btn prev"
-        onClick={() => setCurrentPage(p => p - 1)}
-        disabled={currentPage === 1}
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </button>
+        {/* Pagination */}
+        {filteredData.length > 0 && (
+          <div className="table-pagination">
+            <div className="pagination-info">
+              Page {currentPage} of {totalPages}
+            </div>
+            <div className="pagination-controls">
 
-      <div className="page-numbers">
-        {generatePageNumbers().map((page, index) =>
-          page === '...' ? (
-            <span key={`dots-${index}`} className="page-dots">...</span>
-          ) : (
-            <button
-              key={page}
-              className={`page-number ${currentPage === page ? 'active' : ''}`}
-              onClick={() => setCurrentPage(page)}
-            >
-              {page}
-            </button>
-          )
+              <button
+                className="pagination-btn prev"
+                onClick={() => setCurrentPage(p => p - 1)}
+                disabled={currentPage === 1}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+
+              <div className="page-numbers">
+                {generatePageNumbers().map((page, index) =>
+                  page === '...' ? (
+                    <span key={`dots-${index}`} className="page-dots">...</span>
+                  ) : (
+                    <button
+                      key={page}
+                      className={`page-number ${currentPage === page ? 'active' : ''}`}
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      {page}
+                    </button>
+                  )
+                )}
+              </div>
+
+              <button
+                className="pagination-btn next"
+                onClick={() => setCurrentPage(p => p + 1)}
+                disabled={currentPage === totalPages}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+
+            </div>
+          </div>
         )}
-      </div>
 
-      <button
-        className="pagination-btn next"
-        onClick={() => setCurrentPage(p => p + 1)}
-        disabled={currentPage === totalPages}
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </button>
+      </div>
     </div>
-  </div>
-)}
-
-        </div>
-
-      </div>
   );
 }

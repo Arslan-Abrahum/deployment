@@ -156,6 +156,74 @@ min-width: 1vmin;
   color: #fff;
 }
 
+.cards-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.category-card-horizontal {
+  flex: 1 1 calc(33.333% - 20px);
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  padding: 15px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.category-card-horizontal:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+.category-card-icon-wrapper {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #333;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+.category-card-icon-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.category-card-content h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #fff;
+}
+
+.category-card-content p {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #8CC63F;
+  margin-bottom: 5px;
+}
+
+.category-card-content span {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.7);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .category-card-horizontal {
+    flex: 1 1 100%;
+  }
+}
+
+
 .table-dark tbody tr {
   transition: background-color 0.2s ease;
 }
@@ -196,7 +264,7 @@ min-width: 1vmin;
 
 .table-pagination {
   display: flex;
-  justify-content: space-between; /* left info, right controls */
+  justify-content: space-between; 
   align-items: center;
   padding: 1rem 1.5rem;
   background-color: rgba(255, 255, 255, 0.02);
@@ -281,7 +349,6 @@ min-width: 1vmin;
   padding: 0 0.5rem;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .table-pagination {
     flex-direction: column;
@@ -292,7 +359,6 @@ min-width: 1vmin;
     margin-bottom: 0.75rem;
   }
 }
-
 
 @media (max-width: 768px) {
   .table-pagination {
@@ -311,7 +377,6 @@ html, body {
 
 @media (max-width: 768px) {
 .mt-2{
-  
     font-size: 1.5rem;  
 }
   .cards-row {
@@ -325,13 +390,11 @@ html, body {
     max-width: calc(33.33% - 8px);
   }
 
-  /* Create New Auction full width */
   .full-width-mobile-btn {
     width: 371px;
     
   }
 
-  /* Filter buttons in one row */
   .filter-btn-group {
     display: flex;
   flex-wrap: nowrap;
@@ -342,7 +405,6 @@ html, body {
     text-align: center;
   }
 
-  /* Ensure input and button stack nicely */
   .full-width-mobile {
     display: flex;
     flex-wrap: wrap;
@@ -350,7 +412,6 @@ html, body {
     width: 100%;
   }
 
-  /* Table adjustments */
   .table-dark thead th,
   .table-dark tbody td {
     font-size: 12px;
