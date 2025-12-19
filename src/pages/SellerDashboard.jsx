@@ -261,7 +261,7 @@ const SellerDashboard = () => {
                                 <h2 className="section-title">Active Listings</h2>
                                 <Link to="/seller/auction-listings" className="view-all-link">Manage All</Link>
                             </div>
-                            <div className="listings-grid">
+                            <div className="listings-grid-1">
                                 {activeListings.map((listing) => (
                                     <Link key={listing.id} to={`/seller/listing/${listing.id}`} className="listing-card">
                                         <div className="listing-card-image">

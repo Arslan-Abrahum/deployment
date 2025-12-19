@@ -95,7 +95,6 @@ function Report() {
   return (
     <div className="reports-wrapper">
       <div className="reports-container">
-        
         <div className="reports-section-header">
           <div className="reports-header-content">
             <h1 className="reports-page-title">Inspection History Log</h1>

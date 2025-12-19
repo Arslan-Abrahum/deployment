@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import logo from '../assets/logo.png'
 
 function BuyerHeader() {
@@ -10,12 +10,16 @@ function BuyerHeader() {
                     <img src={logo} alt="Hammers & Tongues Logo" />
                     <span>Hammers & Tongues</span>
                 </Link>
+
                 <nav className="dashboard-nav">
-                    <Link to="/dashboard" className="nav-link active">Home</Link>
-                    <Link to="/buyer/auctions" className="nav-link">Auctions</Link>
-                    <Link to="/my-bids" className="nav-link">My Bids</Link>
-                    <Link to="/won-items" className="nav-link">Won Items</Link>
+                    <Link to="/dashboard" className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}>Home</Link>
+                    <Link to="/buyer/auctions" className={`nav-link ${location.pathname === '/buyer/auctions' ? 'active' : ''}`}>Auctions</Link>
+                    <Link to="/my-bids" className={`nav-link ${location.pathname === '/my-bids' ? 'active' : ''}`}>My Bids</Link>
+                    <Link to="/won-items" className={`nav-link ${location.pathname === '/won-items' ? 'active' : ''}`}>Won Items</Link>
                 </nav>
+
+
+
                 <div className="dashboard-header-right">
                     <button className="notification-button" aria-label="Notifications">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">

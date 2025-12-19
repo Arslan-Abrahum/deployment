@@ -28,7 +28,7 @@
   text-decoration: none;
 }
 
-.listings-grid {
+.listings-grid-1 {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1rem;
@@ -297,7 +297,7 @@
     white-space: nowrap;
   }
 
-  .listings-grid {
+  .listings-grid-1 {
     grid-template-columns: 1fr;
   }
 
