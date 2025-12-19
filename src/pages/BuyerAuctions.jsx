@@ -130,41 +130,6 @@ const BuyerAuctions = () => {
 
   return (
     <div className="buyer-auctions-page">
-      {/* Buyer Dashboard Header */}
-      <header className="buyer-auctions-header">
-        <div className="buyer-auctions-header-container">
-          <Link to="/dashboard" className="buyer-auctions-logo">
-            <img src={logo} alt="Hammers & Tongues Logo" />
-            <span>Hammers & Tongues</span>
-          </Link>
-          
-          <nav className="buyer-auctions-nav">
-            <Link to="/dashboard" className="nav-link">Home</Link>
-            <Link to="/buyer/auctions" className="nav-link active">Auctions</Link>
-            <Link to="/my-bids" className="nav-link">My Bids</Link>
-            <Link to="/won-items" className="nav-link">Won Items</Link>
-          </nav>
-
-          <div className="buyer-auctions-header-right">
-            <button className="notification-button" aria-label="Notifications">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M18 8A6 6 0 0 0 6 8C6 11.3137 3.31371 14 0 14M18 8C20.2091 8 22 9.79086 22 12C22 14.2091 20.2091 16 18 16M18 8C20.2091 8 22 5.79086 22 3C22 0.790861 20.2091 -1 18 -1C15.7909 -1 14 0.790861 14 3C14 5.79086 15.7909 8 18 8Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M6 8C6 11.3137 8.68629 14 12 14C15.3137 14 18 11.3137 18 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span className="notification-badge">3</span>
-            </button>
-            <Link to="/profile" className="profile-button" aria-label="Profile">
-              <div className="profile-avatar">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </header>
-
       {/* Auctions Content */}
       <div className="buyer-auctions-content">
         <div className="buyer-auctions-container">
@@ -178,7 +143,7 @@ const BuyerAuctions = () => {
               <div className="filter-header">
                 <h3 className="filter-section-title">Category</h3>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <div className="filter-options">
@@ -199,7 +164,7 @@ const BuyerAuctions = () => {
               <div className="filter-header">
                 <h3 className="filter-section-title">Status</h3>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <div className="filter-options">
@@ -220,7 +185,7 @@ const BuyerAuctions = () => {
               <div className="filter-header">
                 <h3 className="filter-section-title">Price Range</h3>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <div className="price-inputs">
@@ -248,7 +213,7 @@ const BuyerAuctions = () => {
               <div className="filter-header">
                 <h3 className="filter-section-title">Sort By</h3>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <div className="filter-options radio-options">
@@ -294,7 +259,7 @@ const BuyerAuctions = () => {
                       </span>
                       <span className="timer-value">{auction.timer}</span>
                     </div>
-                    <button 
+                    <button
                       className="view-auction-btn"
                       onClick={() => navigate(`/buyer/auction/${auction.id}`)}
                     >
@@ -312,7 +277,7 @@ const BuyerAuctions = () => {
                 disabled={currentPage === 1}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
               <div className="pagination-numbers">
@@ -332,7 +297,7 @@ const BuyerAuctions = () => {
                 disabled={currentPage === totalPages}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
             </div>

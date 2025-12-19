@@ -76,30 +76,27 @@ export default function AuctionPage() {
 
   return (
     <div className="container-fluid">
-
-      {/* Cards - Modified like CategoryManagement */}
-      {/* Cards - Horizontal layout like CategoryManagement */}
-<div className="cards-container">
-  {cardData.map((card, index) => (
-    <div className="category-card-horizontal" key={index}>
-      <div className="category-card-icon-wrapper">
-        <img src={card.iconUrl} alt={card.title} className="category-card-icon-img"/>
+      <div className="cards-container">
+        {cardData.map((card, index) => (
+          <div className="category-card-horizontal" key={index}>
+            <div className="category-card-icon-wrapper">
+              <img src={card.iconUrl} alt={card.title} className="category-card-icon-img" />
+            </div>
+            <div className="category-card-content">
+              <h4>{card.title}</h4>
+              <p>{card.value}</p>
+              <span>{card.change}</span>
+            </div>
+          </div>
+        ))}
       </div>
-      <div className="category-card-content">
-        <h4>{card.title}</h4>
-        <p>{card.value}</p>
-        <span>{card.change}</span>
-      </div>
-    </div>
-  ))}
-</div>
 
 
       {/* Table Section */}
       <div className="card p-3 dark-card mt-3">
 
         <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 mt-3 mobile-flex-column">
-          <h1 className="mt-2" style={{marginLeft:20}}>All Auctions</h1>
+          <h1 className="mt-2" style={{ marginLeft: 20 }}>All Auctions</h1>
 
           <div className="d-flex flex-wrap gap-2 align-items-center full-width-mobile">
             <Link to="/publishnew">
@@ -115,44 +112,36 @@ export default function AuctionPage() {
             />
 
             <div className="btn-group ms-2 filter-btn-group">
-<<<<<<< HEAD
-              <button  className="btn custom-filter-btn active" >All</button>
-              <button className="btn custom-filter-btn">Live</button>
-              <button className="btn custom-filter-btn">Upcoming</button>
-              <button className="btn custom-filter-btn">Ended</button>
-              <button className="btn custom-filter-btn">Draft</button>
-=======
-              <button 
+              <button
                 className={`btn custom-filter-btn ${filterStatus === "All" ? "active" : ""}`}
                 onClick={() => { setFilterStatus("All"); setCurrentPage(1); }}
               >
                 All
               </button>
-              <button 
+              <button
                 className={`btn custom-filter-btn ${filterStatus === "Live" ? "active" : ""}`}
                 onClick={() => { setFilterStatus("Live"); setCurrentPage(1); }}
               >
                 Live
               </button>
-              <button 
+              <button
                 className={`btn custom-filter-btn ${filterStatus === "Upcoming" ? "active" : ""}`}
                 onClick={() => { setFilterStatus("Upcoming"); setCurrentPage(1); }}
               >
                 Upcoming
               </button>
-              <button 
+              <button
                 className={`btn custom-filter-btn ${filterStatus === "Ended" ? "active" : ""}`}
                 onClick={() => { setFilterStatus("Ended"); setCurrentPage(1); }}
               >
                 Ended
               </button>
-              <button 
+              <button
                 className={`btn custom-filter-btn ${filterStatus === "Draft" ? "active" : ""}`}
                 onClick={() => { setFilterStatus("Draft"); setCurrentPage(1); }}
               >
                 Draft
               </button>
->>>>>>> baf32f9ef95c276c70f7e8b48a5b816d66957cbb
             </div>
           </div>
         </div>
@@ -170,10 +159,6 @@ export default function AuctionPage() {
               </tr>
             </thead>
             <tbody>
-<<<<<<< HEAD
-              {paginatedData.map((item, index) => (
-                <tr key={index} onClick={() => navigate("/controlpanel")}>
-=======
               {paginatedData.length === 0 ? (
                 <tr>
                   <td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'rgba(255, 255, 255, 0.5)', fontStyle: 'italic' }}>
@@ -182,35 +167,33 @@ export default function AuctionPage() {
                 </tr>
               ) : (
                 paginatedData.map((item, index) => (
-                <tr
-                  key={index}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => navigate("/controlpanel")}
-                >
->>>>>>> baf32f9ef95c276c70f7e8b48a5b816d66957cbb
-                  <td>
-                    <strong>{item.name}</strong><br />
-                    <small className="text-secondary">{item.id}</small>
-                  </td>
+                  <tr
+                    key={index}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => navigate("/controlpanel")}
+                  >
+                    <td>
+                      <strong>{item.name}</strong><br />
+                      <small className="text-secondary">{item.id}</small>
+                    </td>
 
-                  <td className="text-center">
-                    <span className={`badgecustomadmin 
+                    <td className="text-center">
+                      <span className={`badgecustomadmin 
                       ${item.status === "Live" ? "bg-live" :
-                      item.status === "Upcoming" ? "bg-upcoming" :
-                      item.status === "Ended" ? "bg-ended" :
-                      "bg-draft"
-                      }`}>
-                      {item.status}
-                    </span>
-                  </td>
+                          item.status === "Upcoming" ? "bg-upcoming" :
+                            item.status === "Ended" ? "bg-ended" :
+                              "bg-draft"
+                        }`}>
+                        {item.status}
+                      </span>
+                    </td>
 
-                  <td>{item.start === "-" ? <span style={{ color: 'rgba(255, 255, 255, 0.4)', fontStyle: 'italic' }}>N/A</span> : item.start}</td>
-                  <td>{item.end === "-" ? <span style={{ color: 'rgba(255, 255, 255, 0.4)', fontStyle: 'italic' }}>N/A</span> : item.end}</td>
-                  <td className="text-right">{item.lots}</td>
-                  <td className="text-right">{item.value === "-" ? <span style={{ color: 'rgba(255, 255, 255, 0.4)', fontStyle: 'italic' }}>N/A</span> : item.value}</td>
-
-                </tr>
-              ))
+                    <td>{item.start === "-" ? <span style={{ color: 'rgba(255, 255, 255, 0.4)', fontStyle: 'italic' }}>N/A</span> : item.start}</td>
+                    <td>{item.end === "-" ? <span style={{ color: 'rgba(255, 255, 255, 0.4)', fontStyle: 'italic' }}>N/A</span> : item.end}</td>
+                    <td className="text-right">{item.lots}</td>
+                    <td className="text-right">{item.value === "-" ? <span style={{ color: 'rgba(255, 255, 255, 0.4)', fontStyle: 'italic' }}>N/A</span> : item.value}</td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>
@@ -230,7 +213,7 @@ export default function AuctionPage() {
                 disabled={currentPage === 1}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
 
@@ -256,7 +239,7 @@ export default function AuctionPage() {
                 disabled={currentPage === totalPages}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
 

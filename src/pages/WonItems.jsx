@@ -88,10 +88,10 @@ const WonItems = () => {
   }
 
   const filteredItems = wonItems.filter(item => {
-    const matchesSearch = searchQuery === '' || 
+    const matchesSearch = searchQuery === '' ||
       item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.lotId.toLowerCase().includes(searchQuery.toLowerCase())
-    
+
     return matchesSearch
   })
 
@@ -103,7 +103,7 @@ const WonItems = () => {
   return (
     <div className="won-items-page">
       {/* Buyer Dashboard Header */}
-      <header className="won-items-header">
+      {/* <header className="won-items-header">
         <div className="won-items-header-container">
           <Link to="/dashboard" className="won-items-logo">
             <img src={logo} alt="Hammers & Tongues Logo" />
@@ -135,7 +135,7 @@ const WonItems = () => {
             </Link>
           </div>
         </div>
-      </header>
+      </header> */}
 
       {/* Won Items Content */}
       <div className="won-items-content">
@@ -158,7 +158,7 @@ const WonItems = () => {
           <div className="search-bar">
             <div className="search-wrapper">
               <svg className="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               <input
                 type="text"
@@ -179,7 +179,7 @@ const WonItems = () => {
                   <img src={item.image} alt={item.title} />
                   <div className="won-badge">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/>
+                      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor" />
                     </svg>
                     <span>Won</span>
                   </div>
@@ -190,7 +190,7 @@ const WonItems = () => {
                   <div className="item-category">{item.category.toUpperCase()}</div>
                   <h3 className="item-title">{item.title}</h3>
                   <div className="item-lot-id">Lot {item.lotId}</div>
-                  
+
                   {/* Winning Price */}
                   <div className="winning-price">
                     {formatCurrency(item.winningPrice)}
@@ -230,13 +230,13 @@ const WonItems = () => {
                   <div className="item-actions">
                     {item.paymentStatus === 'pending' ? (
                       <>
-                        <button 
+                        <button
                           className="action-btn primary"
                           onClick={() => navigate(`/payment/${item.id}`)}
                         >
                           Proceed to Payment
                         </button>
-                        <button 
+                        <button
                           className="action-btn secondary"
                           onClick={() => navigate(`/invoices`)}
                         >
@@ -245,13 +245,13 @@ const WonItems = () => {
                       </>
                     ) : (
                       <>
-                        <button 
+                        <button
                           className="action-btn primary"
                           onClick={() => navigate(`/invoice/${item.invoiceNumber}`)}
                         >
                           View Invoice
                         </button>
-                        <button 
+                        <button
                           className="action-btn secondary"
                           onClick={() => navigate(`/buyer/auction/${item.id}`)}
                         >
@@ -274,7 +274,7 @@ const WonItems = () => {
                 disabled={currentPage === 1}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
               <div className="pagination-numbers">
@@ -308,7 +308,7 @@ const WonItems = () => {
                 disabled={currentPage === totalPages}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
             </div>
