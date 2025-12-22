@@ -41,7 +41,7 @@ import ManualPaymentAuthorization from './pages/ManualPaymentAuthorization'
 import PaymentVerification from './pages/paymentVerification/PaymentVerification'
 import CategoryManagement from './pages/categoryManagement/CategoryManagement'
 import UserManagement from './pages/userManagement/UserManagement'
-import KycVerification from './pages/userManagement/KycVerification'
+import AdminKYC from './pages/userManagement/AdminKYC'
 import SellerProfile from './pages/sellerProfile/SellerProfile'
 import SellerHeader from './components/SellerHeader'
 import CreateCategory from './pages/createCategory/CreateCategory'
@@ -105,7 +105,7 @@ function App() {
             <Route path="/kycverification" element={
               <>
                 <AdminHeader />
-                <KycVerification />
+                <AdminKYC />
               </>
             } />
             <Route path="/reports" element={
