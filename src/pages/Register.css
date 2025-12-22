@@ -241,6 +241,12 @@
   gap: 1.5rem;
 }
 
+.register-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -642,6 +648,10 @@
   }
 
   .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .register-form-grid {
     grid-template-columns: 1fr;
     gap: 1.25rem;
   }

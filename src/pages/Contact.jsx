@@ -119,7 +119,7 @@ const Contact = () => {
           <div className="contact-form-wrappers">
             <h2 className="contact-section-title">Send Us a Message</h2>
             <form className="contact-form" onSubmit={handleSubmit}>
-              <div className="form-group">
+              <div className="form-group form-group-1">
                 <label htmlFor="name" className="form-label">Name</label>
                 <input
                   type="text"

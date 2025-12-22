@@ -247,7 +247,7 @@ const Register = () => {
 
               <div className="form-section">
                 <h3 className="section-title">Personal Information</h3>
-                <div className="form-grid">
+                <div className="register-form-grid">
                   <div className="form-group">
                     <label htmlFor="first_name" className="form-label">
                       First Name <span className="required">*</span>
