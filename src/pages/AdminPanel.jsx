@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from "react-router-dom";  
-import AdminHeader from '../components/AdminHeader';
 import "./AdminPanel.css";
 
 const sampleData = [
@@ -127,14 +126,16 @@ function AdminPanel() {
             </div>
           </div>
 
-          {/* FILTER BAR SECTION */}
           <div className="admin-filter-section">
             <div className="admin-search-container">
               <div className="admin-search-input-wrapper">
+                <button className='admin-search-btn'>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                   <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
+
+                </button>
                 <input
                   type="text"
                   placeholder="Search by Item ID or Seller..."
@@ -179,13 +180,11 @@ function AdminPanel() {
             </button>
           </div>
 
-          {/* TABLE */}
           <div className="admin-data-table-section">
             <div className="admin-table-wrapper">
               <table className="admin-data-table">
                 <thead>
-                  <tr>
-                    <th>#</th> 
+                  <tr className='admin-row-headings'>
                     <th>Item ID</th>
                     <th>Item Category</th>
                     <th>Seller</th>
@@ -203,12 +202,6 @@ function AdminPanel() {
                         className={`admin-table-row ${selectedRow === item.id ? "row-selected" : ""}`}
                         onClick={() => setSelectedRow(item.id)}
                       >
-                        <td>
-                          <span className={`admin-row-number ${selectedRow === item.id ? "bold-number" : ""}`}>
-                            {(currentPage - 1) * itemsPerPage + index + 1}
-                          </span>
-                        </td>
-
                         <td>
                           <span className="admin-item-id">{item.id}</span>
                         </td>

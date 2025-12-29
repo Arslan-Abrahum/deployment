@@ -330,7 +330,6 @@ const FinanceDashboard = () => {
 
           <div className="summary-cards">
             {financialSummary.map((stat) => (
-              // <div key={stat.id} className="summary-card">
               <div key={stat.id} className="finance-stat-card">
                 <div className="card-background-gradient" style={{ 
                   background: stat.trend === 'up' 

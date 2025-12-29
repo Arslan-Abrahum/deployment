@@ -186,12 +186,24 @@
   align-items: center;
 }
 
-.category-search-input-wrapper svg {
+.admin-search-btn {
   position: absolute;
-  left: 1rem;
+  left: 0.7rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.report-admin-search-btn svg {
   color: rgba(255, 255, 255, 0.5);
   pointer-events: none;
 }
+
 
 .category-search-input {
   width: 100%;

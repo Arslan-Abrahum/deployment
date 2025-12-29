@@ -73,7 +73,6 @@ const InspectionAdmin = () => {
       <main className="dashboard-main">
         <div className="dashboard-container">
           <div className="inspection-page">
-            {/* Page Header */}
             <div className="inspection-header">
               <div className="welcome-content">
                 <h1 className="welcome-title">Vehicle Inspection Review</h1>
@@ -96,7 +95,6 @@ const InspectionAdmin = () => {
             </div>
 
             <div className="inspection-layout">
-              {/* Left Column - Vehicle Images */}
               <div className="inspection-left">
                 <div className="vehicle-image-section">
                   <div className="vehicle-main-image">
@@ -143,7 +141,6 @@ const InspectionAdmin = () => {
                 </div>
               </div>
 
-              {/* Right Column - Inspection Form */}
               <div className="inspection-right">
                 <div className="inspection-form">
                   <div className="form-section">
@@ -153,7 +150,6 @@ const InspectionAdmin = () => {
                     </div>
 
                     <div className="inspection-accordions">
-                      {/* General Condition */}
                       <div className="accordion-item">
                         <div className="accordion-header" onClick={() => toggle(1)}>
                           <div className="accordion-title">
@@ -217,7 +213,6 @@ const InspectionAdmin = () => {
                         )}
                       </div>
 
-                      {/* Exterior */}
                       <div className="accordion-item">
                         <div className="accordion-header" onClick={() => toggle(2)}>
                           <div className="accordion-title">
@@ -295,7 +290,6 @@ const InspectionAdmin = () => {
                         )}
                       </div>
 
-                      {/* Upload Section */}
                       <div className="accordion-item">
                         <div className="accordion-header" onClick={() => toggle(4)}>
                           <div className="accordion-title">
@@ -370,7 +364,6 @@ const InspectionAdmin = () => {
                         )}
                       </div>
 
-                      {/* Final Notes */}
                       <div className="accordion-item">
                         <div className="accordion-header" onClick={() => toggle(5)}>
                           <div className="accordion-title">

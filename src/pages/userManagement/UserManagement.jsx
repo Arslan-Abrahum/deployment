@@ -42,16 +42,38 @@ const UserManagement = () => {
       </header>
 
       <div className="filters-row2">
-        <input
-          type="text"
-          className="search-input2"
-          placeholder=" 🔍 Search by name, email, role or status..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1);
-          }}
-        />
+        <div className="admin-user-management-wrapper">
+          <button className='admin-search-btn'>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+          <input
+            type="text"
+            className="admin-user-search-input"
+            placeholder="Search by name, email, role or status..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+          />
+          {search && (
+            <button
+              className="admin-user-clear-search"
+              onClick={() => {
+                setSearch('');
+                setPage(1);
+              }}
+              aria-label="Clear search"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          )}
+        </div>
 
         <select
           className="role-filter2"

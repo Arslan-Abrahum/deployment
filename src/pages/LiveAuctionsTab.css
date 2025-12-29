@@ -20,7 +20,7 @@ body {
 .live-auction-wrapper {
   width: 100%;
   min-height: 100vh;
-  padding: 20px;
+  padding: 1.5rem;
 }
 
 .live-auction-container {
@@ -28,10 +28,8 @@ body {
   max-width: 100%;
 }
 
-/* BREADCRUMB */
 .live-auction-breadcrumb {
   margin-bottom: 1rem;
-  padding: 0 1.5rem;
 }
 
 .breadcrumb-text {
@@ -41,13 +39,11 @@ body {
   line-height: 1.5;
 }
 
-/* HEADER SECTION */
 .live-auction-section-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 1.5rem;
-  padding: 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   gap: 1rem;
 }
@@ -99,14 +95,12 @@ body {
   box-shadow: 0 6px 16px rgba(140, 198, 63, 0.3);
 }
 
-/* FILTER SECTION */
 .live-auction-filter-section {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   align-items: center;
   margin-bottom: 1.5rem;
-  padding: 0 1.5rem;
 }
 
 .live-auction-search-container {
@@ -120,12 +114,24 @@ body {
   align-items: center;
 }
 
-.live-auction-search-input-wrapper svg {
+.admin-search-btn {
   position: absolute;
-  left: 1rem;
+  left: 0.7rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.report-admin-search-btn svg {
   color: rgba(255, 255, 255, 0.5);
   pointer-events: none;
 }
+
 
 .live-auction-search-input {
   width: 100%;
@@ -223,7 +229,7 @@ body {
 
 .live-auction-data-table th {
   padding: 1rem 1.5rem;
-  text-align: left;
+  text-align: center;
   font-size: 0.75rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.6);
@@ -240,6 +246,7 @@ body {
   color: rgba(255, 255, 255, 0.9);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   vertical-align: middle;
+  text-align: center;
 }
 
 .live-auction-data-table tbody tr:last-child td {
@@ -286,6 +293,7 @@ body {
 .live-auction-status-cell {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .live-auction-status-badge {
@@ -299,7 +307,6 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.3px;
   white-space: nowrap;
-  width: 50%;
   min-width: fit-content;
 }
 
@@ -349,7 +356,6 @@ body {
   margin: 0;
 }
 
-/* PAGINATION */
 .live-auction-pagination {
   display: flex;
   justify-content: center;
@@ -512,7 +518,6 @@ body {
   .live-auction-pagination {
     justify-content: center;
     flex-direction: row;
-    flex-wrap: wrap;
     gap: 0.75rem;
     padding: 1.25rem;
   }
@@ -577,6 +582,11 @@ body {
   .live-auction-data-table th,
   .live-auction-data-table td {
     padding: 0.75rem 0.625rem;
+  }
+
+  .live-auction-pagination-btn {
+    padding: 0.4rem 0.4rem;
+    font-size: 0.8125rem;
   }
 
   .live-auction-page-numbers {

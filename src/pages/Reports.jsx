@@ -102,14 +102,15 @@ function Report() {
           </div>
         </div>
 
-        {/* FILTER SECTION */}
         <div className="reports-filter-section">
           <div className="reports-search-container">
             <div className="reports-search-input-wrapper">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
+              <button className='admin-search-btn'>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </button>
               <input
                 type="text"
                 placeholder="Search inspections..."
@@ -149,13 +150,11 @@ function Report() {
           <button onClick={() => { setSearch(""); setStatus("All"); setOfficer("All"); setCurrentPage(1); }} className="reports-clear-btn">Clear</button>
         </div>
 
-        {/* TABLE */}
         <div className="reports-data-table-section">
           <div className="reports-table-wrapper">
             <table className="reports-data-table">
               <thead>
                 <tr>
-                  <th>#</th>
                   <th>Item ID</th>
                   <th>Item Category</th>
                   <th>Date & Time</th>
@@ -174,12 +173,6 @@ function Report() {
                       className={`reports-table-row ${selectedRow === item.id ? "row-selected" : ""}`}
                       onClick={() => setSelectedRow(item.id)}
                     >
-                      <td>
-                        <span className={`reports-row-number ${selectedRow === item.id ? "bold-number" : ""}`}>
-                          {(currentPage - 1) * itemsPerPage + index + 1}
-                        </span>
-                      </td>
-
                       <td>
                         <span className="reports-item-id">{item.id}</span>
                       </td>
@@ -203,11 +196,10 @@ function Report() {
 
                       <td>
                         <div className="reports-status-cell">
-                          <span className={`reports-status-badge ${
-                            item.status === "Approved" ? "badge-approved" :
-                            item.status === "Rejected" ? "badge-rejected" : 
-                            item.status === "Pending" ? "badge-pending" : ""
-                          }`}>
+                          <span className={`reports-status-badge ${item.status === "Approved" ? "badge-approved" :
+                              item.status === "Rejected" ? "badge-rejected" :
+                                item.status === "Pending" ? "badge-pending" : ""
+                            }`}>
                             {item.status}
                           </span>
                         </div>
@@ -269,7 +261,7 @@ function Report() {
                 disabled={currentPage === 1}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 Previous
               </button>
@@ -297,7 +289,7 @@ function Report() {
               >
                 Next
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
             </div>

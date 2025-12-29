@@ -96,9 +96,9 @@ export default function LiveAuctionsTab() {
     <div className="live-auction-wrapper">
       <div className="live-auction-container">
         
-        <div className="live-auction-breadcrumb">
+        {/* <div className="live-auction-breadcrumb">
           <p className="breadcrumb-text">Auctions / Vintage Collectibles / Vintage Rolex Submariner / Logs</p>
-        </div>
+        </div> */}
 
         <div className="live-auction-section-header">
           <div className="live-auction-header-content">
@@ -117,14 +117,15 @@ export default function LiveAuctionsTab() {
           </div>
         </div>
 
-        {/* FILTER SECTION */}
         <div className="live-auction-filter-section">
           <div className="live-auction-search-container">
             <div className="live-auction-search-input-wrapper">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
+             <button className='admin-search-btn'>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </button>
               <input
                 type="text"
                 placeholder="Search by users or Bid ID..."
@@ -160,7 +161,6 @@ export default function LiveAuctionsTab() {
             <table className="live-auction-data-table">
               <thead>
                 <tr>
-                  <th>#</th>
                   <th>Bid ID</th>
                   <th>User</th>
                   <th>Bid Amount</th>
@@ -177,11 +177,6 @@ export default function LiveAuctionsTab() {
                       className="live-auction-table-row"
                       onClick={() => navigate("/AdminAuctionResults")}
                     >
-                      <td>
-                        <span className="live-auction-row-number">
-                          {(page - 1) * ROWS_PER_PAGE + index + 1}
-                        </span>
-                      </td>
 
                       <td>
                         <span className="live-auction-bid-id">{item.id}</span>

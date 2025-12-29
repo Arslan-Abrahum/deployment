@@ -83,7 +83,6 @@ export default function AuctionPage() {
   return (
     <div className="auction-wrapper">
       <div className="auction-container">
-        {/* HEADER SECTION */}
         <div className="auction-section-header">
           <div className="auction-header-content">
             <h1 className="auction-page-title">All Auctions</h1>
@@ -108,9 +107,9 @@ export default function AuctionPage() {
             <div className="auction-card-icon-container">
               <div className="auction-card-icon" style={{ backgroundColor: 'rgba(59, 130, 246, 0.15)' }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <circle cx="9" cy="7" r="4" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="9" cy="7" r="4" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
             </div>
@@ -126,9 +125,9 @@ export default function AuctionPage() {
             <div className="auction-card-icon-container">
               <div className="auction-card-icon" style={{ backgroundColor: 'rgba(140, 198, 63, 0.15)' }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#8CC63F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M2 17L12 22L22 17" stroke="#8CC63F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M2 12L12 17L22 12" stroke="#8CC63F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#8CC63F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M2 17L12 22L22 17" stroke="#8CC63F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M2 12L12 17L22 12" stroke="#8CC63F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
             </div>
@@ -144,8 +143,8 @@ export default function AuctionPage() {
             <div className="auction-card-icon-container">
               <div className="auction-card-icon" style={{ backgroundColor: 'rgba(168, 85, 247, 0.15)' }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <rect x="2" y="7" width="20" height="14" rx="2" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <rect x="2" y="7" width="20" height="14" rx="2" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" stroke="#A855F7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
             </div>
@@ -157,14 +156,15 @@ export default function AuctionPage() {
           </div>
         </div>
 
-        {/* SEARCH & FILTER */}
         <div className="auction-filter-section">
           <div className="auction-search-container">
             <div className="auction-search-input-wrapper">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
+              <button className='admin-search-btn'>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </button>
               <input
                 type="text"
                 placeholder="Search by Name or ID..."
@@ -202,19 +202,12 @@ export default function AuctionPage() {
           </div>
         </div>
 
-        {/* TABLE */}
         <div className="auction-data-table-section">
-          <div className="auction-table-info-bar">
-            <span className="auction-table-count">
-              Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredData.length)} of {filteredData.length} auctions
-            </span>
-          </div>
-          
+
           <div className="auction-table-wrapper">
             <table className="auction-data-table">
               <thead>
                 <tr>
-                  <th className="auction-table-serial">#</th>
                   <th className="auction-table-name">Auction Name / ID</th>
                   <th className="auction-table-status">Status</th>
                   <th className="auction-table-start">Start Date</th>
@@ -233,16 +226,12 @@ export default function AuctionPage() {
                       className="auction-table-row"
                       onClick={() => navigate("/controlpanel")}
                     >
-                      <td className="auction-table-serial">
-                        <span className="auction-serial-number">{startIndex + index + 1}</span>
-                      </td>
-
                       <td className="auction-table-name">
-                        <div className="auction-name-info">
-                          <div className="auction-icon-cell">
+                        <div className="admin-auction-name-info">
+                          <div className="admin-auction-icon-cell">
                             <span className="auction-icon-emoji">{getAuctionIcon(item.name)}</span>
                           </div>
-                          <div className="auction-details">
+                          <div className="admin-auction-details">
                             <h4 className="auction-name">{item.name}</h4>
                             <span className="auction-id">{item.id}</span>
                           </div>
@@ -251,12 +240,11 @@ export default function AuctionPage() {
 
                       <td className="auction-table-status">
                         <div className="auction-status-cell">
-                          <span className={`auction-status-badge ${
-                            item.status === "Live" ? "badge-live" :
-                            item.status === "Upcoming" ? "badge-upcoming" :
-                            item.status === "Ended" ? "badge-ended" :
-                            "badge-draft"
-                          }`}>
+                          <span className={`auction-status-badge ${item.status === "Live" ? "badge-live" :
+                              item.status === "Upcoming" ? "badge-upcoming" :
+                                item.status === "Ended" ? "badge-ended" :
+                                  "badge-draft"
+                            }`}>
                             {item.status}
                           </span>
                         </div>
@@ -286,8 +274,8 @@ export default function AuctionPage() {
                             title="View auction"
                           >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                              <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                           </button>
                           <button
@@ -296,8 +284,8 @@ export default function AuctionPage() {
                             title="Edit auction"
                           >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                           </button>
                           <button
@@ -306,9 +294,9 @@ export default function AuctionPage() {
                             title="More options"
                           >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                              <circle cx="12" cy="12" r="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              <circle cx="12" cy="5" r="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              <circle cx="12" cy="19" r="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              <circle cx="12" cy="12" r="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                              <circle cx="12" cy="5" r="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                              <circle cx="12" cy="19" r="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                           </button>
                         </div>
@@ -321,7 +309,7 @@ export default function AuctionPage() {
                       <div className="auction-empty-state">
                         <div className="auction-empty-icon">
                           <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
                         </div>
                         <h3>No auctions found</h3>
