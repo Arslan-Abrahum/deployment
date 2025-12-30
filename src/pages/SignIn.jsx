@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import logo from '../assets/logo.png'
 import './SignIn.css'
 import { setLocalStorage } from '../utils/localStorage'
 
@@ -34,11 +33,11 @@ const SignIn = () => {
       navigate("/manager-panel", { replace: true });
     } else if (formData.email === "testbuyer@gmail.com" && formData.password === "testBuyer@1") {
       setLocalStorage('user', { ...formData, isAuth: true, role: 'buyer' })
-      navigate("/dashboard", { replace: true })
+      navigate("/buyer/dashboard", { replace: true })
     }
     else if (formData.email === "testseller@gmail.com" && formData.password === "testSeller@1") {
       setLocalStorage('user', { ...formData, isAuth: true, role: 'seller' })
-      navigate("/seller-dashboard", { replace: true })
+      navigate("/seller/dashboard", { replace: true })
     }
     else {
       alert("Invalid Credentials ❌");
