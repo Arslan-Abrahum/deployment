@@ -64,149 +64,168 @@ import BuyerLayout from "./layouts/BuyerLayout";
 import SellerLayout from "./layouts/SellerLayout";
 import ManagerLayout from "./layouts/ManagerLayout";
 import AdminLayout from "./layouts/AdminLayout";
+import { Provider } from "react-redux";
+import store from './store/store'
 
+import { Bounce, ToastContainer } from "react-toastify";
 function App() {
   return (
-    <Router>
-      <Routes>
+    <Provider store={store}>
+      <Router>
+        <div className="app">
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<><Header /><Home /><Footer /></>} />
+            <Route path="/auctions" element={<><Header /><Auctions /><Footer /></>} />
+            <Route path="/auction/:id" element={<><Header /><AuctionDetails /><Footer /></>} />
+            <Route path="/about" element={<><Header /><About /><Footer /></>} />
+            <Route path="/contact" element={<><Header /><Contact /><Footer /></>} />
 
-        {/* Public Routes */}
-        <Route path="/" element={<><Header /><Home /><Footer /></>} />
-        <Route path="/auctions" element={<><Header /><Auctions /><Footer /></>} />
-        <Route path="/auction/:id" element={<><Header /><AuctionDetails /><Footer /></>} />
-        <Route path="/about" element={<><Header /><About /><Footer /></>} />
-        <Route path="/contact" element={<><Header /><Contact /><Footer /></>} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/otp-verification" element={<OTPVerification />} />
+            <Route path="/kyc-verification" element={<KYCVerification />} />
 
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/otp-verification" element={<OTPVerification />} />
-        <Route path="/kyc-verification" element={<KYCVerification />} />
+            {/* Buyer Routes */}
+            <Route element={<BuyerGuard />}>
+              <Route element={<BuyerLayout />}>
+                <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
+                <Route path="/buyer/auctions" element={<BuyerAuctions />} />
+                <Route path="/buyer/auction/:id" element={<BuyerAuctionDetails />} />
+                <Route path="/buyer/bids" element={<BuyerBids />} />
+                <Route path="/buyer/won-items" element={<BuyerWonItems />} />
+                <Route path="/buyer/invoices" element={<BuyerInvoices />} />
+                <Route path="/buyer/wallet" element={<BuyerWallet />} />
+                <Route path="/buyer/profile" element={<BuyerProfile />} />
+              </Route>
+            </Route>
 
-        {/* Buyer Routes */}
-        <Route element={<BuyerGuard />}>
-          <Route element={<BuyerLayout />}>
-            <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
-            <Route path="/buyer/auctions" element={<BuyerAuctions />} />
-            <Route path="/buyer/auction/:id" element={<BuyerAuctionDetails />} />
-            <Route path="/buyer/bids" element={<BuyerBids />} />
-            <Route path="/buyer/won-items" element={<BuyerWonItems />} />
-            <Route path="/buyer/invoices" element={<BuyerInvoices />} />
-            <Route path="/buyer/wallet" element={<BuyerWallet />} />
-            <Route path="/buyer/profile" element={<BuyerProfile />} />
-          </Route>
-        </Route>
+            {/* Seller Routes */}
+            <Route element={<SellerGuard />}>
+              <Route element={<SellerLayout />}>
+                <Route path="/seller/dashboard" element={<SellerDashboard />} />
+                <Route path="/seller/auction-listings" element={<SellerAuctionListings />} />
+                <Route path="/seller/listing/:id" element={<SellerListingDetails />} />
+                <Route path="/seller/auctions" element={<SellerAuctions />} />
+                <Route path="/seller/product" element={<SellerCreateProduct />} />
+                <Route path="/seller/analytics" element={<SellerAnalytics />} />
+                <Route path="/seller/profile" element={<SellerProfile />} />
+              </Route>
+            </Route>
 
-        {/* Seller Routes */}
-        <Route element={<SellerGuard />}>
-          <Route element={<SellerLayout />}>
-            <Route path="/seller/dashboard" element={<SellerDashboard />} />
-            <Route path="/seller/auction-listings" element={<SellerAuctionListings />} />
-            <Route path="/seller/listing/:id" element={<SellerListingDetails />} />
-            <Route path="/seller/auctions" element={<SellerAuctions />} />
-            <Route path="/seller/product" element={<SellerCreateProduct />} />
-            <Route path="/seller/analytics" element={<SellerAnalytics />} />
-            <Route path="/seller/profile" element={<SellerProfile />} />
-          </Route>
-        </Route>
+            {/* Manager Routes */}
+            <Route element={<ManagerGuard />}>
+              <Route element={<ManagerLayout />}>
+                <Route path="/manager/dashboard" element={<ManagerDashboard />} />
+                <Route path="/manager/profile" element={<ManagerProfile />} />
 
-        {/* Manager Routes */}
-        <Route element={<ManagerGuard />}>
-          <Route element={<ManagerLayout />}>
-            <Route path="/manager/dashboard" element={<ManagerDashboard />} />
-            <Route path="/manager/profile" element={<ManagerProfile />} />
 
-            
-           <Route path="/manager/inspection" element={
-            <>
-              <ManagerInspection />
-            </>
-          } />
-  
-          <Route path="/manager/auctions" element={
-            <>
-              <ManagerAuctions />
-            </>
-          } />
+                <Route path="/manager/inspection" element={
+                  <>
+                    <ManagerInspection />
+                  </>
+                } />
 
-          <Route path="/manager/publishnew" element={
-            <>
-              <ManagerPublishNew />
-            </>
-          } />
-          <Route path="/manager/live-auctions" element={
-            <>
-              <ManagerLiveAuctions />
-            </>
-          } />
-          <Route path="/manager/auction-results" element={
-            <>
-              <ManagerAuctionResults />
-            </>
-          } />
-          <Route path="/manager/controlpanel" element={
-            <>
-              <ManagerAuctionControlPanel />
-            </>
-          } />
+                <Route path="/manager/auctions" element={
+                  <>
+                    <ManagerAuctions />
+                  </>
+                } />
 
-          <Route path="/manager/category" element={
-            <>
-              <CategoryManagement />
-            </>
-          } />
-          <Route path="/manager/add-category" element={
-            <>
-              <ManagerCreateCategory />
-            </>
-          } />
-          <Route path="/manager/product-fields" element={
-            <>
-              <ManagerProductFields />
-            </>
-          } />
+                <Route path="/manager/publishnew" element={
+                  <>
+                    <ManagerPublishNew />
+                  </>
+                } />
+                <Route path="/manager/live-auctions" element={
+                  <>
+                    <ManagerLiveAuctions />
+                  </>
+                } />
+                <Route path="/manager/auction-results" element={
+                  <>
+                    <ManagerAuctionResults />
+                  </>
+                } />
+                <Route path="/manager/controlpanel" element={
+                  <>
+                    <ManagerAuctionControlPanel />
+                  </>
+                } />
 
-          </Route>
-        </Route>
+                <Route path="/manager/category" element={
+                  <>
+                    <CategoryManagement />
+                  </>
+                } />
+                <Route path="/manager/add-category" element={
+                  <>
+                    <ManagerCreateCategory />
+                  </>
+                } />
+                <Route path="/manager/product-fields" element={
+                  <>
+                    <ManagerProductFields />
+                  </>
+                } />
 
-        {/* Admin Routes */}
-        <Route element={<AdminGuard />}>
-          <Route element={<AdminLayout />}>
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/profile" element={<AdminProfile />} />
+              </Route>
+            </Route>
 
-            <Route path="/admin/finance" element={<AdminFinance />} />
-            <Route path="/admin/finance/manual-payments" element={
-              <>
-                <ManualPaymentEntry />
-              </>
-            } />
+            {/* Admin Routes */}
+            <Route element={<AdminGuard />}>
+              <Route element={<AdminLayout />}>
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/profile" element={<AdminProfile />} />
 
-            <Route path="/admin/finance/manual/payments-authorization" element={
-              <>
-                <ManualPaymentAuthorization />
-              </>
-            } />
-            <Route path="/admin/finance/manual/payments-verification" element={
-              <>
-                <PaymentVerification />
-              </>
-            } />
-            <Route path="/admin/users" element={
-              <>
-                <UserManagement />
-              </>
-            } />
-            <Route path="/admin/kycverification" element={
-              <>
-                <AdminManagerKYC />
-              </>
-            } />
+                <Route path="/admin/finance" element={<AdminFinance />} />
+                <Route path="/admin/finance/manual-payments" element={
+                  <>
+                    <ManualPaymentEntry />
+                  </>
+                } />
 
-          </Route>
-        </Route>
+                <Route path="/admin/finance/manual/payments-authorization" element={
+                  <>
+                    <ManualPaymentAuthorization />
+                  </>
+                } />
+                <Route path="/admin/finance/manual/payments-verification" element={
+                  <>
+                    <PaymentVerification />
+                  </>
+                } />
+                <Route path="/admin/users" element={
+                  <>
+                    <UserManagement />
+                  </>
+                } />
+                <Route path="/admin/kycverification" element={
+                  <>
+                    <AdminManagerKYC />
+                  </>
+                } />
 
-      </Routes>
-    </Router>
+              </Route>
+            </Route>
+
+          </Routes>
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+          />
+        </div>
+      </Router>
+    </Provider>
   );
 }
 

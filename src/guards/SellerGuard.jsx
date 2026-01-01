@@ -1,7 +1,8 @@
 import { Navigate, Outlet } from "react-router-dom";
+import { cookieStorage } from "../utils/cookieStorage";
 
 const SellerGuard = () => {
-  const token = localStorage.getItem("sellerToken");
+  const token = cookieStorage.getItem(cookieStorage.AUTH_KEYS.TOKEN) || null
   return token ? <Outlet /> : <Navigate to="/signin" replace />;
 };
 

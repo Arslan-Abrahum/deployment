@@ -4,10 +4,10 @@ import "./AdminDashboard.css";
 import { useNavigate } from "react-router-dom";
 
 // Lazy load images for better performance
-const Car1 = lazy(() => import('../../assets/admin-assests/1.png'));
-const Car2 = lazy(() => import('../../assets/admin-assests/2.png'));
-const Car3 = lazy(() => import('../../assets/admin-assests/3.png'));
-const Car4 = lazy(() => import('../../assets/admin-assests/4.png'));
+// const Car1 = lazy(() => import('../../assets/admin-assests/1.png'));
+// const Car2 = lazy(() => import('../../assets/admin-assests/2.png'));
+// const Car3 = lazy(() => import('../../assets/admin-assests/3.png'));
+// const Car4 = lazy(() => import('../../assets/admin-assests/4.png'));
 
 // Separate mock data to reduce bundle size
 const mockAuctionsData = {
@@ -15,250 +15,6 @@ const mockAuctionsData = {
   "total_pages": 1,
   "current_page": 1,
   "results": [
-    {
-      "id": 8,
-      "title": "BMW",
-      "description": "It is well mainted.",
-      "status": "APPROVED",
-      "category_name": "Vehicles",
-      "created_at": "2025-12-24T11:07:02.361996Z",
-      "updated_at": "2025-12-31T09:02:34.005167Z",
-      "rejection_reason": "",
-      "specific_data": {},
-      "handover_type": "PICKUP",
-      "delivery_datetime": "2025-12-24T11:05:37Z",
-      "pickup_address": "test",
-      "pickup_latitude": "54.550000",
-      "pickup_longitude": "654.999996",
-      "currency": "USD",
-      "initial_price": "5000.00",
-      "is_buy_now_enabled": false,
-      "buy_now_price": "7500.00",
-      "start_date": "2024-12-30T10:00:00Z",
-      "end_date": "2025-01-05T10:00:00Z",
-      "extended_time_seconds": 0,
-      "seller_details": {
-        "id": 10,
-        "name": "Imran Ahmad",
-        "email": "ahsas@yopmail.com",
-        "business_name": "",
-        "is_verified": false,
-        "profile_image": null
-      },
-      "manager_details": {
-        "id": 38,
-        "email": "manager@yopmail.com",
-        "first_name": "seller",
-        "last_name": "user",
-        "profile_image": null
-      },
-      "media": [
-        {
-          "id": 13,
-          "media_type": "image",
-          "file": Car1,
-          "label": "BMW IMG"
-        }
-      ],
-      "bids": []
-    },
-    {
-      "id": 6,
-      "title": "BMW m3",
-      "description": "Well-maintained Corolla, single owner, 55,000 km.",
-      "status": "ACTIVE",
-      "category_name": "Vehicles",
-      "created_at": "2025-12-23T17:39:27.969869Z",
-      "updated_at": "2025-12-23T17:42:32.995777Z",
-      "rejection_reason": "",
-      "specific_data": {
-        "make": "Toyota",
-        "year": 2018,
-        "model": "Corolla"
-      },
-      "handover_type": "PICKUP",
-      "delivery_datetime": null,
-      "pickup_address": "Street 12, Karachi, Pakistan",
-      "pickup_latitude": "24.860700",
-      "pickup_longitude": "67.001100",
-      "currency": "USD",
-      "initial_price": "7999.98",
-      "is_buy_now_enabled": false,
-      "buy_now_price": null,
-      "start_date": "2025-12-23T17:41:57Z",
-      "end_date": "2025-12-24T00:00:00Z",
-      "extended_time_seconds": 0,
-      "seller_details": {
-        "id": 7,
-        "name": "Abdullah Afzal",
-        "email": "Abdullah@yopmail.com",
-        "business_name": "Test",
-        "is_verified": false,
-        "profile_image": "/media/users/7/images/123f714f441e48d687716d166b741416.jpg"
-      },
-      "manager_details": {
-        "id": 1,
-        "email": "admin@gmail.com",
-        "first_name": "",
-        "last_name": "",
-        "profile_image": null
-      },
-      "media": [
-        {
-          "id": 10,
-          "media_type": "image",
-          "file": Car2,
-          "label": "gallery_3"
-        },
-        {
-          "id": 11,
-          "media_type": "image",
-          "file": "/media/auctions/media/car5_MkSELOW.png",
-          "label": "gallery_4"
-        },
-        {
-          "id": 12,
-          "media_type": "file",
-          "file": "/media/auctions/media/Advance_Pyhton_Roadmap_Outine_Ans_Mustafa_7DhTEEv.pdf",
-          "label": "inspection_report"
-        }
-      ],
-      "bids": []
-    },
-    {
-      "id": 5,
-      "title": "BMW m2",
-      "description": "Well-maintained Corolla, single owner, 55,000 km.",
-      "status": "ACTIVE",
-      "category_name": "Vehicles",
-      "created_at": "2025-12-23T17:38:56.277674Z",
-      "updated_at": "2025-12-23T17:41:39.898000Z",
-      "rejection_reason": "",
-      "specific_data": {
-        "make": "Toyota",
-        "year": 2018,
-        "model": "Corolla"
-      },
-      "handover_type": "PICKUP",
-      "delivery_datetime": null,
-      "pickup_address": "Street 12, Karachi, Pakistan",
-      "pickup_latitude": "24.860700",
-      "pickup_longitude": "67.001100",
-      "currency": "USD",
-      "initial_price": "80000.00",
-      "is_buy_now_enabled": false,
-      "buy_now_price": null,
-      "start_date": "2025-12-23T17:41:22Z",
-      "end_date": "2025-12-27T06:00:00Z",
-      "extended_time_seconds": 0,
-      "seller_details": {
-        "id": 7,
-        "name": "Abdullah Afzal",
-        "email": "Abdullah@yopmail.com",
-        "business_name": "Test",
-        "is_verified": false,
-        "profile_image": "/media/users/7/images/123f714f441e48d687716d166b741416.jpg"
-      },
-      "manager_details": {
-        "id": 38,
-        "email": "manager@yopmail.com",
-        "first_name": "seller",
-        "last_name": "user",
-        "profile_image": null
-      },
-      "media": [
-        {
-          "id": 7,
-          "media_type": "image",
-          "file": Car3,
-          "label": "gallery_3"
-        },
-        {
-          "id": 8,
-          "media_type": "image",
-          "file": "/media/auctions/media/car5.png",
-          "label": "gallery_4"
-        },
-        {
-          "id": 9,
-          "media_type": "file",
-          "file": "/media/auctions/media/Advance_Pyhton_Roadmap_Outine_Ans_Mustafa_E6Ec9u2.pdf",
-          "label": "inspection_report"
-        }
-      ],
-      "bids": []
-    },
-    {
-      "id": 4,
-      "title": "Honda City 2019",
-      "description": "Well-maintained Corolla, single owner, 55,000 km.",
-      "status": "ACTIVE",
-      "category_name": "Vehicles",
-      "created_at": "2025-12-23T17:37:33.426821Z",
-      "updated_at": "2025-12-29T14:28:19.981932Z",
-      "rejection_reason": "",
-      "specific_data": {
-        "make": "Toyota",
-        "year": 2018,
-        "model": "Corolla"
-      },
-      "handover_type": "PICKUP",
-      "delivery_datetime": null,
-      "pickup_address": "Street 12, Karachi, Pakistan",
-      "pickup_latitude": "24.860700",
-      "pickup_longitude": "67.001100",
-      "currency": "USD",
-      "initial_price": "50000.00",
-      "is_buy_now_enabled": false,
-      "buy_now_price": null,
-      "start_date": "2025-12-23T17:40:00Z",
-      "end_date": "2025-12-31T00:00:00Z",
-      "extended_time_seconds": 0,
-      "seller_details": {
-        "id": 7,
-        "name": "Abdullah Afzal",
-        "email": "Abdullah@yopmail.com",
-        "business_name": "Test",
-        "is_verified": false,
-        "profile_image": "/media/users/7/images/123f714f441e48d687716d166b741416.jpg"
-      },
-      "manager_details": {
-        "id": 24,
-        "email": "itximda531@yopmail.com",
-        "first_name": "Imran",
-        "last_name": "Ahmad",
-        "profile_image": "/media/users/24/images/f51f7488a2044b6d99a6cabba601ae51.jpg"
-      },
-      "media": [
-        {
-          "id": 4,
-          "media_type": "image",
-          "file": Car4,
-          "label": "gallery_1"
-        },
-        {
-          "id": 5,
-          "media_type": "image",
-          "file": "/media/auctions/media/car2.png",
-          "label": "gallery_2"
-        },
-        {
-          "id": 6,
-          "media_type": "file",
-          "file": "/media/auctions/media/Advance_Pyhton_Roadmap_Outine_Ans_Mustafa_t4C0lhz.pdf",
-          "label": "inspection_report"
-        }
-      ],
-      "bids": [
-        {
-          "id": 1,
-          "amount": "70000.00",
-          "bidder_email": "itximda531@gmail.com",
-          "bidder_name": "Imran Ahmad",
-          "created_at": "2025-12-29T14:30:10.538783Z"
-        }
-      ]
-    }
   ]
 };
 
@@ -410,32 +166,32 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const [auctions, setAuctions] = useState([]);
   const [stats] = useState({
-    totalUsers: 2847,
-    totalAuctions: 1924,
-    activeAuctions: 147,
-    pendingApprovals: 23,
-    totalRevenue: "$1,284,750",
-    platformFees: "$128,475",
-    disputeCases: 8,
-    completedAuctions: 1482,
-    pendingAuctions: 12,
-    rejectedAuctions: 5
+    totalUsers: 0,
+    totalAuctions: 0,
+    activeAuctions: 0,
+    pendingApprovals: 0,
+    totalRevenue: "0",
+    platformFees: "0",
+    disputeCases: 0,
+    completedAuctions: 0,
+    pendingAuctions: 0,
+    rejectedAuctions: 0
   });
 
   // Memoized data
   const recentActivities = useMemo(() => [
-    { id: 1, user: "John Smith", action: "registered as seller", time: "10 minutes ago" },
-    { id: 2, user: "Sarah Johnson", action: "placed bid on BMW", amount: "$7,500", time: "30 minutes ago" },
-    { id: 3, user: "Admin", action: "approved auction listing", auction: "Vintage Watch", time: "1 hour ago" },
-    { id: 4, user: "System", action: "automatic backup completed", time: "2 hours ago" },
-    { id: 5, user: "Manager 1", action: "assigned inspection task", time: "3 hours ago" },
+    // { id: 1, user: "John Smith", action: "registered as seller", time: "10 minutes ago" },
+    // { id: 2, user: "Sarah Johnson", action: "placed bid on BMW", amount: "$7,500", time: "30 minutes ago" },
+    // { id: 3, user: "Admin", action: "approved auction listing", auction: "Vintage Watch", time: "1 hour ago" },
+    // { id: 4, user: "System", action: "automatic backup completed", time: "2 hours ago" },
+    // { id: 5, user: "Manager 1", action: "assigned inspection task", time: "3 hours ago" },
   ], []);
 
   const topSellers = useMemo(() => [
-    { id: 1, name: "Abdullah Afzal", auctions: 24, revenue: "$284,500", rating: 4.8 },
-    { id: 2, name: "Imran Ahmad", auctions: 18, revenue: "$192,300", rating: 4.9 },
-    { id: 3, name: "Luxury Jewelry", auctions: 15, revenue: "$156,800", rating: 4.7 },
-    { id: 4, name: "Art Gallery Co.", auctions: 12, revenue: "$128,400", rating: 4.6 },
+    // { id: 1, name: "Abdullah Afzal", auctions: 24, revenue: "$284,500", rating: 4.8 },
+    // { id: 2, name: "Imran Ahmad", auctions: 18, revenue: "$192,300", rating: 4.9 },
+    // { id: 3, name: "Luxury Jewelry", auctions: 15, revenue: "$156,800", rating: 4.7 },
+    // { id: 4, name: "Art Gallery Co.", auctions: 12, revenue: "$128,400", rating: 4.6 },
   ], []);
 
   useEffect(() => {
@@ -630,7 +386,7 @@ const AdminDashboard = () => {
             </div>
           </section>
 
-          <section className="admin-dashboard-quick-actions-grid" aria-label="Quick actions">
+          {/* <section className="admin-dashboard-quick-actions-grid" aria-label="Quick actions">
             <div className="admin-dashboard-card">
               <div className="admin-dashboard-card-header">
                 <h2 className="admin-dashboard-card-title">Quick Actions</h2>
@@ -673,7 +429,7 @@ const AdminDashboard = () => {
                 </button>
               </div>
             </div>
-          </section>
+          </section> */}
         </div>
       </div>
     </div>

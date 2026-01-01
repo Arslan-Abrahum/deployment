@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import logo from '../assets/logo.png'
 import './Register.css'
+
+
+// import { clearRegistrationData } from '../store/slices/authSlice';
+// import { registerUser } from '../store/actions/authActions';
+
 
 const Register = () => {
   const navigate = useNavigate()

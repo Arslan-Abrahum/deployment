@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import "./AdminProfile.css";
 import { useNavigate } from "react-router-dom";
-
+import { useDispatch } from "react-redux";
+import { logout } from "../../store/slices/authSlice";
 const AdminProfile = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -812,7 +814,7 @@ const AdminProfile = () => {
                 <div className="admin-danger-zone">
                   <h3 className="admin-section-title">Danger Zone</h3>
                   <div className="admin-danger-actions">
-                    <button className="admin-danger-btn">
+                    {/* <button className="admin-danger-btn">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" strokeWidth="2"/>
                       </svg>
@@ -823,21 +825,26 @@ const AdminProfile = () => {
                         <path d="M12 15v2m-6 4h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2zm10-10V7a4 4 0 0 0-8 0v4h8z" stroke="currentColor" strokeWidth="2"/>
                       </svg>
                       Reset All Passwords
-                    </button>
-                    <button className="admin-danger-btn admin-red" onClick={()=> navigate('/signin', {replace: true})}>
+                    </button> */}
+                    <button className="admin-danger-btn admin-red" onClick={()=>
+                      {
+                        dispatch(logout())
+                        navigate('/signin', {replace: true})
+                      }
+                      }>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" strokeWidth="2"/>
                         <polyline points="16 17 21 12 16 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         <line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" strokeWidth="2"/>
                       </svg>
-                      Logout All Users
+                      Logout
                     </button>
-                    <button className="admin-danger-btn admin-red">
+                    {/* <button className="admin-danger-btn admin-red">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <path d="M3 6h18M5 6l1 13a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-13M10 11v6M14 11v6" stroke="currentColor" strokeWidth="2"/>
                       </svg>
                       Purge Database
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               </div>

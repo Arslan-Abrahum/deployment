@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import "./ManagerProfile.css";
 import { useNavigate } from "react-router-dom";
-
+import { useDispatch } from "react-redux";
+import { logout } from "../store/slices/authSlice";
 const ManagerProfile = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
 
@@ -618,7 +620,12 @@ const ManagerProfile = () => {
                       </svg>
                       Back to Dashboard
                     </button>
-                    <button className="mp-danger-btn mp-danger-red" onClick={() => navigate("/signin", {replace: true})}>
+                    <button className="mp-danger-btn mp-danger-red" onClick={() => 
+                      {
+                        dispatch(logout())
+                        navigate("/signin", {replace: true})
+                      }
+                      }>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" strokeWidth="2"/>
                         <polyline points="16 17 21 12 16 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

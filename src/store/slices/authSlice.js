@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { cookieStorage } from '../../utils/cookieStorage';
 import { registerUser, loginUser, verifyOtp, resendOtp, refreshAccessToken, requestPasswordReset, verifyPasswordOtp, confirmPasswordReset } from '../actions/authActions';
+import { toast } from 'react-toastify';
 
 const initialState = {
   user: cookieStorage.getItem(cookieStorage.AUTH_KEYS.USER) || null,

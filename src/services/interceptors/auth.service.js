@@ -16,7 +16,11 @@ export const authService = {
   },
 
   login: async (credentials) => {
+    console.log("Credentials: ", credentials);
+    
     const { data } = await apiClient.post(API_ROUTES.LOGIN, credentials);
+    console.log("Data: ", data);
+    
     return data;
   },
 

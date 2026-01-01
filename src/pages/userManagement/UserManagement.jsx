@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 import "./UserManagement.css";
 
 const USERS = [
-  { name: "John Doe", email: "john.doe@example.com", role: "Standard User", status: "Active", lastLogin: "2024-05-20 10:30 AM" },
-  { name: "Jane Smith", email: "jane.smith@example.com", role: "Standard User", status: "Active", lastLogin: "2024-05-19 03:45 PM" },
-  { name: "Robert Brown", email: "robert.brown@example.com", role: "Standard User", status: "Suspended", lastLogin: "2024-04-30 11:00 AM" },
-  { name: "Emily White", email: "emily.white@example.com", role: "Standard User", status: "Inactive", lastLogin: "2023-12-01 08:15 PM" },
-  { name: "Alex Green", email: "alex.green@example.com", role: "Standard User", status: "Active", lastLogin: "2024-05-21 01:10 PM" },
-  { name: "Sarah Lee", email: "sarah.lee@example.com", role: "Standard User", status: "Active", lastLogin: "2024-05-18 09:05 AM" },
+  // { name: "John Doe", email: "john.doe@example.com", role: "Standard User", status: "Active", lastLogin: "2024-05-20 10:30 AM" },
+  // { name: "Jane Smith", email: "jane.smith@example.com", role: "Standard User", status: "Active", lastLogin: "2024-05-19 03:45 PM" },
+  // { name: "Robert Brown", email: "robert.brown@example.com", role: "Standard User", status: "Suspended", lastLogin: "2024-04-30 11:00 AM" },
+  // { name: "Emily White", email: "emily.white@example.com", role: "Standard User", status: "Inactive", lastLogin: "2023-12-01 08:15 PM" },
+  // { name: "Alex Green", email: "alex.green@example.com", role: "Standard User", status: "Active", lastLogin: "2024-05-21 01:10 PM" },
+  // { name: "Sarah Lee", email: "sarah.lee@example.com", role: "Standard User", status: "Active", lastLogin: "2024-05-18 09:05 AM" },
 ];
 
 const ROWS_PER_PAGE = 5;
@@ -123,7 +123,7 @@ const UserManagement = () => {
                   {user.role}
                 </td>
                 <td
-                className="status-data"
+                  className="status-data"
                   onClick={() => navigate("/admin/kycverification")}
                 >
                   <span className={`user-status ${user.status.toLowerCase()}`}>
@@ -142,7 +142,7 @@ const UserManagement = () => {
           </tbody>
         </table>
 
-        {filteredUsers.length > 0 && (
+        {filteredUsers.length > 0 ? (
           <div className="table-pagination">
             <div className="pagination-info">
               Page {page} of {totalPages}
@@ -182,7 +182,20 @@ const UserManagement = () => {
               </button>
             </div>
           </div>
-        )}
+        ) : (
+          <div className="user-m-empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+              <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M14 2V8H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M16 13H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M16 17H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M10 9H9H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <h3>No logs found</h3>
+            <p>Try adjusting your filters or search term</p>
+          </div>
+        )
+        }
       </div>
     </div>
   );

@@ -14,34 +14,34 @@ const AdminFinance = () => {
     {
       id: 1,
       title: 'Total Payments',
-      amount: 145250.00,
-      change: '+12.5%',
-      trend: 'up',
+      amount: 0,
+      change: '0',
+      trend: 'Null',
       icon: 'payments',
       navigation: ''
     },
     {
       id: 2,
       title: 'Total Revenue',
-      amount: 287500.00,
-      change: '+8.3%',
-      trend: 'up',
+      amount: 0,
+      change: '0',
+      trend: 'Null',
       icon: 'revenue',
       navigation: ''
     },
     {
       id: 3,
       title: 'Pending Approvals',
-      amount: 12,
-      change: '-2 new',
-      trend: 'down',
+      amount: 0,
+      change: '0',
+      trend: 'Null',
       icon: 'approvals',
       navigation: ''
     },
     {
       id: 4,
       title: 'Manual Entries',
-      amount: 8,
+      amount: 0,
       change: 'No change',
       trend: 'neutral',
       icon: 'entries',
@@ -50,168 +50,168 @@ const AdminFinance = () => {
   ]
 
   const financeLogs = [
-    {
-      id: 1,
-      action: 'Payment Received',
-      details: 'Buyer: John Doe • Invoice #INV-2024-0123',
-      officer: 'Sarah Miller (Admin)',
-      dateTime: '2024-01-25 14:30:45',
-      amount: 1250.00,
-      status: 'completed'
-    },
-    {
-      id: 2,
-      action: 'Refund Processed',
-      details: 'Order #ORD-2024-0456 • Refund ID: RFD-789',
-      officer: 'Michael Chen (Finance)',
-      dateTime: '2024-01-25 12:15:22',
-      amount: 450.00,
-      status: 'completed'
-    },
-    {
-      id: 3,
-      action: 'Fee Adjusted',
-      details: 'Seller commission adjustment • Seller ID: SEL-123',
-      officer: 'David Wilson (Admin)',
-      dateTime: '2024-01-25 10:45:18',
-      amount: -150.00,
-      status: 'completed'
-    },
-    {
-      id: 4,
-      action: 'Payment Failed',
-      details: 'Transaction declined • Card ending in 7890',
-      officer: 'System',
-      dateTime: '2024-01-25 09:20:33',
-      amount: 0.00,
-      status: 'failed'
-    },
-    {
-      id: 5,
-      action: 'Payment Received',
-      details: 'Buyer: Emily Johnson • Invoice #INV-2024-0124',
-      officer: 'Sarah Miller (Admin)',
-      dateTime: '2024-01-24 16:45:12',
-      amount: 3200.00,
-      status: 'completed'
-    },
-    {
-      id: 6,
-      action: 'Refund Processed',
-      details: 'Order #ORD-2024-0457 • Refund ID: RFD-790',
-      officer: 'Michael Chen (Finance)',
-      dateTime: '2024-01-24 14:20:55',
-      amount: 1200.00,
-      status: 'pending'
-    },
-    {
-      id: 7,
-      action: 'Fee Adjusted',
-      details: 'Platform fee waiver • Promotion code applied',
-      officer: 'David Wilson (Admin)',
-      dateTime: '2024-01-24 11:10:42',
-      amount: -75.00,
-      status: 'completed'
-    },
-    {
-      id: 8,
-      action: 'Payment Failed',
-      details: 'Insufficient funds • Account ending in 1234',
-      officer: 'System',
-      dateTime: '2024-01-24 09:05:19',
-      amount: 0.00,
-      status: 'failed'
-    },
-    {
-      id: 9,
-      action: 'Payment Received',
-      details: 'Buyer: Robert Davis • Invoice #INV-2024-0125',
-      officer: 'Sarah Miller (Admin)',
-      dateTime: '2024-01-23 15:30:28',
-      amount: 850.00,
-      status: 'completed'
-    },
-    {
-      id: 10,
-      action: 'Refund Processed',
-      details: 'Order #ORD-2024-0458 • Refund ID: RFD-791',
-      officer: 'Michael Chen (Finance)',
-      dateTime: '2024-01-23 13:45:37',
-      amount: 225.00,
-      status: 'completed'
-    },
-    {
-      id: 11,
-      action: 'Fee Adjusted',
-      details: 'Late payment penalty • Invoice #INV-2024-0115',
-      officer: 'System',
-      dateTime: '2024-01-23 10:15:09',
-      amount: 50.00,
-      status: 'completed'
-    },
-    {
-      id: 12,
-      action: 'Payment Failed',
-      details: 'Expired card • Card ending in 5678',
-      officer: 'System',
-      dateTime: '2024-01-23 08:30:44',
-      amount: 0.00,
-      status: 'failed'
-    },
-    {
-      id: 13,
-      action: 'Refund Processed',
-      details: 'Order #ORD-2024-0458 • Refund ID: RFD-791',
-      officer: 'Michael Chen (Finance)',
-      dateTime: '2025-12-27 13:45:37',
-      amount: 225.00,
-      status: 'completed'
-    },
-    {
-      id: 14,
-      action: 'Payment Failed',
-      details: 'Insufficient funds • Account ending in 1234',
-      officer: 'System',
-      dateTime: '2025-12-29 09:05:19',
-      amount: 0.00,
-      status: 'failed'
-    },
-    {
-      id: 9,
-      action: 'Payment Received',
-      details: 'Buyer: Robert Davis • Invoice #INV-2024-0125',
-      officer: 'Sarah Miller (Admin)',
-      dateTime: '2025-12-29 15:30:28',
-      amount: 850.00,
-      status: 'completed'
-    },
-    {
-      id: 10,
-      action: 'Refund Processed',
-      details: 'Order #ORD-2024-0458 • Refund ID: RFD-791',
-      officer: 'Michael Chen (Finance)',
-     dateTime: '2025-12-29 13:45:37',
-      amount: 225.00,
-      status: 'completed'
-    },
-    {
-      id: 11,
-      action: 'Fee Adjusted',
-      details: 'Late payment penalty • Invoice #INV-2024-0115',
-      officer: 'System',
-      dateTime: '2025-12-29 10:15:09',
-      amount: 50.00,
-      status: 'completed'
-    },
-    {
-      id: 12,
-      action: 'Payment Failed',
-      details: 'Expired card • Card ending in 5678',
-      officer: 'System',
-      dateTime: '2025-12-27 08:30:44',
-      amount: 0.00,
-      status: 'failed'
-    },
+    // {
+    //   id: 1,
+    //   action: 'Payment Received',
+    //   details: 'Buyer: John Doe • Invoice #INV-2024-0123',
+    //   officer: 'Sarah Miller (Admin)',
+    //   dateTime: '2024-01-25 14:30:45',
+    //   amount: 1250.00,
+    //   status: 'completed'
+    // },
+    // {
+    //   id: 2,
+    //   action: 'Refund Processed',
+    //   details: 'Order #ORD-2024-0456 • Refund ID: RFD-789',
+    //   officer: 'Michael Chen (Finance)',
+    //   dateTime: '2024-01-25 12:15:22',
+    //   amount: 450.00,
+    //   status: 'completed'
+    // },
+    // {
+    //   id: 3,
+    //   action: 'Fee Adjusted',
+    //   details: 'Seller commission adjustment • Seller ID: SEL-123',
+    //   officer: 'David Wilson (Admin)',
+    //   dateTime: '2024-01-25 10:45:18',
+    //   amount: -150.00,
+    //   status: 'completed'
+    // },
+    // {
+    //   id: 4,
+    //   action: 'Payment Failed',
+    //   details: 'Transaction declined • Card ending in 7890',
+    //   officer: 'System',
+    //   dateTime: '2024-01-25 09:20:33',
+    //   amount: 0.00,
+    //   status: 'failed'
+    // },
+    // {
+    //   id: 5,
+    //   action: 'Payment Received',
+    //   details: 'Buyer: Emily Johnson • Invoice #INV-2024-0124',
+    //   officer: 'Sarah Miller (Admin)',
+    //   dateTime: '2024-01-24 16:45:12',
+    //   amount: 3200.00,
+    //   status: 'completed'
+    // },
+    // {
+    //   id: 6,
+    //   action: 'Refund Processed',
+    //   details: 'Order #ORD-2024-0457 • Refund ID: RFD-790',
+    //   officer: 'Michael Chen (Finance)',
+    //   dateTime: '2024-01-24 14:20:55',
+    //   amount: 1200.00,
+    //   status: 'pending'
+    // },
+    // {
+    //   id: 7,
+    //   action: 'Fee Adjusted',
+    //   details: 'Platform fee waiver • Promotion code applied',
+    //   officer: 'David Wilson (Admin)',
+    //   dateTime: '2024-01-24 11:10:42',
+    //   amount: -75.00,
+    //   status: 'completed'
+    // },
+    // {
+    //   id: 8,
+    //   action: 'Payment Failed',
+    //   details: 'Insufficient funds • Account ending in 1234',
+    //   officer: 'System',
+    //   dateTime: '2024-01-24 09:05:19',
+    //   amount: 0.00,
+    //   status: 'failed'
+    // },
+    // {
+    //   id: 9,
+    //   action: 'Payment Received',
+    //   details: 'Buyer: Robert Davis • Invoice #INV-2024-0125',
+    //   officer: 'Sarah Miller (Admin)',
+    //   dateTime: '2024-01-23 15:30:28',
+    //   amount: 850.00,
+    //   status: 'completed'
+    // },
+    // {
+    //   id: 10,
+    //   action: 'Refund Processed',
+    //   details: 'Order #ORD-2024-0458 • Refund ID: RFD-791',
+    //   officer: 'Michael Chen (Finance)',
+    //   dateTime: '2024-01-23 13:45:37',
+    //   amount: 225.00,
+    //   status: 'completed'
+    // },
+    // {
+    //   id: 11,
+    //   action: 'Fee Adjusted',
+    //   details: 'Late payment penalty • Invoice #INV-2024-0115',
+    //   officer: 'System',
+    //   dateTime: '2024-01-23 10:15:09',
+    //   amount: 50.00,
+    //   status: 'completed'
+    // },
+    // {
+    //   id: 12,
+    //   action: 'Payment Failed',
+    //   details: 'Expired card • Card ending in 5678',
+    //   officer: 'System',
+    //   dateTime: '2024-01-23 08:30:44',
+    //   amount: 0.00,
+    //   status: 'failed'
+    // },
+    // {
+    //   id: 13,
+    //   action: 'Refund Processed',
+    //   details: 'Order #ORD-2024-0458 • Refund ID: RFD-791',
+    //   officer: 'Michael Chen (Finance)',
+    //   dateTime: '2025-12-27 13:45:37',
+    //   amount: 225.00,
+    //   status: 'completed'
+    // },
+    // {
+    //   id: 14,
+    //   action: 'Payment Failed',
+    //   details: 'Insufficient funds • Account ending in 1234',
+    //   officer: 'System',
+    //   dateTime: '2025-12-29 09:05:19',
+    //   amount: 0.00,
+    //   status: 'failed'
+    // },
+    // {
+    //   id: 9,
+    //   action: 'Payment Received',
+    //   details: 'Buyer: Robert Davis • Invoice #INV-2024-0125',
+    //   officer: 'Sarah Miller (Admin)',
+    //   dateTime: '2025-12-29 15:30:28',
+    //   amount: 850.00,
+    //   status: 'completed'
+    // },
+    // {
+    //   id: 10,
+    //   action: 'Refund Processed',
+    //   details: 'Order #ORD-2024-0458 • Refund ID: RFD-791',
+    //   officer: 'Michael Chen (Finance)',
+    //  dateTime: '2025-12-29 13:45:37',
+    //   amount: 225.00,
+    //   status: 'completed'
+    // },
+    // {
+    //   id: 11,
+    //   action: 'Fee Adjusted',
+    //   details: 'Late payment penalty • Invoice #INV-2024-0115',
+    //   officer: 'System',
+    //   dateTime: '2025-12-29 10:15:09',
+    //   amount: 50.00,
+    //   status: 'completed'
+    // },
+    // {
+    //   id: 12,
+    //   action: 'Payment Failed',
+    //   details: 'Expired card • Card ending in 5678',
+    //   officer: 'System',
+    //   dateTime: '2025-12-27 08:30:44',
+    //   amount: 0.00,
+    //   status: 'failed'
+    // },
   ]
 
   const formatCurrency = (amount) => {
