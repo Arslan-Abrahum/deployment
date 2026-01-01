@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import "./AdminManagerKYC.css";
+import { useNavigate } from "react-router-dom";
 
 const AdminManagerKYC = () => {
   const [comparison, setComparison] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState(null);
-
+  const navigate = useNavigate()
   const openFullscreen = (src) => {
     setFullscreenImage(src);
   };
@@ -62,8 +63,8 @@ const AdminManagerKYC = () => {
           <div className="kyc-card-form admin-panel">
             <h3>Admin Review Panel</h3>
             <div className="action-buttons">
-              <button className="approve">Approve</button>
-              <button className="reject">Reject</button>
+              <button className="approve" onClick={()=> navigate('/admin/users')}>Approve</button>
+              <button className="reject" onClick={()=> navigate('/admin/users')}>Reject</button>
             </div>
             <label className="reason-label">Reason for Rejection</label>
             <textarea className="textarea-form" placeholder="Provide a clear reason for rejecting this user's KYC documents..." />
