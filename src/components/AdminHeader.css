@@ -109,6 +109,33 @@
   letter-spacing: 0.5px;
 }
 
+.admin-header__logout-btn {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.85);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.admin-header__logout-btn:hover {
+  background-color: rgba(255, 77, 77, 0.15);
+  color: #ff4d4d;
+  border-color: rgba(255, 77, 77, 0.4);
+  transform: translateY(-1px);
+}
+
+.admin-header__logout-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
 .admin-header__profile-btn {
   background: none;
   border: none;
@@ -292,6 +319,34 @@
   margin-top: auto;
   padding: 1rem 0;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-header__mobile-logout-btn {
+  width: 100%;
+  background-color: rgba(255, 77, 77, 0.1);
+  border: 1px solid rgba(255, 77, 77, 0.3);
+  color: #ff4d4d;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.admin-header__mobile-logout-btn:hover {
+  background-color: rgba(255, 77, 77, 0.2);
+  border-color: rgba(255, 77, 77, 0.5);
+  transform: translateY(-1px);
+}
+
+.admin-header__mobile-logout-btn svg {
+  width: 20px;
+  height: 20px;
 }
 
 .admin-header__mobile-profile {

@@ -1,10 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { logout } from '../store/slices/authSlice'
 import logo from '../assets/logo.png'
 import './AdminHeader.css'
 
 function AdminHeader() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const menuRef = useRef(null)
   const mobileMenuRef = useRef(null)
@@ -43,6 +47,11 @@ function AdminHeader() {
 
   const closeMobileMenu = () => {
     setMobileMenuOpen(false)
+  }
+
+  const handleLogout = () => {
+    dispatch(logout())
+    navigate('/signin', { replace: true })
   }
 
   const navItems = [
@@ -116,6 +125,19 @@ function AdminHeader() {
             </div>
 
             <button
+              className="admin-header__logout-btn"
+              onClick={handleLogout}
+              aria-label="Logout"
+              title="Logout"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" strokeLinecap="round" strokeLinejoin="round"/>
+                <line x1="21" y1="12" x2="9" y2="12" strokeLinecap="round"/>
+              </svg>
+            </button>
+
+            <button
               className="admin-header__mobile-toggle"
               onClick={toggleMobileMenu}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
@@ -187,6 +209,23 @@ function AdminHeader() {
               </Link>
             ))}
           </nav>
+
+          <div className="admin-header__mobile-footer">
+            <button
+              className="admin-header__mobile-logout-btn"
+              onClick={() => {
+                handleLogout()
+                closeMobileMenu()
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" strokeLinecap="round" strokeLinejoin="round"/>
+                <line x1="21" y1="12" x2="9" y2="12" strokeLinecap="round"/>
+              </svg>
+              <span>Logout</span>
+            </button>
+          </div>
 
         </div>
       </header>
