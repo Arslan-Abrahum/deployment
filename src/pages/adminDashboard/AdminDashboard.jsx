@@ -445,7 +445,6 @@ const AdminDashboard = () => {
     return users.results.filter((user) => {
       // Must have role='manager'
       if (user.role !== "manager") return false;
-      console.log(user);
       // Must have is_staff=false (exclude if is_staff is true, "true", 1, or "1")
       const isStaffValue = user?.is_staff;
       const isStaff =

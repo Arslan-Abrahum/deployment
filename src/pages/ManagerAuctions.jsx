@@ -1,34 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "./ManagerAuctions.css";
 import { Link, useNavigate } from "react-router-dom";
+import { managerService } from '../services/interceptors/manager.service';
 
 export default function ManagerAuctions() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [activeFilter, setActiveFilter] = useState("All");
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const itemsPerPage = 5;
 
-  const tableData = [
-    // { name: "Vintage Watch Collection", id: "#VW-10234", status: "Live", start: "Oct 25, 2023", end: "Nov 01, 2023", lots: 45, value: "$15,420" },
-    // { name: "Modern Art & Sculptures", id: "#MA-98765", status: "Live", start: "Nov 05, 2023", end: "Nov 12, 2023", lots: 82, value: "$0.00" },
-    // { name: "Estate Jewelry Clearance", id: "#EJ-45678", status: "Draft", start: "Oct 10, 2023", end: "Oct 17, 2023", lots: 120, value: "$48,950" },
-    // { name: "Antique Furniture Finds", id: "#AF-33211", status: "Draft", start: "-", end: "-", lots: 35, value: "-" },
-    // { name: "Luxury Cars Auction", id: "#LC-11223", status: "Live", start: "Oct 12, 2023", end: "Oct 20, 2023", lots: 60, value: "$22,300" },
-    // { name: "Rare Books Lot", id: "#RB-65432", status: "Live", start: "Dec 01, 2023", end: "Dec 10, 2023", lots: 90, value: "$0.00" },
-    // { name: "Vintage Cameras", id: "#VC-90876", status: "Draft", start: "Sep 15, 2023", end: "Sep 20, 2023", lots: 25, value: "$9,500" },
-    // { name: "Art Statues", id: "#AS-77889", status: "Draft", start: "-", end: "-", lots: 14, value: "-" },
-    // { name: "Old Coins", id: "#OC-55511", status: "Live", start: "Oct 19, 2023", end: "Oct 22, 2023", lots: 80, value: "$12,100" },
-    // { name: "Antique Watches", id: "#AW-22445", status: "Live", start: "Nov 15, 2023", end: "Nov 25, 2023", lots: 35, value: "$0.00" },
-  ];
+  // Fetch tasks from API
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await managerService.getAssignedTasks();
+        // Transform API response to auction format and filter for ACTIVE status only
+        const transformedData = Array.isArray(response) ? response
+          .filter(item => item.status === 'ACTIVE') // Only show ACTIVE status items
+          .map((item) => ({
+            name: item.title || 'Untitled Auction',
+            id: `#AUC-${item.id}`,
+            originalId: item.id,
+            status: "Live", // Map ACTIVE to "Live" for display
+            start: item.start_date ? new Date(item.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-',
+            end: item.end_date ? new Date(item.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-',
+            lots: 0, // Not available in API response
+            value: item.initial_price ? `$${parseFloat(item.initial_price).toLocaleString()}` : '$0.00',
+            rawData: item // Keep original data for reference
+          })) : [];
+        setTasks(transformedData);
+      } catch (err) {
+        console.error('Error fetching manager tasks:', err);
+        setError(err.message || 'Failed to load auctions. Please try again.');
+        setTasks([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filteredData = tableData.filter((item) => {
-    const matchSearch =
-      item.name.toLowerCase().includes(search.toLowerCase()) ||
-      item.id.toLowerCase().includes(search.toLowerCase());
-    const matchFilter = activeFilter === "All" || item.status === activeFilter;
-    return matchSearch && matchFilter;
-  });
+    fetchTasks();
+  }, []);
+
+  const filteredData = useMemo(() => {
+    return tasks.filter((item) => {
+      const matchSearch =
+        item.name.toLowerCase().includes(search.toLowerCase()) ||
+        item.id.toLowerCase().includes(search.toLowerCase());
+      const matchFilter = activeFilter === "All" || item.status === activeFilter;
+      return matchSearch && matchFilter;
+    });
+  }, [tasks, search, activeFilter]);
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -227,7 +254,45 @@ export default function ManagerAuctions() {
               </thead>
 
               <tbody>
-                {paginatedData.length > 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan="7">
+                      <div className="auction-empty-state">
+                        <div className="auction-empty-icon" style={{ animation: 'spin 1s linear infinite' }}>
+                          <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray="32" strokeDashoffset="16" opacity="0.3"/>
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray="32" strokeDashoffset="16" className="spinner-circle"/>
+                          </svg>
+                        </div>
+                        <h3>Loading auctions...</h3>
+                        <p>Please wait while we fetch your active auctions</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : error ? (
+                  <tr>
+                    <td colSpan="7">
+                      <div className="auction-empty-state">
+                        <div className="auction-empty-icon">
+                          <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                            <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          </svg>
+                        </div>
+                        <h3>Error loading auctions</h3>
+                        <p>{error}</p>
+                        <button 
+                          onClick={() => window.location.reload()} 
+                          className="auction-primary-action-btn"
+                          style={{ marginTop: '1rem' }}
+                        >
+                          Retry
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ) : paginatedData.length > 0 ? (
                   paginatedData.map((item, index) => (
                     <tr
                       key={index}

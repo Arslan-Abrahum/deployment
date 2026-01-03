@@ -828,3 +828,19 @@ body {
     height: 30px;
   }
 }
+
+/* Loading Spinner Animation */
+.auction-empty-icon .spinner-circle {
+  transform-origin: center;
+  transform: rotate(-90deg);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(-90deg);
+  }
+  to {
+    transform: rotate(270deg);
+  }
+}

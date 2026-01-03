@@ -109,41 +109,31 @@
   letter-spacing: 0.5px;
 }
 
-.manager-header__profile-btn {
+.manager-header__logout-btn {
   background: none;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 0.5rem;
   cursor: pointer;
   border-radius: 8px;
   color: rgba(255, 255, 255, 0.85);
   transition: all 0.2s;
   display: flex;
-  text-decoration: none;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
 }
 
-.manager-header__profile-btn:hover {
-  background-color: rgba(140, 198, 63, 0.14);
-  color: #8cc63f;
-  border-color: rgba(140, 198, 63, 0.3);
+.manager-header__logout-btn:hover {
+  background-color: rgba(255, 77, 77, 0.15);
+  color: #ff4d4d;
+  border-color: rgba(255, 77, 77, 0.4);
   transform: translateY(-1px);
 }
 
-.manager-header__avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background-color: rgba(140, 198, 63, 0.18);
-  border: 2px solid rgba(140, 198, 63, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #8cc63f;
-  transition: all 0.2s;
-}
-
-.manager-header__avatar:hover {
-  transform: scale(1.05);
+.manager-header__logout-btn svg {
+  width: 18px;
+  height: 18px;
 }
 
 .manager-header__mobile-toggle {
@@ -386,9 +376,14 @@
     font-size: 0.6875rem;
   }
 
-  .manager-header__avatar {
+  .manager-header__logout-btn {
     width: 32px;
     height: 32px;
+  }
+  
+  .manager-header__logout-btn svg {
+    width: 16px;
+    height: 16px;
   }
 
   .manager-header__mobile-menu {
@@ -438,9 +433,14 @@
     font-size: 1rem;
   }
 
-  .manager-header__avatar {
+  .manager-header__logout-btn {
     width: 28px;
     height: 28px;
+  }
+  
+  .manager-header__logout-btn svg {
+    width: 14px;
+    height: 14px;
   }
 
   .manager-header__mobile-nav-link {

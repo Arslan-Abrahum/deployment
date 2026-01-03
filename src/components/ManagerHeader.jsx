@@ -1,10 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { logout } from '../store/slices/authSlice'
 import logo from '../assets/logo.png'
 import './ManagerHeader.css'
 
 function ManagerHeader() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const menuRef = useRef(null)
   const mobileMenuRef = useRef(null)
@@ -43,6 +47,11 @@ function ManagerHeader() {
 
   const closeMobileMenu = () => {
     setMobileMenuOpen(false)
+  }
+
+  const handleLogout = () => {
+    dispatch(logout())
+    navigate('/signin', { replace: true })
   }
 
   const navItems = [
@@ -122,28 +131,18 @@ function ManagerHeader() {
               )}
             </button>
 
-            <Link to="/manager/profile" className="manager-header__profile-btn" aria-label="Profile">
-              <div className="manager-header__avatar">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <circle
-                    cx="12"
-                    cy="7"
-                    r="4"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            </Link>
+            <button
+              className="manager-header__logout-btn"
+              onClick={handleLogout}
+              aria-label="Logout"
+              title="Logout"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" strokeLinecap="round" strokeLinejoin="round"/>
+                <line x1="21" y1="12" x2="9" y2="12" strokeLinecap="round"/>
+              </svg>
+            </button>
           </div>
         </div>
 

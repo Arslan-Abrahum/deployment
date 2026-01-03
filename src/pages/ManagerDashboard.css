@@ -672,3 +672,23 @@ body {
     font-size: 0.8125rem;
   }
 }
+
+/* Loading Spinner Animation */
+.manager-loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+.manager-loading-spinner .spinner-circle {
+  transform-origin: center;
+  transform: rotate(-90deg);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(-90deg);
+  }
+  to {
+    transform: rotate(270deg);
+  }
+}

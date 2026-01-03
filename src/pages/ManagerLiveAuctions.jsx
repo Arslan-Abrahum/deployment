@@ -1,21 +1,7 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import "./ManagerLiveAuctions.css";
 import { useNavigate } from "react-router-dom";
-
-const SAMPLE_DATA = [
-  // { id: "BID-1001", user: "Ali Khan", amount: 1200, time: "2023-10-25 10:45 AM", status: "Winning" },
-  // { id: "BID-1002", user: "Sara Ahmed", amount: 1350, time: "2023-10-25 10:50 AM", status: "Outbid" },
-  // { id: "BID-1003", user: "Usman Tariq", amount: 1500, time: "2023-10-25 10:55 AM", status: "Winning" },
-  // { id: "BID-1004", user: "Hassan Raza", amount: 1100, time: "2023-10-25 11:00 AM", status: "Outbid" },
-  // { id: "BID-1005", user: "Ayesha Noor", amount: 1600, time: "2023-10-25 11:05 AM", status: "Winning" },
-  // { id: "BID-1006", user: "Bilal Khan", amount: 1250, time: "2023-10-25 11:10 AM", status: "Winning" },
-  // { id: "BID-1007", user: "Nida Ali", amount: 1400, time: "2023-10-25 11:15 AM", status: "Outbid" },
-  // { id: "BID-1008", user: "Omar Farooq", amount: 1550, time: "2023-10-25 11:20 AM", status: "Winning" },
-  // { id: "BID-1009", user: "Sara Khan", amount: 1150, time: "2023-10-25 11:25 AM", status: "Outbid" },
-  // { id: "BID-1010", user: "Ayesha Farooq", amount: 1650, time: "2023-10-25 11:30 AM", status: "Winning" },
-  // { id: "BID-1011", user: "Ahmed Ali", amount: 1750, time: "2023-10-25 11:35 AM", status: "Winning" },
-  // { id: "BID-1012", user: "Fatima Khan", amount: 1200, time: "2023-10-25 11:40 AM", status: "Outbid" },
-];
+import { managerService } from '../services/interceptors/manager.service';
 
 const ROWS_PER_PAGE = 5;
 
@@ -23,15 +9,53 @@ export default function ManagerLiveAuctions() {
   const [search, setSearch] = useState("");
   const [date, setDate] = useState("");
   const [page, setPage] = useState(1);
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  // Fetch tasks from API
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await managerService.getAssignedTasks();
+        // Transform API response and filter for COMPLETED or APPROVED status only
+        const transformedData = Array.isArray(response) ? response
+          .filter(item => item.status === 'COMPLETED' || item.status === 'APPROVED') // Only show COMPLETED or APPROVED status items
+          .map((item) => ({
+            id: `#AUC-${item.id}`,
+            name: item.title || 'Untitled Auction',
+            seller: item.seller_details?.name || 'Unknown Seller',
+            category: item.category_name || 'Unknown',
+            status: item.status,
+            created_at: item.created_at,
+            end_date: item.end_date,
+            initial_price: item.initial_price,
+            rawData: item // Keep original data for reference
+          })) : [];
+        setTasks(transformedData);
+      } catch (err) {
+        console.error('Error fetching completed auctions:', err);
+        setError(err.message || 'Failed to load completed auctions. Please try again.');
+        setTasks([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, []);
+
   const filteredData = useMemo(() => {
-    return SAMPLE_DATA.filter((item) => {
-      const matchSearch = item.user.toLowerCase().includes(search.toLowerCase()) ||
-                          item.id.toLowerCase().includes(search.toLowerCase());
+    return tasks.filter((item) => {
+      const matchSearch = (item.name?.toLowerCase().includes(search.toLowerCase()) || '') ||
+                          item.id.toLowerCase().includes(search.toLowerCase()) ||
+                          (item.seller?.toLowerCase().includes(search.toLowerCase()) || '');
       return matchSearch;
     });
-  }, [search]);
+  }, [tasks, search]);
 
   const totalPages = Math.ceil(filteredData.length / ROWS_PER_PAGE);
 
@@ -101,8 +125,8 @@ export default function ManagerLiveAuctions() {
 
         <div className="live-auction-section-header">
           <div className="live-auction-header-content">
-            <h1 className="live-auction-page-title">Bid Logs</h1>
-            <p className="live-auction-page-subtitle">Vintage Rolex Submariner - Auction #5821</p>
+            <h1 className="live-auction-page-title">Completed Auctions</h1>
+            <p className="live-auction-page-subtitle">View all completed and approved auction items</p>
           </div>
           <div className="live-auction-header-actions">
             <button className="live-auction-export-btn" onClick={exportCSV}>
@@ -127,7 +151,7 @@ export default function ManagerLiveAuctions() {
               </button>
               <input
                 type="text"
-                placeholder="Search by users or Bid ID..."
+                placeholder="Search by Auction Name, ID, or Seller..."
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                 className="live-auction-search-input"
@@ -160,62 +184,107 @@ export default function ManagerLiveAuctions() {
             <table className="live-auction-data-table">
               <thead>
                 <tr>
-                  <th>Bid ID</th>
-                  <th>User</th>
-                  <th>Bid Amount</th>
-                  <th>Time Stamp</th>
-                  {/* <th>Status</th> */}
+                  <th>Auction ID</th>
+                  <th>Auction Name</th>
+                  <th>Category</th>
+                  <th>Seller</th>
+                  <th>Status</th>
+                  <th>End Date</th>
+                  <th>Initial Price</th>
                 </tr>
               </thead>
 
               <tbody>
-                {paginatedData.length > 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan="7">
+                      <div className="live-auction-empty-state">
+                        <div className="live-auction-empty-icon" style={{ animation: 'spin 1s linear infinite' }}>
+                          <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray="32" strokeDashoffset="16" opacity="0.3"/>
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray="32" strokeDashoffset="16" className="spinner-circle"/>
+                          </svg>
+                        </div>
+                        <h3>Loading completed auctions...</h3>
+                        <p>Please wait while we fetch your completed auctions</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : error ? (
+                  <tr>
+                    <td colSpan="7">
+                      <div className="live-auction-empty-state">
+                        <div className="live-auction-empty-icon">
+                          <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                            <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          </svg>
+                        </div>
+                        <h3>Error loading completed auctions</h3>
+                        <p>{error}</p>
+                        <button 
+                          onClick={() => window.location.reload()} 
+                          className="live-auction-export-btn"
+                          style={{ marginTop: '1rem' }}
+                        >
+                          Retry
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ) : paginatedData.length > 0 ? (
                   paginatedData.map((item, index) => (
                     <tr
                       key={item.id}
                       className="live-auction-table-row"
-                      onClick={() => navigate("/manager/auction-results")}
+                      onClick={() => navigate("/manager/auction-results", { state: { auctionData: item.rawData } })}
                     >
-
                       <td>
                         <span className="live-auction-bid-id">{item.id}</span>
                       </td>
-
                       <td>
-                        <span className="live-auction-user-name">{item.user}</span>
+                        <span className="live-auction-user-name">{item.name}</span>
                       </td>
-
                       <td>
-                        <span className="live-auction-amount">${item.amount.toLocaleString()}</span>
+                        <span className="live-auction-user-name">{item.category}</span>
                       </td>
-
                       <td>
-                        <span className="live-auction-time">{item.time}</span>
+                        <span className="live-auction-user-name">{item.seller}</span>
                       </td>
-
-                      {/* <td>
+                      <td>
                         <div className="live-auction-status-cell">
                           <span className={`live-auction-status-badge ${
-                            item.status === "Winning" ? "badge-winning" :
-                            item.status === "Outbid" ? "badge-outbid" :
+                            item.status === "COMPLETED" ? "badge-winning" :
+                            item.status === "APPROVED" ? "badge-winning" :
                             "badge-ended"
                           }`}>
                             {item.status}
                           </span>
                         </div>
-                      </td> */}
+                      </td>
+                      <td>
+                        <span className="live-auction-time">
+                          {item.end_date ? new Date(item.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-'}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="live-auction-amount">
+                          {item.initial_price ? `$${parseFloat(item.initial_price).toLocaleString()}` : '$0.00'}
+                        </span>
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="6">
+                    <td colSpan="7">
                       <div className="live-auction-empty-state">
                         <div className="live-auction-empty-icon">
                           <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
                             <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
                         </div>
-                        <h3>No bids found</h3>
+                        <h3>No completed auctions found</h3>
                         <p>Try adjusting your search or filters</p>
                       </div>
                     </td>

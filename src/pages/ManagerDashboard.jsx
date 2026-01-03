@@ -1,31 +1,48 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
+import { managerService } from '../services/interceptors/manager.service';
 import "./ManagerDashboard.css";
 
-const sampleData = [
-  // { id: "VH-24351", category: "Vehicle", seller: "Johnathan Doe", status: "Pending Inspection", officer: "Walter White", date: "2025-12-01" },
-  // { id: "EL-98765", category: "Electronics", seller: "James Smith", status: "Pending Inspection", officer: "Walter White", date: "2025-12-02" },
-  // { id: "FN-54321", category: "Furniture", seller: "Mike Ehrmantraut", status: "Rejected", officer: "Walter White", date: "2025-12-03" },
-  // { id: "AR-88776", category: "Artwork", seller: "Lydia Rodarte", status: "Pending Inspection", officer: "Walter White", date: "2025-12-04" },
-  // { id: "HG-11223", category: "Home Goods", seller: "Kim Wexler", status: "Pending Inspection", officer: "Walter White", date: "2025-12-05" },
-  // { id: "EL-33333", category: "Electronics", seller: "Gus Fring", status: "Rejected", officer: "Walter White", date: "2025-12-05" },
-  // { id: "VH-55555", category: "Vehicle", seller: "Hank Schrader", status: "Rejected", officer: "Walter White", date: "2025-12-05" }
-];
+// Map API status to display status
+const mapStatusToDisplay = (apiStatus) => {
+  const statusMap = {
+    'DRAFT': 'DRAFT',
+    'ACTIVE': 'Pending Inspection',
+    'PENDING': 'Pending Inspection',
+    'IN_PROGRESS': 'In Progress',
+    'REJECTED': 'Rejected',
+    'COMPLETED': 'Completed',
+    'APPROVED': 'Completed'
+  };
+  return statusMap[apiStatus] || apiStatus || 'Pending Inspection';
+};
 
 function ManagerDashboard() {
-
   const navigate = useNavigate();
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const handleAction = (status) => {
-    if (status === "Pending Inspection" || status === "In Progress") {
+  const handleAction = (status, item) => {
+    // Check raw status for DRAFT, or display status for others
+    const rawStatus = item.rawData?.status || '';
+    const isDraft = rawStatus === 'DRAFT';
+    
+    if (isDraft || status === "Pending Inspection" || status === "In Progress") {
       navigate("/manager/inspection",
         {
           state: {
-            startInspection: true
+            startInspection: true,
+            auctionData: item.rawData
           }
         });
-    } else if (status === "Rejected", { state: { startInspection: false } }) {
-      navigate("/manager/inspection");
+    } else if (status === "Rejected") {
+      navigate("/manager/inspection", { 
+        state: { 
+          startInspection: false,
+          auctionData: item.rawData
+        } 
+      });
     }
   };
 
@@ -36,9 +53,48 @@ function ManagerDashboard() {
   const [selectedRow, setSelectedRow] = useState(null);
   const itemsPerPage = 5;
 
-  const sortedData = useMemo(() => {
-    return [...sampleData].sort((a, b) => new Date(b.date) - new Date(a.date));
+  // Fetch tasks from API
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await managerService.getAssignedTasks();
+        // Transform API response to dashboard format
+        const transformedData = Array.isArray(response) ? response.map((item) => ({
+          id: `INSP-${item.id}`,
+          originalId: item.id,
+          category: item.category_name || 'Unknown',
+          seller: item.seller_details?.name || 'Unknown Seller',
+          status: mapStatusToDisplay(item.status),
+          officer: item.seller_details?.name || 'Unassigned',
+          date: item.created_at ? new Date(item.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+          title: item.title,
+          description: item.description,
+          rejection_reason: item.rejection_reason,
+          rawData: item // Keep original data for reference
+        })) : [];
+        setTasks(transformedData);
+      } catch (err) {
+        console.error('Error fetching manager tasks:', err);
+        setError(err.message || 'Failed to load tasks. Please try again.');
+        setTasks([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
   }, []);
+
+  const sortedData = useMemo(() => {
+    // Filter to show only DRAFT status items
+    const draftItems = tasks.filter(item => {
+      const rawStatus = item.rawData?.status || '';
+      return rawStatus === 'DRAFT';
+    });
+    return [...draftItems].sort((a, b) => new Date(b.date) - new Date(a.date));
+  }, [tasks]);
 
   const filtered = useMemo(() => {
     return sortedData.filter(item => {
@@ -93,12 +149,16 @@ function ManagerDashboard() {
     return pages;
   }
 
-  const ActionButton = ({ status }) => {
-    if (status === "Pending Inspection")
-      return <button className="view-btn" onClick={() => handleAction(status)}>Start Inspection</button>;
+  const ActionButton = ({ status, item }) => {
+    // Check raw status for DRAFT, or display status for others
+    const rawStatus = item.rawData?.status || '';
+    const isDraft = rawStatus === 'DRAFT';
+    
+    if (isDraft || status === "Pending Inspection" || status === "In Progress")
+      return <button className="view-btn" onClick={() => handleAction(status, item)}>Start Inspection</button>;
 
     if (status === "Rejected")
-      return <button className="view-btn view-danger-btn" onClick={() => handleAction(status)}>View Report</button>;
+      return <button className="view-btn view-danger-btn" onClick={() => handleAction(status, item)}>View Report</button>;
 
     return <span className="text-gray-500">—</span>;
   }
@@ -159,14 +219,12 @@ function ManagerDashboard() {
               </div>
             </div>
 
-            <select className="manager-filter-select" value={category} onChange={(e) => setCategory(e.target.value)}>
+            {/* <select className="manager-filter-select" value={category} onChange={(e) => setCategory(e.target.value)}>
               <option value="All">All Categories</option>
-              <option value="Vehicle">Vehicle</option>
-              <option value="Electronics">Electronics</option>
-              <option value="Furniture">Furniture</option>
-              <option value="Artwork">Artwork</option>
-              <option value="Home Goods">Home Goods</option>
-            </select>
+              {Array.from(new Set(tasks.map(item => item.category))).map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select> */}
 
             <select className="manager-filter-select" value={status} onChange={(e) => setStatus(e.target.value)}>
               <option value="All">All Status</option>
@@ -175,11 +233,11 @@ function ManagerDashboard() {
               <option value="Completed">Completed</option>
             </select>
 
-            <button onClick={applyFilters} className="manager-apply-btn">Apply</button>
+            {/* <button onClick={applyFilters} className="manager-apply-btn">Apply</button>
 
             <button onClick={() => { setSearch(''); setCategory("All"); setStatus("All"); applyFilters(); }} className="manager-clear-btn">
               Clear
-            </button>
+            </button> */}
           </div>
 
           <div className="manager-data-table-section">
@@ -197,7 +255,45 @@ function ManagerDashboard() {
                 </thead>
 
                 <tbody>
-                  {paginatedData.length > 0 ? (
+                  {loading ? (
+                    <tr>
+                      <td colSpan="6">
+                        <div className="manager-empty-state">
+                          <div className="manager-empty-icon manager-loading-spinner">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray="32" strokeDashoffset="16" opacity="0.3"/>
+                              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray="32" strokeDashoffset="16" className="spinner-circle"/>
+                            </svg>
+                          </div>
+                          <h3>Loading tasks...</h3>
+                          <p>Please wait while we fetch your assigned inspections</p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : error ? (
+                    <tr>
+                      <td colSpan="6">
+                        <div className="manager-empty-state">
+                          <div className="manager-empty-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                              <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                              <line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                          </div>
+                          <h3>Error loading tasks</h3>
+                          <p>{error}</p>
+                          <button 
+                            onClick={() => window.location.reload()} 
+                            className="manager-apply-btn"
+                            style={{ marginTop: '1rem' }}
+                          >
+                            Retry
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : paginatedData.length > 0 ? (
                     paginatedData.map((item, index) => (
                       <tr
                         key={item.id}
@@ -241,7 +337,7 @@ function ManagerDashboard() {
 
                         <td>
                           <div className="manager-action-buttons">
-                            <ActionButton status={item.status} />
+                            <ActionButton status={item.status} item={item} />
                           </div>
                         </td>
                       </tr>
