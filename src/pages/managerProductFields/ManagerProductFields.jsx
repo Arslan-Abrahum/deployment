@@ -1,26 +1,111 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { createCategory, updateCategory, fetchCategories } from '../../store/actions/adminActions';
 import './ManagerProductFields.css';
 
 const ManagerProductFields = () => {
   const { categoryId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { categories: categoriesFromStore } = useSelector((state) => state.admin);
+
+  // Check if we're in edit mode
+  const editingCategoryId = localStorage.getItem('editingCategoryId');
+  const isEditMode = !!editingCategoryId;
+
+  const [categoryName, setCategoryName] = useState('');
+
+  // Convert validation_schema to fields format
+  const convertValidationSchemaToFields = (validationSchema) => {
+    if (!validationSchema || typeof validationSchema !== 'object') {
+      return [];
+    }
+
+    return Object.entries(validationSchema).map(([key, schema], index) => {
+      const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      const field = {
+        id: Date.now() + index,
+        name: fieldName,
+        type: schema.type === 'string' && schema.enum ? 'select' : schema.type || 'text',
+        required: schema.required || false,
+        placeholder: '',
+        sortOrder: index + 1,
+      };
+
+      if (schema.enum && Array.isArray(schema.enum)) {
+        field.options = schema.enum;
+      }
+
+      return field;
+    });
+  };
+
+  useEffect(() => {
+    // Get category name from localStorage
+    const name = localStorage.getItem('pendingCategoryName');
+    if (name) {
+      setCategoryName(name);
+    } else {
+      // If no name found, redirect back to category list
+      navigate('/admin/category');
+      return;
+    }
+
+    // If in edit mode, load existing category fields
+    if (isEditMode && editingCategoryId) {
+      if (categoriesFromStore && Array.isArray(categoriesFromStore)) {
+        const category = categoriesFromStore.find(cat => cat.id === parseInt(editingCategoryId));
+
+        if (category && category.validation_schema) {
+          const existingFields = convertValidationSchemaToFields(category.validation_schema);
+          if (existingFields.length > 0) {
+            setFields(existingFields);
+          }
+        }
+      } else {
+        // If categories not loaded yet, fetch them
+        dispatch(fetchCategories());
+      }
+    }
+  }, [navigate, isEditMode, editingCategoryId, categoriesFromStore, dispatch]);
+
+  // Re-check for category after fetching
+  useEffect(() => {
+    if (isEditMode && editingCategoryId && categoriesFromStore) {
+      const category = Array.isArray(categoriesFromStore) 
+        ? categoriesFromStore.find(cat => cat.id === parseInt(editingCategoryId))
+        : null;
+
+      if (category && category.validation_schema) {
+        const existingFields = convertValidationSchemaToFields(category.validation_schema);
+        if (existingFields.length > 0) {
+          setFields(existingFields);
+        }
+      }
+    }
+  }, [categoriesFromStore, isEditMode, editingCategoryId]);
 
   const [category, setCategory] = useState({
     id: categoryId,
-    name: 'Vehicles',
+    name: categoryName || 'New Category',
     icon: '🚗',
     iconColor: '#3B82F6'
   });
 
-  const [fields, setFields] = useState([
-    { id: 1, name: 'Make', type: 'text', required: true, placeholder: 'e.g., Toyota, Honda', sortOrder: 1 },
-    { id: 2, name: 'Model', type: 'text', required: true, placeholder: 'e.g., Camry, Civic', sortOrder: 2 },
-    { id: 3, name: 'Year', type: 'number', required: true, placeholder: 'e.g., 2020', sortOrder: 3 },
-    { id: 4, name: 'Mileage', type: 'number', required: false, placeholder: 'e.g., 45000', sortOrder: 4 },
-    { id: 5, name: 'Condition', type: 'select', required: true, options: ['New', 'Used', 'Refurbished'], sortOrder: 5 },
-    { id: 6, name: 'Color', type: 'text', required: false, placeholder: 'e.g., Red, Blue', sortOrder: 6 },
-  ]);
+  // Initialize fields - empty for edit mode (will be loaded), default for create mode
+  const [fields, setFields] = useState(() => {
+    // If in edit mode, start with empty array (will be populated from API)
+    if (localStorage.getItem('editingCategoryId')) {
+      return [];
+    }
+    // Default fields for new categories
+    return [
+      { id: 1, name: 'Title', type: 'text', required: true, placeholder: 'e.g., Product Title', sortOrder: 1 },
+      { id: 2, name: 'Description', type: 'textarea', required: true, placeholder: 'e.g., Product Description', sortOrder: 2 },
+      { id: 3, name: 'Year', type: 'number', required: true, placeholder: 'e.g., 2020', sortOrder: 3 },
+    ];
+  });
 
   const [newField, setNewField] = useState({
     name: '',
@@ -60,6 +145,34 @@ const ManagerProductFields = () => {
     }
   };
 
+  const handleOptionsKeyDown = (e) => {
+    // Handle Enter key to auto-add comma
+    if (e.key === 'Enter' && e.target.name === 'options') {
+      const textarea = e.target;
+      const cursorPosition = textarea.selectionStart;
+      const textBeforeCursor = textarea.value.substring(0, cursorPosition);
+      const textAfterCursor = textarea.value.substring(cursorPosition);
+      
+      // Get the current line (text before cursor on this line)
+      const lastNewlineIndex = textBeforeCursor.lastIndexOf('\n');
+      const currentLine = lastNewlineIndex === -1 ? textBeforeCursor : textBeforeCursor.substring(lastNewlineIndex + 1);
+      
+      // If current line has content and doesn't end with comma, add comma before newline
+      if (currentLine.trim() && !currentLine.trim().endsWith(',')) {
+        e.preventDefault();
+        const newValue = textBeforeCursor + ',' + '\n' + textAfterCursor;
+        setNewField(prev => ({
+          ...prev,
+          options: newValue
+        }));
+        // Set cursor position after the newline
+        setTimeout(() => {
+          textarea.setSelectionRange(cursorPosition + 2, cursorPosition + 2);
+        }, 0);
+      }
+    }
+  };
+
   const validateField = (field) => {
     const newErrors = {};
 
@@ -91,7 +204,7 @@ const ManagerProductFields = () => {
       placeholder: newField.placeholder,
       sortOrder: fields.length + 1,
       ...(newField.type === 'select' && {
-        options: newField.options.split(',').map(opt => opt.trim()).filter(opt => opt)
+        options: newField.options.split(/[,\n]/).map(opt => opt.trim()).filter(opt => opt)
       })
     };
 
@@ -114,7 +227,7 @@ const ManagerProductFields = () => {
       type: field.type,
       required: field.required,
       placeholder: field.placeholder || '',
-      options: field.options ? field.options.join(', ') : ''
+      options: field.options ? field.options.join(',\n') : ''
     });
     setShowFieldForm(true);
   };
@@ -135,7 +248,7 @@ const ManagerProductFields = () => {
           required: newField.required,
           placeholder: newField.placeholder,
           ...(newField.type === 'select' && {
-            options: newField.options.split(',').map(opt => opt.trim()).filter(opt => opt)
+            options: newField.options.split(/[,\n]/).map(opt => opt.trim()).filter(opt => opt)
           })
         }
         : field
@@ -185,10 +298,57 @@ const ManagerProductFields = () => {
     }
   };
 
-  const handleSaveFields = () => {
-    console.log('Saving fields:', fields);
-    alert('Product fields saved successfully!');
-    navigate('/manager/categories');
+  const handleSaveFields = async () => {
+    if (!categoryName) {
+      alert('Category name is missing. Please go back and enter a category name.');
+      return;
+    }
+
+    // Build validation_schema from fields
+    const validationSchema = {};
+    fields.forEach(field => {
+      const fieldSchema = { type: field.type === 'select' ? 'string' : field.type };
+      
+      if (field.required) {
+        fieldSchema.required = true;
+      }
+
+      if (field.type === 'select' && field.options && field.options.length > 0) {
+        fieldSchema.enum = field.options;
+      }
+
+      validationSchema[field.name.toLowerCase().replace(/\s+/g, '_')] = fieldSchema;
+    });
+
+    const categoryData = {
+      name: categoryName,
+      validation_schema: validationSchema
+    };
+
+    try {
+      if (isEditMode && editingCategoryId) {
+        // Update existing category
+        await dispatch(updateCategory({ 
+          categoryId: parseInt(editingCategoryId), 
+          categoryData 
+        })).unwrap();
+        // Clear localStorage
+        localStorage.removeItem('pendingCategoryName');
+        localStorage.removeItem('editingCategoryId');
+        // Refresh categories list
+        dispatch(fetchCategories());
+      } else {
+        // Create new category
+        await dispatch(createCategory(categoryData)).unwrap();
+        // Clear localStorage
+        localStorage.removeItem('pendingCategoryName');
+      }
+      // Navigate back to category list
+      navigate('/admin/category');
+    } catch (error) {
+      console.error(`Failed to ${isEditMode ? 'update' : 'create'} category:`, error);
+      // Error is already handled by the action (toast notification)
+    }
   };
 
   const getFieldTypeIcon = (type) => {
@@ -209,13 +369,20 @@ const ManagerProductFields = () => {
             <div className="category-details">
               <h1 className="manage-field-page-title">Manage Product Fields</h1>
               <p className="manage-field-page-subtitle">
-                Configure custom fields for products in <strong>{category.name}</strong> category
+                Configure custom fields for products in <strong>{categoryName || 'New Category'}</strong> category
               </p>
             </div>
             <div className="header-actions">
               <button
                 className="field-secondary-btn"
-                onClick={() => navigate('/manager/category')}
+                onClick={() => {
+                  // Clear edit mode data when canceling
+                  if (isEditMode) {
+                    localStorage.removeItem('editingCategoryId');
+                    localStorage.removeItem('pendingCategoryName');
+                  }
+                  navigate('/admin/category');
+                }}
               >
                 Back to Categories
               </button>
@@ -461,7 +628,7 @@ const ManagerProductFields = () => {
 
                 <div className="preview-form">
                   <div className="preview-header">
-                    <h4 className="preview-title">Add New Product - {category.name}</h4>
+                    <h4 className="preview-title">Add New Product - {categoryName || 'New Category'}</h4>
                     <p className="preview-subtitle">Required fields are marked with *</p>
                   </div>
 
@@ -489,7 +656,7 @@ const ManagerProductFields = () => {
                           />
                         )}
                         {field.type === 'select' && (
-                          <select className="preview-select" disabled>
+                          <select className="preview-select">
                             <option value="">Select {field.name.toLowerCase()}</option>
                             {field.options?.map((option, idx) => (
                               <option key={idx} value={option}>{option}</option>

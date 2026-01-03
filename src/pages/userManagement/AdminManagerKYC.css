@@ -11,6 +11,9 @@ body {
 .kyc-page {
   min-height: 100vh;
   padding: 25px;
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .kyc-header {
@@ -212,6 +215,8 @@ textarea {
 
 .document-preview {
   width: 100%;
+  overflow: visible;
+  margin-top: 20px;
 }
 
 .doc-header {
@@ -221,10 +226,230 @@ textarea {
   margin-bottom: 16px;
 }
 
-.documents {
+.documents-horizontal {
   display: flex;
   gap: 20px;
-  flex-wrap: wrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 10px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.documents-horizontal::-webkit-scrollbar {
+  height: 8px;
+}
+
+.documents-horizontal::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.documents-horizontal::-webkit-scrollbar-thumb {
+  background: rgba(140, 198, 63, 0.5);
+  border-radius: 4px;
+}
+
+.documents-horizontal::-webkit-scrollbar-thumb:hover {
+  background: rgba(140, 198, 63, 0.7);
+}
+
+.doc-card-horizontal {
+  flex: 0 0 320px;
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  overflow: visible;
+}
+
+.doc-card-horizontal:hover {
+  border-color: rgba(140, 198, 63, 0.5);
+  box-shadow: 0 4px 20px rgba(140, 198, 63, 0.1);
+  transform: translateY(-2px);
+}
+
+.doc-card-horizontal h4 {
+  margin: 0;
+  padding-top: 12px;
+  font-size: 0.9375rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  word-wrap: break-word;
+}
+
+.documents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.doc-card-enhanced {
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.doc-card-enhanced:hover {
+  border-color: rgba(140, 198, 63, 0.5);
+  box-shadow: 0 4px 20px rgba(140, 198, 63, 0.1);
+  transform: translateY(-2px);
+}
+
+.doc-card-horizontal .doc-image-container {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doc-image-container {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.doc-image-error {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.doc-image-error p {
+  margin: 8px 0 0 0;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.doc-card-horizontal .doc-image {
+  max-width: 100%;
+  max-height: 400px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.doc-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.doc-image:hover {
+  transform: scale(1.05);
+}
+
+.doc-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(2px);
+  border-radius: 10px;
+}
+
+.doc-image-container:hover .doc-image-overlay {
+  opacity: 1;
+}
+
+.doc-card-horizontal .doc-image-container {
+  overflow: hidden;
+}
+
+.doc-card-horizontal .doc-image-container .doc-image-overlay {
+  border-radius: 10px;
+}
+
+.doc-action-btn {
+  background: rgba(140, 198, 63, 0.9);
+  color: #000;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.doc-action-btn:hover {
+  background: #8cc63f;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(140, 198, 63, 0.4);
+}
+
+.doc-preview-btn {
+  background: rgba(59, 130, 246, 0.9);
+  color: #fff;
+}
+
+.doc-preview-btn:hover {
+  background: #3b82f6;
+}
+
+.doc-download-btn {
+  background: rgba(34, 197, 94, 0.9);
+  color: #fff;
+}
+
+.doc-download-btn:hover {
+  background: #22c55e;
+}
+
+.doc-card-enhanced h4 {
+  margin: 0;
+  padding-top: 12px;
+  font-size: 0.9375rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  word-wrap: break-word;
 }
 
 .doc-card {
@@ -367,19 +592,84 @@ input:checked+.slider:before {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: rgba(0, 0, 0, 0.95);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 10000;
+  overflow: hidden;
 }
 
-.fullscreen-overlay img {
+.fullscreen-image-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.fullscreen-image {
   max-width: 90%;
   max-height: 90%;
   object-fit: contain;
   border-radius: 10px;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.fullscreen-controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 12px 16px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 10001;
+  flex-wrap: wrap;
+}
+
+.fullscreen-control-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fullscreen-control-btn:hover {
+  background: rgba(140, 198, 63, 0.2);
+  border-color: #8cc63f;
+  color: #8cc63f;
+  transform: scale(1.1);
+}
+
+.fullscreen-control-btn.close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.zoom-level {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-width: 50px;
+  text-align: center;
+  padding: 0 8px;
 }
 
 .fullscreen-overlay .close-modal {
@@ -392,6 +682,7 @@ input:checked+.slider:before {
   z-index: 10001;
   user-select: none;
   transition: color 0.2s;
+  display: none;
 }
 
 .fullscreen-overlay .close-modal:hover {
@@ -483,12 +774,46 @@ input:checked+.slider:before {
     width: 100%;
   }
 
-  .documents {
-    flex-direction: column;
+  .documents-horizontal {
+    gap: 15px;
   }
 
+  .doc-card-horizontal {
+    flex: 0 0 280px;
+  }
+
+  .doc-card-horizontal .doc-image-container {
+    min-height: 300px;
+  }
+
+  .doc-card-horizontal .doc-image {
+    max-height: 300px;
+  }
+
+  .documents-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+
+  .doc-card-enhanced,
   .doc-card {
-    min-width: 100%;
+    min-width: 0;
+  }
+
+  .fullscreen-controls {
+    top: 10px;
+    right: 10px;
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  .fullscreen-control-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .zoom-level {
+    font-size: 0.75rem;
+    min-width: 40px;
   }
 }
 
@@ -507,8 +832,16 @@ input:checked+.slider:before {
     gap: 1rem;
   }
 
-  .comparison-toggle span {
-    margin-left: 0 !important;
+  .doc-card-horizontal {
+    flex: 0 0 240px;
+  }
+
+  .doc-card-horizontal .doc-image-container {
+    min-height: 250px;
+  }
+
+  .doc-card-horizontal .doc-image {
+    max-height: 250px;
   }
 
   .kyc-spinner {

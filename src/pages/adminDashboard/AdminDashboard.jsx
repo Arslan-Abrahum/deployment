@@ -2,6 +2,9 @@
 import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from "react";
 import "./AdminDashboard.css";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUsersList } from "../../store/actions/adminActions";
+import { adminService } from "../../services/interceptors/admin.service";
 
 // Lazy load images for better performance
 // const Car1 = lazy(() => import('../../assets/admin-assests/1.png'));
@@ -67,7 +70,9 @@ const ActivityItem = React.memo(({ activity }) => (
 
 const AuctionRow = React.memo(({ auction, onViewDetails, onAssignManager }) => {
   const getStatusColor = useCallback((status) => {
-    switch (status) {
+    // Map DRAFT to PENDING for color
+    const displayStatus = status === 'DRAFT' ? 'PENDING' : status;
+    switch (displayStatus) {
       case 'ACTIVE': return 'admin-dashboard-status-success';
       case 'APPROVED': return 'admin-dashboard-status-success';
       case 'PENDING': return 'admin-dashboard-status-warning';
@@ -76,6 +81,9 @@ const AuctionRow = React.memo(({ auction, onViewDetails, onAssignManager }) => {
       default: return 'admin-dashboard-status-default';
     }
   }, []);
+
+  // Map DRAFT to PENDING for display
+  const displayStatus = auction.status === 'DRAFT' ? 'PENDING' : auction.status;
 
   return (
     <tr className="admin-dashboard-auction-row">
@@ -108,17 +116,21 @@ const AuctionRow = React.memo(({ auction, onViewDetails, onAssignManager }) => {
       </td>
       <td className="admin-dashboard-table-cell admin-dashboard-cell-status" data-label="Status">
         <span className={`admin-dashboard-status-badge ${getStatusColor(auction.status)}`}>
-          {auction.status}
+          {displayStatus}
         </span>
       </td>
       <td className="admin-dashboard-table-cell admin-dashboard-cell-price" data-label="Price">
         <div className="admin-dashboard-auction-price">
-          {auction.currency} {auction.initial_price}
+          {auction.currency} {auction.initial_price || auction.seller_expected_price || 'N/A'}
         </div>
       </td>
       <td className="admin-dashboard-table-cell admin-dashboard-cell-manager" data-label="Manager">
         <div className="admin-dashboard-manager-info">
-          {auction.manager_details ? (
+          {auction.auction_manager_name ? (
+            <div className="admin-dashboard-manager-name">
+              {auction.auction_manager_name}
+            </div>
+          ) : auction.manager_details ? (
             <>
               <div className="admin-dashboard-manager-name">
                 {auction.manager_details.first_name} {auction.manager_details.last_name}
@@ -143,19 +155,22 @@ const AuctionRow = React.memo(({ auction, onViewDetails, onAssignManager }) => {
               <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
             </svg>
           </button>
-          <button
-            className="admin-dashboard-icon-btn"
-            onClick={() => onAssignManager(auction.id, 1)}
-            title="Assign Manager"
-            aria-label={`Assign manager to ${auction.title}`}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" />
-              <circle cx="8.5" cy="7" r="4" stroke="currentColor" strokeWidth="2" />
-              <line x1="20" y1="8" x2="20" y2="14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              <line x1="23" y1="11" x2="17" y2="11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </button>
+          {/* Show Assign Manager button only for pending auctions (DRAFT or PENDING) */}
+          {(auction.status === 'DRAFT' || auction.status === 'PENDING') && (
+            <button
+              className="admin-dashboard-icon-btn"
+              onClick={() => onAssignManager(auction.id, 1)}
+              title="Assign Manager"
+              aria-label={`Assign manager to ${auction.title}`}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" />
+                <circle cx="8.5" cy="7" r="4" stroke="currentColor" strokeWidth="2" />
+                <line x1="20" y1="8" x2="20" y2="14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <line x1="23" y1="11" x2="17" y2="11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
+          )}
         </div>
       </td>
     </tr>
@@ -164,19 +179,90 @@ const AuctionRow = React.memo(({ auction, onViewDetails, onAssignManager }) => {
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { users, isLoading } = useSelector((state) => state.admin);
   const [auctions, setAuctions] = useState([]);
-  const [stats] = useState({
-    totalUsers: 0,
-    totalAuctions: 0,
-    activeAuctions: 0,
-    pendingApprovals: 0,
-    totalRevenue: "0",
-    platformFees: "0",
-    disputeCases: 0,
-    completedAuctions: 0,
-    pendingAuctions: 0,
-    rejectedAuctions: 0
-  });
+  const [filterStatus, setFilterStatus] = useState('Pending');
+  const [isLoadingAuctions, setIsLoadingAuctions] = useState(false);
+  const [auctionCount, setAuctionCount] = useState(0);
+  
+  // Fetch users on component mount
+  useEffect(() => {
+    dispatch(fetchUsersList());
+  }, [dispatch]);
+
+  // Fetch auctions on component mount
+  useEffect(() => {
+    const fetchAuctions = async () => {
+      setIsLoadingAuctions(true);
+      try {
+        const response = await adminService.getAuctionListings();
+        setAuctions(response.results || []);
+        setAuctionCount(response.count || 0);
+      } catch (error) {
+        console.error('Error fetching auctions:', error);
+        setAuctions([]);
+        setAuctionCount(0);
+      } finally {
+        setIsLoadingAuctions(false);
+      }
+    };
+    fetchAuctions();
+  }, []);
+
+  // Calculate stats from users data
+  const stats = useMemo(() => {
+    if (!users?.results) {
+      return {
+        totalUsers: 0,
+        totalAuctions: auctionCount,
+        activeAuctions: 0,
+        pendingApprovals: 0,
+        totalRevenue: "0",
+        platformFees: "0",
+        disputeCases: 0,
+        completedAuctions: 0,
+        pendingAuctions: 0,
+        rejectedAuctions: 0
+      };
+    }
+
+    const allUsers = users.results;
+    const totalUsers = allUsers.length;
+    
+    // Count pending approvals (sellers with KYC images but not verified)
+    const pendingApprovals = allUsers.filter(user => {
+      if (user.role !== 'seller' || !user?.seller_details) return false;
+      
+      // Check if seller has KYC images
+      const sellerDetails = user.seller_details;
+      const kycImageFields = ['id_front', 'id_back', 'driving_license_front', 'driving_license_back', 'passport_front'];
+      const hasImages = kycImageFields.some(field => {
+        const value = sellerDetails[field];
+        if (!value) return false;
+        if (typeof value === 'string') {
+          return value.trim() !== '';
+        }
+        return value !== null && value !== undefined;
+      });
+      
+      // Pending if not verified and has images
+      return !user.seller_details.verified && hasImages;
+    }).length;
+
+    return {
+      totalUsers,
+      totalAuctions: auctionCount,
+      activeAuctions: 0,
+      pendingApprovals,
+      totalRevenue: "0",
+      platformFees: "0",
+      disputeCases: 0,
+      completedAuctions: 0,
+      pendingAuctions: 0,
+      rejectedAuctions: 0
+    };
+  }, [users, auctionCount]);
 
   // Memoized data
   const recentActivities = useMemo(() => [
@@ -194,16 +280,27 @@ const AdminDashboard = () => {
     // { id: 4, name: "Art Gallery Co.", auctions: 12, revenue: "$128,400", rating: 4.6 },
   ], []);
 
-  useEffect(() => {
-    setAuctions(mockAuctionsData.results);
-  }, []);
+  // Filter auctions based on selected status
+  const filteredAuctions = useMemo(() => {
+    if (!auctions || auctions.length === 0) return [];
+    
+    if (filterStatus === 'All Status') {
+      return auctions;
+    }
+    
+    return auctions.filter(auction => {
+      // Map DRAFT to PENDING for filtering
+      const displayStatus = auction.status === 'DRAFT' ? 'PENDING' : auction.status;
+      return displayStatus === filterStatus.toUpperCase();
+    });
+  }, [auctions, filterStatus]);
 
   const handleAssignToManager = useCallback((auctionId, managerId) => {
     console.log(`Assigning auction ${auctionId} to manager ${managerId}`);
   }, []);
 
   const handleViewDetails = useCallback((auctionId) => {
-    // navigate(`/admin/auctions/${auctionId}`);
+    navigate(`/admin/auction/${auctionId}`);
   }, [navigate]);
 
   // Memoized stats cards data
@@ -267,14 +364,14 @@ const AdminDashboard = () => {
           <p className="admin-dashboard-subtitle">Platform oversight and management console</p>
         </div>
         <div className="admin-dashboard-header-actions">
-          <button
+          {/* <button
             className="admin-dashboard-action-btn admin-dashboard-btn-primary"
             onClick={() => navigate('/admin/profile')}
             aria-label="Go to my profile"
           >
             <ProfileIcon />
             <span>My Profile</span>
-          </button>
+          </button> */}
           <button 
             className="admin-dashboard-action-btn admin-dashboard-btn-outline"
             aria-label="Generate report"
@@ -293,8 +390,8 @@ const AdminDashboard = () => {
       </section>
 
       <div className="admin-dashboard-main">
-        {/* Left Column */}
-        <div className="admin-dashboard-left-column">
+        {/* Left Column - Commented out */}
+        {/* <div className="admin-dashboard-left-column">
           <section className="admin-dashboard-card" aria-label="Recent activity">
             <div className="admin-dashboard-card-header">
               <h2 className="admin-dashboard-card-title">Recent Activity</h2>
@@ -334,55 +431,74 @@ const AdminDashboard = () => {
               ))}
             </div>
           </section>
-        </div>
+        </div> */}
 
-        {/* Right Column */}
-        <div className="admin-dashboard-right-column">
+        {/* Full Width Column */}
+        <div className="admin-dashboard-full-width-column">
           <section className="admin-dashboard-card" aria-label="Recent auctions">
             <div className="admin-dashboard-card-header">
-              <h2 className="admin-dashboard-card-title">Recent Auctions</h2>
+              <div className="admin-dashboard-card-title-wrapper">
+                <h2 className="admin-dashboard-card-title">Recent Auctions</h2>
+                {auctionCount > 0 && (
+                  <span className="admin-dashboard-auction-count">({auctionCount})</span>
+                )}
+              </div>
               <div className="admin-dashboard-card-actions">
-                <select className="admin-dashboard-filter-select" aria-label="Filter by status">
+                <select 
+                  className="admin-dashboard-filter-select" 
+                  aria-label="Filter by status"
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                >
                   <option>All Status</option>
                   <option>Active</option>
                   <option>Pending</option>
-                  <option>Completed</option>
                 </select>
               </div>
             </div>
             
             <div className="admin-dashboard-auctions-table-wrapper">
-              <table className="admin-dashboard-auctions-table">
-                <thead>
-                  <tr>
-                    <th scope="col" className="admin-dashboard-table-header-cell admin-dashboard-th-auction">
-                      Auction
-                    </th>
-                    <th scope="col" className="admin-dashboard-table-header-cell admin-dashboard-th-status">
-                      Status
-                    </th>
-                    <th scope="col" className="admin-dashboard-table-header-cell admin-dashboard-th-price">
-                      Price
-                    </th>
-                    <th scope="col" className="admin-dashboard-table-header-cell admin-dashboard-th-manager">
-                      Manager
-                    </th>
-                    <th scope="col" className="admin-dashboard-table-header-cell admin-dashboard-th-actions">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {auctions.slice(0, 5).map(auction => (
-                    <AuctionRow
-                      key={auction.id}
-                      auction={auction}
-                      onViewDetails={handleViewDetails}
-                      onAssignManager={handleAssignToManager}
-                    />
-                  ))}
-                </tbody>
-              </table>
+              {isLoadingAuctions ? (
+                <div style={{ padding: '2rem', textAlign: 'center', color: '#fff' }}>
+                  Loading auctions...
+                </div>
+              ) : filteredAuctions.length === 0 ? (
+                <div style={{ padding: '2rem', textAlign: 'center', color: '#fff' }}>
+                  No auctions found
+                </div>
+              ) : (
+                <table className="admin-dashboard-auctions-table">
+                  <thead>
+                    <tr>
+                      <th scope="col" className="admin-dashboard-table-header-cell admin-dashboard-th-auction">
+                        Auction
+                      </th>
+                      <th scope="col" className="admin-dashboard-table-header-cell admin-dashboard-th-status">
+                        Status
+                      </th>
+                      <th scope="col" className="admin-dashboard-table-header-cell admin-dashboard-th-price">
+                        Price
+                      </th>
+                      <th scope="col" className="admin-dashboard-table-header-cell admin-dashboard-th-manager">
+                        Manager
+                      </th>
+                      <th scope="col" className="admin-dashboard-table-header-cell admin-dashboard-th-actions">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredAuctions.map(auction => (
+                      <AuctionRow
+                        key={auction.id}
+                        auction={auction}
+                        onViewDetails={handleViewDetails}
+                        onAssignManager={handleAssignToManager}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </section>
 

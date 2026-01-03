@@ -76,3 +76,74 @@ export const fetchUsersList = createAsyncThunk(
     }
   }
 );
+
+export const fetchCategories = createAsyncThunk(
+  'admin/fetchCategories',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await adminService.getCategories();
+      return response;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        'Failed to fetch categories';
+      toast.error(message);
+      return rejectWithValue(error.response?.data || { message });
+    }
+  }
+);
+
+export const createCategory = createAsyncThunk(
+  'admin/createCategory',
+  async (categoryData, { rejectWithValue }) => {
+    try {
+      const response = await adminService.createCategory(categoryData);
+      toast.success('Category created successfully!');
+      return response;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        'Failed to create category';
+      toast.error(message);
+      return rejectWithValue(error.response?.data || { message });
+    }
+  }
+);
+
+export const updateCategory = createAsyncThunk(
+  'admin/updateCategory',
+  async ({ categoryId, categoryData }, { rejectWithValue }) => {
+    try {
+      const response = await adminService.updateCategory(categoryId, categoryData);
+      toast.success('Category updated successfully!');
+      return response;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        'Failed to update category';
+      toast.error(message);
+      return rejectWithValue(error.response?.data || { message });
+    }
+  }
+);
+
+export const deleteCategory = createAsyncThunk(
+  'admin/deleteCategory',
+  async (categoryId, { rejectWithValue }) => {
+    try {
+      await adminService.deleteCategory(categoryId);
+      toast.success('Category deleted successfully!');
+      return categoryId;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        'Failed to delete category';
+      toast.error(message);
+      return rejectWithValue(error.response?.data || { message });
+    }
+  }
+);

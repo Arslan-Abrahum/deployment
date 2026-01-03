@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { assignAuctionToManager, fetchAdminDashboard, fetchUsersList, performUserAction } from '../actions/adminActions';
+import { assignAuctionToManager, fetchAdminDashboard, fetchUsersList, performUserAction, fetchCategories, deleteCategory } from '../actions/adminActions';
 
 const initialState = {
   dashboard: null,
   users: [],
+  categories: [],
   isLoading: false,
   isPerformingAction: false,
   isAssigning: false,
@@ -89,6 +90,37 @@ const adminSlice = createSlice({
         state.users = action.payload;
       })
       .addCase(fetchUsersList.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Fetch Categories
+    builder
+      .addCase(fetchCategories.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchCategories.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.categories = action.payload;
+      })
+      .addCase(fetchCategories.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
+
+    // Delete Category
+    builder
+      .addCase(deleteCategory.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteCategory.fulfilled, (state, action) => {
+        state.isLoading = false;
+        // Remove deleted category from the list
+        state.categories = state.categories.filter(cat => cat.id !== action.payload);
+      })
+      .addCase(deleteCategory.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });

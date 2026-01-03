@@ -57,22 +57,32 @@ function AdminHeader() {
       )
     },
     {
+      path: '/admin/users',
+      label: 'User Management',
+      desktopLabel: 'User Management',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 0a3.5 3.5 0 01-5.5 2.696" />
+        </svg>
+      )
+    },
+    {
+      path: '/admin/category',
+      label: 'Category Management',
+      desktopLabel: 'Category Management',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+        </svg>
+      )
+    },
+    {
       path: '/admin/finance',
       label: 'Finance',
       desktopLabel: 'Finance',
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      )
-    },
-    {
-      path: '/admin/users',
-      label: 'User Management',
-      desktopLabel: 'Users',
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 0a3.5 3.5 0 01-5.5 2.696" />
         </svg>
       )
     }
@@ -121,7 +131,7 @@ function AdminHeader() {
               )}
             </button>
 
-            <Link to="/admin/profile" className="admin-header__profile-btn" aria-label="Profile">
+            {/* <Link to="/admin/profile" className="admin-header__profile-btn" aria-label="Profile">
               <div className="admin-header__avatar">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                   <path
@@ -142,7 +152,7 @@ function AdminHeader() {
                   />
                 </svg>
               </div>
-            </Link>
+            </Link> */}
           </div>
         </div>
 

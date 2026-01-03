@@ -1,41 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCategories, deleteCategory } from '../../store/actions/adminActions';
 import './CategoryManagement.css';
 
 export default function CategoryManagement() {
+  const dispatch = useDispatch();
+  const { categories: categoriesFromStore, isLoading } = useSelector((state) => state.admin);
   const [searchQuery, setSearchQuery] = useState('');
-  const [categories, setCategories] = useState([
-    // { id: 1, name: 'Industrial Machinery', items: 142, status: true, description: 'Heavy machinery and industrial equipment', icon: '🏭' },
-    // { id: 2, name: 'Vehicles & Fleet', items: 88, status: true, description: 'Cars, trucks, and commercial vehicles', icon: '🚗' },
-    // { id: 3, name: 'Office Furniture', items: 231, status: false, description: 'Office desks, chairs, and furnishings', icon: '🪑' },
-    // { id: 4, name: 'Electronics & IT', items: 175, status: true, description: 'Computers, servers, and IT equipment', icon: '💻' },
-    // { id: 5, name: 'Real Estate', items: 12, status: false, description: 'Commercial and residential properties', icon: '🏠' },
-    // { id: 6, name: 'Construction Equipment', items: 98, status: true, description: 'Construction tools and machinery', icon: '🚧' },
-    // { id: 7, name: 'Medical Equipment', items: 45, status: true, description: 'Medical devices and hospital equipment', icon: '🏥' },
-    // { id: 8, name: 'Agriculture Tools', items: 67, status: false, description: 'Farming equipment and agricultural tools', icon: '🚜' },
-    // { id: 9, name: 'Sports Equipment', items: 34, status: true, description: 'Sports gear and fitness equipment', icon: '⚽' },
-    // { id: 10, name: 'Art & Collectibles', items: 156, status: true, description: 'Artwork and collectible items', icon: '🎨' },
-    // { id: 11, name: 'Restaurant Equipment', items: 89, status: false, description: 'Kitchen and restaurant equipment', icon: '🍽️' },
-    // { id: 12, name: 'Lab Equipment', items: 43, status: true, description: 'Laboratory instruments and equipment', icon: '🔬' },
-  ]);
+  const navigate = useNavigate();
+
+  // Fetch categories on component mount
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
+  // Transform API data to match component structure
+  const categories = Array.isArray(categoriesFromStore) ? categoriesFromStore.map(cat => ({
+    id: cat.id,
+    name: cat.name,
+    slug: cat.slug,
+    description: cat.description || '',
+    status: cat.is_active !== undefined ? cat.is_active : true,
+    items: 0, // API doesn't provide items count
+    icon: '📦'
+  })) : [];
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-  const navigate = useNavigate();
 
   const handleStatusToggle = (id) => {
-    setCategories(categories.map(cat =>
-      cat.id === id ? { ...cat, status: !cat.status } : cat
-    ));
+    // TODO: Implement status toggle API call
+    console.log('Toggle status for category:', id);
   };
 
   const handleEdit = (id) => {
-    console.log('Edit category:', id);
+    // Store category ID in localStorage to pass to edit flow
+    localStorage.setItem('editingCategoryId', id.toString());
+    // Find the category to get its name
+    const category = categories.find(cat => cat.id === id);
+    if (category) {
+      localStorage.setItem('pendingCategoryName', category.name);
+    }
+    navigate('/admin/edit-category');
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this category? This action cannot be undone.')) {
-      setCategories(categories.filter(cat => cat.id !== id));
+      try {
+        await dispatch(deleteCategory(id)).unwrap();
+        // Refresh categories list after successful deletion
+        dispatch(fetchCategories());
+      } catch (error) {
+        // Error is already handled by the action (toast notification)
+        console.error('Failed to delete category:', error);
+      }
     }
   };
 
@@ -101,7 +120,7 @@ export default function CategoryManagement() {
             </div>
             <div className="category-header-actions">
               <button className="category-primary-action-btn" onClick={
-                () => navigate('/manager/add-category')
+                () => navigate('/admin/add-category')
               }>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -126,7 +145,6 @@ export default function CategoryManagement() {
               <div className="category-card-content">
                 <span className="card-label">Total Categories</span>
                 <h3 className="category-card-value">{categories.length}</h3>
-                <span className="category-card-change positive">0%</span>
               </div>
             </div>
 
@@ -143,7 +161,6 @@ export default function CategoryManagement() {
               <div className="category-card-content">
                 <span className="card-label">Active Categories</span>
                 <h3 className="category-card-value">{categories.filter(cat => cat.status).length}</h3>
-                <span className="category-card-change positive">0%</span>
               </div>
             </div>
 
@@ -159,11 +176,11 @@ export default function CategoryManagement() {
               <div className="category-card-content">
                 <span className="card-label">Inactive Categories</span>
                 <h3 className="category-card-value">{categories.filter(cat => !cat.status).length}</h3>
-                <span className="category-card-change negative">0%</span>
               </div>
             </div>
 
-            <div className="category-stat-card">
+            {/* Total Items box commented out */}
+            {/* <div className="category-stat-card">
               <div className="category-card-bg-gradient" style={{ background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(168, 85, 247, 0.05) 100%)' }}></div>
               <div className="category-card-icon-container">
                 <div className="category-card-icon" style={{ backgroundColor: 'rgba(168, 85, 247, 0.15)' }}>
@@ -180,7 +197,7 @@ export default function CategoryManagement() {
                 <h3 className="category-card-value">{categories.reduce((sum, cat) => sum + cat.items, 0)}</h3>
                 <span className="category-card-change positive">0%</span>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <div className="category-data-table-section">
@@ -225,8 +242,7 @@ export default function CategoryManagement() {
                 <thead>
                   <tr>
                     <th>Category</th>
-                    <th>Description</th>
-                    <th>Items</th>
+                    <th>ID</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
@@ -242,20 +258,12 @@ export default function CategoryManagement() {
                             </div>
                             <div className="category-details">
                               <h4 className="category-name">{category.name}</h4>
-                              <span className="category-id">ID: CAT-{category.id.toString().padStart(3, '0')}</span>
                             </div>
                           </div>
                         </td>
                         <td>
-                          <div className="category-description-cell">
-                            <p className="category-description-text">{category.description}</p>
-                          </div>
-                        </td>
-                        <td>
-                          <div className="category-items-cell">
-                            <div className="category-items-count-badge">
-                              <span className="category-count">{category.items}</span>
-                            </div>
+                          <div className="category-id-cell">
+                            <span className="category-id-text">CAT-{category.id.toString().padStart(3, '0')}</span>
                           </div>
                         </td>
                         <td>
@@ -299,7 +307,7 @@ export default function CategoryManagement() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="5">
+                      <td colSpan="4">
                         <div className="category-empty-state">
                           <div className="category-empty-icon">
                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none">

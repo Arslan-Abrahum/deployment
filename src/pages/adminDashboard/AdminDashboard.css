@@ -139,9 +139,11 @@ background-color: #8CC63F;
 /* Main Content Layout */
 .admin-dashboard-main {
   padding: 0 2rem 2rem;
-  display: grid;
-  grid-template-columns: 1fr 1.5fr;
-  gap: 1.5rem;
+  display: block;
+}
+
+.admin-dashboard-full-width-column {
+  width: 100%;
 }
 
 /* Cards */
@@ -161,12 +163,26 @@ background-color: #8CC63F;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.admin-dashboard-card-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .admin-dashboard-card-title {
   font-size: 1.125rem;
   font-weight: 600;
   color: white;
+  margin: 0;
+}
+
+.admin-dashboard-auction-count {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 400;
 }
 
 .admin-dashboard-card-action {
@@ -182,6 +198,12 @@ background-color: #8CC63F;
 }
 .admin-dashboard-card-action:hover {
   background-color: #8bc63f32;
+}
+
+.admin-dashboard-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 /* Activity List */
 .admin-dashboard-activity-list {
@@ -317,7 +339,7 @@ background-color: #8CC63F;
 
 .admin-dashboard-table-header-cell {
   padding: 1rem;
-  text-align: center;
+  text-align: left;
   font-size: 0.75rem;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.6);
@@ -326,10 +348,50 @@ background-color: #8CC63F;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+.admin-dashboard-th-auction {
+  text-align: left;
+}
+
+.admin-dashboard-th-status {
+  text-align: center;
+}
+
+.admin-dashboard-th-price {
+  text-align: center;
+}
+
+.admin-dashboard-th-manager {
+  text-align: left;
+}
+
+.admin-dashboard-th-actions {
+  text-align: center;
+}
+
 .admin-dashboard-table-cell {
   padding: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   vertical-align: middle;
+}
+
+.admin-dashboard-cell-auction {
+  text-align: left;
+}
+
+.admin-dashboard-cell-status {
+  text-align: center;
+}
+
+.admin-dashboard-cell-price {
+  text-align: center;
+}
+
+.admin-dashboard-cell-manager {
+  text-align: left;
+}
+
+.admin-dashboard-cell-actions {
+  text-align: center;
 }
 
 .admin-dashboard-auction-row:last-child .admin-dashboard-table-cell {

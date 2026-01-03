@@ -21,10 +21,10 @@ const UserManagement = () => {
   const [page, setPage] = useState(1);
 
 
-  // Fetch users on component mount
+  // Fetch users on component mount and when roleFilter changes
   useEffect(() => {
     dispatch(fetchUsersList());
-  }, [dispatch]);
+  }, [dispatch, roleFilter]);
 
   // // Refresh users list after successful action
   // useEffect(() => {
@@ -39,6 +39,30 @@ const UserManagement = () => {
     return "Active";
   };
 
+  // Check if seller has KYC images attached
+  const hasKYCImages = (user) => {
+    if (user.role !== 'seller' || !user?.seller_details) return false;
+    
+    const sellerDetails = user.seller_details;
+    const kycImageFields = [
+      'id_front',
+      'id_back',
+      'driving_license_front',
+      'driving_license_back',
+      'passport_front'
+    ];
+    
+    // Check if at least one KYC image field exists and is not null/empty
+    return kycImageFields.some(field => {
+      const value = sellerDetails[field];
+      if (!value) return false;
+      // Handle both string and non-string values
+      if (typeof value === 'string') {
+        return value.trim() !== '';
+      }
+      return value !== null && value !== undefined;
+    });
+  };
 
   // Filter and paginate users
   // const filteredUsers = useMemo(() => {
@@ -79,6 +103,17 @@ const filteredUsers = useMemo(() => {
       roleFilter === "manager"
         ? user.role === "manager" && !isStaff
         : user.role === roleFilter;
+
+    // ✅ Seller filtering: Only show if verified OR (pending with images)
+    if (user.role === 'seller' && roleFilter === 'seller') {
+      const isVerified = user?.seller_details?.verified === true;
+      const isPending = !isVerified;
+      
+      // If pending, only show if they have KYC images
+      if (isPending && !hasKYCImages(user)) {
+        return false;
+      }
+    }
 
     return matchesSearch && matchesRole;
   });
@@ -202,13 +237,19 @@ console.log("filteredUsers: ", filteredUsers);
                 <th>Email</th>
                 <th>Role</th>
                 <th>Status</th>
-                <th>Actions</th>
+                {roleFilter === 'seller' && <th>Actions</th>}
+                {/* Actions column only shown for sellers */}
               </tr>
             </thead>
 
             <tbody>
               {paginatedUsers.map((user) => (
-                <tr key={user.id} className="user-management-table-row" onClick={() => navigate(`/admin/kycverification/${user.id}`)}>
+                <tr 
+                  key={user.id} 
+                  className="user-management-table-row" 
+                  onClick={roleFilter === 'seller' && user.role === 'seller' ? () => navigate(`/admin/kycverification/${user.id}`) : undefined}
+                  style={roleFilter !== 'seller' || user.role !== 'seller' ? { cursor: 'default' } : { cursor: 'pointer' }}
+                >
                   <td className="user-management-name-cell">
                     <div className="user-management-avatar">
                       {user.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}
@@ -226,65 +267,67 @@ console.log("filteredUsers: ", filteredUsers);
                       {getUserStatus(user)}
                     </span>
                   </td>
-                  <td className="user-management-actions-cell">
-                    <div className="user-management-actions-dropdown">
-                      <button className="user-management-actions-trigger">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                          <circle cx="12" cy="6" r="1.5" fill="currentColor" />
-                          <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-                          <circle cx="12" cy="18" r="1.5" fill="currentColor" />
-                        </svg>
-                      </button>
-                      {/* <div className="user-management-actions-menu">
-                        {user.role === 'seller' && !user.is_verified && (
-                          <button
-                            className="user-management-action-btn user-management-action-verify"
-                            onClick={() => handleUserAction(user.id, 'VERIFY_SELLER')}
-                            disabled={isPerformingAction}
-                          >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                              <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                            Verify Seller
-                          </button>
-                        )}
-                        {user.role === 'seller' && (
-                          <button
-                            className="user-management-action-btn user-management-action-promote"
-                            onClick={() => handleUserAction(user.id, 'PROMOTE_TO_MANAGER')}
-                            disabled={isPerformingAction}
-                          >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                              <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                            Promote to Manager
-                          </button>
-                        )}
-                        {user.role === 'manager' && (
-                          <button
-                            className="user-management-action-btn user-management-action-suspend"
-                            onClick={() => handleUserAction(user.id, 'SUSPEND_MANAGER')}
-                            disabled={isPerformingAction}
-                          >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                              <path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                            </svg>
-                            Suspend Manager
-                          </button>
-                        )}
-                        <button
-                          className="user-management-action-btn user-management-action-change"
-                          onClick={() => handleUserAction(user.id, 'SPECIFIC_ROLE_ACTION', 'buyer')}
-                          disabled={isPerformingAction}
-                        >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                            <path d="M17 8l4 4m0 0l-4 4m4-4H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  {roleFilter === 'seller' && user.role === 'seller' && (
+                    <td className="user-management-actions-cell">
+                      <div className="user-management-actions-dropdown">
+                        <button className="user-management-actions-trigger">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="6" r="1.5" fill="currentColor" />
+                            <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+                            <circle cx="12" cy="18" r="1.5" fill="currentColor" />
                           </svg>
-                          Change to Buyer
                         </button>
-                      </div> */}
-                    </div>
-                  </td>
+                        {/* <div className="user-management-actions-menu">
+                          {user.role === 'seller' && !user.is_verified && (
+                            <button
+                              className="user-management-action-btn user-management-action-verify"
+                              onClick={() => handleUserAction(user.id, 'VERIFY_SELLER')}
+                              disabled={isPerformingAction}
+                            >
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                              Verify Seller
+                            </button>
+                          )}
+                          {user.role === 'seller' && (
+                            <button
+                              className="user-management-action-btn user-management-action-promote"
+                              onClick={() => handleUserAction(user.id, 'PROMOTE_TO_MANAGER')}
+                              disabled={isPerformingAction}
+                            >
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                              Promote to Manager
+                            </button>
+                          )}
+                          {user.role === 'manager' && (
+                            <button
+                              className="user-management-action-btn user-management-action-suspend"
+                              onClick={() => handleUserAction(user.id, 'SUSPEND_MANAGER')}
+                              disabled={isPerformingAction}
+                            >
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                <path d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                              </svg>
+                              Suspend Manager
+                            </button>
+                          )}
+                          <button
+                            className="user-management-action-btn user-management-action-change"
+                            onClick={() => handleUserAction(user.id, 'SPECIFIC_ROLE_ACTION', 'buyer')}
+                            disabled={isPerformingAction}
+                          >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                              <path d="M17 8l4 4m0 0l-4 4m4-4H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                            Change to Buyer
+                          </button>
+                        </div> */}
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

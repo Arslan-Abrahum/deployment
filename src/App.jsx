@@ -45,6 +45,7 @@ import ManagerProductFields from './pages/managerProductFields/ManagerProductFie
 
 // Admin
 import AdminDashboard from "./pages/adminDashboard/AdminDashboard";
+import AdminAuctionDetails from "./pages/adminDashboard/AdminAuctionDetails";
 import AdminProfile from "./pages/adminProfile/AdminProfile";
 import AdminFinance from './pages/AdminFinance'
 import ManualPaymentEntry from './components/ManualPayment'
@@ -151,7 +152,8 @@ function App() {
                   </>
                 } />
 
-                <Route path="/manager/category" element={
+                {/* Category Management moved to admin flow */}
+                {/* <Route path="/manager/category" element={
                   <>
                     <CategoryManagement />
                   </>
@@ -165,7 +167,7 @@ function App() {
                   <>
                     <ManagerProductFields />
                   </>
-                } />
+                } /> */}
 
               </Route>
             </Route>
@@ -174,6 +176,7 @@ function App() {
             <Route element={<AdminGuard />}>
               <Route element={<AdminLayout />}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/auction/:id" element={<AdminAuctionDetails />} />
                 <Route path="/admin/profile" element={<AdminProfile />} />
                 <Route path="/admin/finance" element={<AdminFinance />} />
                 <Route path="/admin/finance/manual-payments" element={
@@ -200,6 +203,26 @@ function App() {
                 <Route path="/admin/kycverification/:id" element={
                   <>
                     <AdminManagerKYC />
+                  </>
+                } />
+                <Route path="/admin/category" element={
+                  <>
+                    <CategoryManagement />
+                  </>
+                } />
+                <Route path="/admin/add-category" element={
+                  <>
+                    <ManagerCreateCategory />
+                  </>
+                } />
+                <Route path="/admin/edit-category" element={
+                  <>
+                    <ManagerCreateCategory />
+                  </>
+                } />
+                <Route path="/admin/product-fields" element={
+                  <>
+                    <ManagerProductFields />
                   </>
                 } />
 

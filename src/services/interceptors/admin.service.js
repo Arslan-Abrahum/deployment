@@ -62,4 +62,84 @@ export const adminService = {
       throw error;
     }
   },
+
+  // Get Categories List
+  getCategories: async () => {
+    try {
+      const { data } = await apiClient.get('/api/auctions/categories/');
+      return data;
+    } catch (error) {
+      if (error.isNetworkError) {
+        throw new Error('Unable to connect to server. Please try again later.');
+      }
+      throw error;
+    }
+  },
+
+  // Create Category
+  createCategory: async (categoryData) => {
+    try {
+      const { data } = await apiClient.post('/api/auctions/categories/', categoryData);
+      return data;
+    } catch (error) {
+      if (error.isNetworkError) {
+        throw new Error('Unable to connect to server. Please try again later.');
+      }
+      throw error;
+    }
+  },
+
+  // Update Category
+  updateCategory: async (categoryId, categoryData) => {
+    try {
+      const { data } = await apiClient.post(`/api/auctions/categories/${categoryId}/`, categoryData);
+      return data;
+    } catch (error) {
+      if (error.isNetworkError) {
+        throw new Error('Unable to connect to server. Please try again later.');
+      }
+      throw error;
+    }
+  },
+
+  // Delete Category
+  deleteCategory: async (categoryId) => {
+    try {
+      const { data } = await apiClient.delete(`/api/auctions/categories/${categoryId}/`);
+      return data;
+    } catch (error) {
+      if (error.isNetworkError) {
+        throw new Error('Unable to connect to server. Please try again later.');
+      }
+      throw error;
+    }
+  },
+
+  // Get Auction Listings
+  getAuctionListings: async (params = {}) => {
+    try {
+      const { data } = await apiClient.get(API_ROUTES.AUCTION_LISTINGS, {
+        params,
+      });
+      return data;
+    } catch (error) {
+      if (error.isNetworkError) {
+        throw new Error('Unable to connect to server. Please try again later.');
+      }
+      throw error;
+    }
+  },
+
+  // Get Single Auction by ID
+  getAuctionById: async (auctionId) => {
+    try {
+      const { data } = await apiClient.get(`${API_ROUTES.AUCTION_LISTINGS}${auctionId}/`);
+      return data;
+    } catch (error) {
+      if (error.isNetworkError) {
+        throw new Error('Unable to connect to server. Please try again later.');
+      }
+      throw error;
+    }
+  },
 };

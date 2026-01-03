@@ -28,6 +28,7 @@ export const API_ROUTES = {
   ADMIN_USER_ACTION: '/api/inspections/admin/user-action/',
   ADMIN_ASSIGN_AUCTION: '/api/inspections/admin/assign/',
   ADMIN_USERS_LIST: '/api/inspections/admin/users/',
+  AUCTION_LISTINGS: '/api/auctions/listings/',
   
   // Manager Routes
   MANAGER_TASKS: '/api/inspections/manager/tasks/',

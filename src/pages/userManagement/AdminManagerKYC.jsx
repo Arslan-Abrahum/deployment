@@ -4,9 +4,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUsersList, performUserAction } from "../../store/actions/adminActions";
 import { clearActionSuccess } from "../../store/slices/adminSlice";
+import KYCDocumentPreview from "./KYCDocumentPreview";
 const AdminManagerKYC = () => {
   const [comparison, setComparison] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const navigate = useNavigate();
   const { id } = useParams();
   const [selectedAction, setSelectedAction] = useState({
@@ -25,6 +30,30 @@ const AdminManagerKYC = () => {
     dispatch(fetchUsersList());
   }, [dispatch]);
 
+  // Keyboard shortcuts for fullscreen viewer
+  useEffect(() => {
+    if (!fullscreenImage) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        closeFullscreen();
+      } else if (e.key === '+' || e.key === '=') {
+        e.preventDefault();
+        setZoomLevel(prev => Math.min(prev + 0.25, 3));
+      } else if (e.key === '-') {
+        e.preventDefault();
+        setZoomLevel(prev => Math.max(prev - 0.25, 0.5));
+      } else if (e.key === '0') {
+        e.preventDefault();
+        setZoomLevel(1);
+        setImagePosition({ x: 0, y: 0 });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [fullscreenImage]);
+
   // Refresh users list after successful action
   useEffect(() => {
     if (actionSuccess) {
@@ -42,10 +71,75 @@ const AdminManagerKYC = () => {
 
   const openFullscreen = (src) => {
     setFullscreenImage(src);
+    setZoomLevel(1);
+    setImagePosition({ x: 0, y: 0 });
   };
 
   const closeFullscreen = () => {
     setFullscreenImage(null);
+    setZoomLevel(1);
+    setImagePosition({ x: 0, y: 0 });
+  };
+
+  const handleZoomIn = () => {
+    setZoomLevel(prev => Math.min(prev + 0.25, 3));
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel(prev => Math.max(prev - 0.25, 0.5));
+  };
+
+  const handleResetZoom = () => {
+    setZoomLevel(1);
+    setImagePosition({ x: 0, y: 0 });
+  };
+
+  const handleMouseDown = (e) => {
+    if (zoomLevel > 1) {
+      setIsDragging(true);
+      setDragStart({
+        x: e.clientX - imagePosition.x,
+        y: e.clientY - imagePosition.y
+      });
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    if (isDragging && zoomLevel > 1) {
+      setImagePosition({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleWheel = (e) => {
+    if (fullscreenImage) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      setZoomLevel(prev => Math.max(0.5, Math.min(3, prev + delta)));
+    }
+  };
+
+  const downloadImage = async (imageUrl, filename) => {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename || 'kyc-document.jpg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading image:', error);
+    }
   };
 
   // Format date helper
@@ -89,31 +183,38 @@ const AdminManagerKYC = () => {
   };
 
   // Document configuration
+  const getDocumentPath = (fieldValue) => {
+    if (!fieldValue || fieldValue === 'null' || fieldValue === 'undefined' || fieldValue.trim() === '') {
+      return null;
+    }
+    return `http://207.180.233.44:8001${fieldValue}`;
+  };
+
   const documentTypes = [
     {
       key: "id_front",
       label: "National ID (Front)",
-      path: `http://207.180.233.44:8001${selectedUser?.seller_details?.id_front}`,
+      path: getDocumentPath(selectedUser?.seller_details?.id_front),
     },
     {
       key: "id_back",
       label: "National ID (Back)",
-      path: `http://207.180.233.44:8001${selectedUser?.seller_details?.id_back}`,
+      path: getDocumentPath(selectedUser?.seller_details?.id_back),
     },
     {
       key: "driving_license_front",
       label: "Driving License (Front)",
-      path: `http://207.180.233.44:8001${selectedUser?.seller_details?.driving_license_front}`,
+      path: getDocumentPath(selectedUser?.seller_details?.driving_license_front),
     },
     {
       key: "driving_license_back",
       label: "Driving License (Back)",
-      path: `http://207.180.233.44:8001${selectedUser?.seller_details?.driving_license_back}`,
+      path: getDocumentPath(selectedUser?.seller_details?.driving_license_back),
     },
     {
       key: "passport_front",
       label: "Passport",
-      path: `http://207.180.233.44:8001${selectedUser?.seller_details?.passport_front}`,
+      path: getDocumentPath(selectedUser?.seller_details?.passport_front),
     },
   ];
 
@@ -253,86 +354,93 @@ const AdminManagerKYC = () => {
           </div>
         </div>
 
-        <div className="card document-preview">
-          <div className="doc-header">
-            <h3>Document Preview</h3>
-            <div className="comparison-toggle">
-              <span style={{ marginLeft: 200 }}>Comparison View</span>
-              <label className="switch">
-                <input
-                  type="checkbox"
-                  checked={comparison}
-                  onChange={() => setComparison(!comparison)}
-                />
-                <span style={{ marginLeft: 4 }} className="slider"></span>
-              </label>
-            </div>
-          </div>
-
-          <div className="documents">
-            {documentTypes.map((doc) => (
-              <div key={doc.key} className="doc-card">
-                {doc.path ? (
-                  <>
-                    <img src={doc.path} alt={doc.label} />
-                    <h4>{doc.label}</h4>
-                    <button className="btnfullscreen" onClick={() => openFullscreen(doc.path)}>
-                      View Full Screen
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <div className="doc-missing-placeholder">
-                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                        <path
-                          d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M14 2V8H20"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M12 18V12"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M12 9H12.01"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      <p className="doc-missing-text">Document not provided</p>
-                    </div>
-                    <h4>{doc.label}</h4>
-                    <button className="btnfullscreen" disabled>
-                      Not Available
-                    </button>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+        <KYCDocumentPreview
+          documents={documentTypes}
+          onPreviewImage={openFullscreen}
+          onDownloadImage={downloadImage}
+        />
       </div>
 
       {fullscreenImage && (
-        <div className="fullscreen-overlay" onClick={closeFullscreen}>
-          <span className="close-modal" onClick={closeFullscreen}>
-            &times;
-          </span>
-          <img src={fullscreenImage} alt="Full Screen" />
+        <div 
+          className="fullscreen-overlay" 
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closeFullscreen();
+          }}
+          onWheel={handleWheel}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
+          <div className="fullscreen-controls">
+            <button 
+              className="fullscreen-control-btn"
+              onClick={handleZoomOut}
+              title="Zoom Out"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                <path d="M8 12H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </button>
+            <span className="zoom-level">{Math.round(zoomLevel * 100)}%</span>
+            <button 
+              className="fullscreen-control-btn"
+              onClick={handleZoomIn}
+              title="Zoom In"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                <path d="M12 8V16M8 12H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </button>
+            <button 
+              className="fullscreen-control-btn"
+              onClick={handleResetZoom}
+              title="Reset Zoom"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z" stroke="currentColor" strokeWidth="2"/>
+                <path d="M12 8V12M12 12V16M12 12H8M12 12H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </button>
+            <button 
+              className="fullscreen-control-btn"
+              onClick={() => downloadImage(fullscreenImage, 'kyc-document.jpg')}
+              title="Download"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <button 
+              className="fullscreen-control-btn close-btn"
+              onClick={closeFullscreen}
+              title="Close"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          <div 
+            className="fullscreen-image-container"
+            onMouseDown={handleMouseDown}
+            style={{ cursor: zoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
+          >
+            <img 
+              src={fullscreenImage} 
+              alt="Full Screen" 
+              className="fullscreen-image"
+              style={{
+                transform: `scale(${zoomLevel}) translate(${imagePosition.x / zoomLevel}px, ${imagePosition.y / zoomLevel}px)`,
+                transition: isDragging ? 'none' : 'transform 0.2s ease'
+              }}
+              draggable={false}
+            />
+          </div>
         </div>
       )}
     </>
