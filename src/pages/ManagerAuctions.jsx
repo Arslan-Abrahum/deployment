@@ -108,12 +108,26 @@ export default function ManagerAuctions() {
   };
 
   const handleRowClick = (item) => {
-  if (item.status === "Draft") {
-    navigate("/manager/publishnew");
-  } else {
-    navigate("/manager/controlpanel");
-  }
-};
+    const rawStatus = item.rawData?.status || item.status;
+    
+    if (rawStatus === "APPROVED") {
+      // Navigate to details view for APPROVED auctions
+      navigate("/manager/auction-details", {
+        state: { auctionData: item.rawData }
+      });
+    } else if (rawStatus === "ACTIVE") {
+      // Navigate to control panel for ACTIVE auctions
+      navigate("/manager/controlpanel", {
+        state: { auctionData: item.rawData }
+      });
+    } else if (item.status === "Draft") {
+      navigate("/manager/publishnew");
+    } else {
+      navigate("/manager/controlpanel", {
+        state: { auctionData: item.rawData }
+      });
+    }
+  };
 
   return (
     <div className="auction-wrapper">

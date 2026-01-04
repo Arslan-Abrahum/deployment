@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchUsersList } from "../../store/actions/adminActions";
 import { adminService } from "../../services/interceptors/admin.service";
 import { toast } from "react-toastify";
+import { API_CONFIG } from "../../config/api.config";
 
 // Lazy load images for better performance
 // const Car1 = lazy(() => import('../../assets/admin-assests/1.png'));
@@ -25,6 +26,21 @@ const mockAuctionsData = {
   total_pages: 1,
   current_page: 1,
   results: []
+};
+
+// Helper function to construct media URL
+const getMediaUrl = (filePath) => {
+  if (!filePath) return null;
+  // If it's already a full URL, return as is
+  if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
+    return filePath;
+  }
+  // If it starts with /, prepend the base URL
+  if (filePath.startsWith('/')) {
+    return `${API_CONFIG.BASE_URL}${filePath}`;
+  }
+  // Otherwise return as is (might be a relative path)
+  return filePath;
 };
 
 // Memoized SVG components for better performance
@@ -116,6 +132,11 @@ const ActivityItem = React.memo(({ activity }) => (
   </div>
 ));
 
+// Helper function to check if manager is assigned
+const hasManagerAssigned = (auction) => {
+  return !!(auction.auction_manager_name || auction.manager_details);
+};
+
 const AuctionRow = React.memo(({ auction, onViewDetails, onAssignManager }) => {
   const getStatusColor = useCallback((status) => {
     // Map DRAFT to PENDING for color
@@ -131,6 +152,8 @@ const AuctionRow = React.memo(({ auction, onViewDetails, onAssignManager }) => {
         return "admin-dashboard-status-error";
       case "COMPLETED":
         return "admin-dashboard-status-info";
+      case "CLOSED":
+        return "admin-dashboard-status-info";
       default:
         return "admin-dashboard-status-default";
     }
@@ -138,6 +161,12 @@ const AuctionRow = React.memo(({ auction, onViewDetails, onAssignManager }) => {
 
   // Map DRAFT to PENDING for display
   const displayStatus = auction.status === "DRAFT" ? "PENDING" : auction.status;
+  
+  // Check if manager is assigned
+  const managerAssigned = hasManagerAssigned(auction);
+  
+  // Check if assign button should be shown (only for pending/draft auctions without manager)
+  const showAssignButton = (auction.status === "DRAFT" || auction.status === "PENDING") && !managerAssigned;
 
   return (
     <tr className="admin-dashboard-auction-row">
@@ -154,7 +183,7 @@ const AuctionRow = React.memo(({ auction, onViewDetails, onAssignManager }) => {
             >
               {auction.media && auction.media.length > 0 ? (
                 <img
-                  src={auction.media[0].file}
+                  src={getMediaUrl(auction.media[0].file)}
                   alt={auction.title}
                   loading="lazy"
                   width="40"
@@ -252,8 +281,8 @@ const AuctionRow = React.memo(({ auction, onViewDetails, onAssignManager }) => {
               />
             </svg>
           </button>
-          {/* Show Assign Manager button only for pending auctions (DRAFT or PENDING) */}
-          {(auction.status === "DRAFT" || auction.status === "PENDING") && (
+          {/* Show Assign Manager button only for pending auctions (DRAFT or PENDING) without manager */}
+          {showAssignButton && (
             <button
               className="admin-dashboard-icon-btn"
               onClick={(e) => {
@@ -308,7 +337,7 @@ const AdminDashboard = () => {
   const dispatch = useDispatch();
   const { users, isLoading } = useSelector((state) => state.admin);
   const [auctions, setAuctions] = useState([]);
-  const [filterStatus, setFilterStatus] = useState("Pending");
+  const [filterStatus, setFilterStatus] = useState("All Status");
   const [isLoadingAuctions, setIsLoadingAuctions] = useState(false);
   const [auctionCount, setAuctionCount] = useState(0);
   const [showManagerModal, setShowManagerModal] = useState(false);
@@ -326,11 +355,12 @@ const AdminDashboard = () => {
     const fetchAuctions = async () => {
       setIsLoadingAuctions(true);
       try {
-        const response = await adminService.getAuctionListings();
+        const response = await adminService.getDashboard();
         setAuctions(response.results || []);
         setAuctionCount(response.count || 0);
       } catch (error) {
         console.error("Error fetching auctions:", error);
+        toast.error("Failed to load auctions. Please try again.");
         setAuctions([]);
         setAuctionCount(0);
       } finally {
@@ -471,16 +501,22 @@ const AdminDashboard = () => {
   const handleViewDetails = useCallback(
     (auctionId) => {
       const auction = auctions.find((a) => a.id === auctionId);
-      // For pending auctions, show modal with manager assignment option
+      if (!auction) return;
+      
+      // Check if manager is assigned
+      const managerAssigned = hasManagerAssigned(auction);
+      
+      // For pending auctions without manager, show modal with manager assignment option
+      // For pending auctions with manager, navigate to details page
       if (
-        auction &&
-        (auction.status === "DRAFT" || auction.status === "PENDING")
+        (auction.status === "DRAFT" || auction.status === "PENDING") &&
+        !managerAssigned
       ) {
         setSelectedAuction(auction);
         setSelectedManagerId("");
         setShowManagerModal(true);
       } else {
-        // For other auctions, navigate to details page
+        // For other auctions or pending auctions with manager, navigate to details page
         navigate(`/admin/auction/${auctionId}`);
       }
     },
@@ -507,7 +543,7 @@ const AdminDashboard = () => {
       });
 
       // Refresh auctions list
-      const response = await adminService.getAuctionListings();
+      const response = await adminService.getDashboard();
       setAuctions(response.results || []);
       setAuctionCount(response.count || 0);
 
@@ -774,6 +810,7 @@ const AdminDashboard = () => {
                   <option>All Status</option>
                   <option>Active</option>
                   <option>Pending</option>
+                  <option>Closed</option>
                 </select>
               </div>
             </div>

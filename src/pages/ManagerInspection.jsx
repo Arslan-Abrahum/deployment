@@ -82,6 +82,9 @@ const ManagerInspection = () => {
   // Get item title
   const itemTitle = auctionData?.title || 'Unknown Item';
 
+  // Get item description
+  const itemDescription = auctionData?.description || '';
+
   // Get item ID
   const itemId = auctionData?.id ? `INSP-${auctionData.id}` : 'N/A';
 
@@ -293,9 +296,6 @@ const ManagerInspection = () => {
   };
 
   const specificData = getSpecificData();
-  const makeModelYear = specificData.make && specificData.model && specificData.year
-    ? `${specificData.year} ${specificData.make} ${specificData.model}`
-    : itemTitle;
 
   return (
     <div className="inspection-dashboard">
@@ -384,7 +384,10 @@ const ManagerInspection = () => {
                   )}
 
                   <div className="vehicle-details">
-                    <h3 className="vehicle-title">{makeModelYear}</h3>
+                    <h3 className="vehicle-title">{itemTitle}</h3>
+                    {itemDescription && (
+                      <p className="vehicle-description">{itemDescription}</p>
+                    )}
                     <div className="vehicle-meta">
                       <div className="meta-item">
                         <span className="meta-label">Item ID:</span>

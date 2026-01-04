@@ -137,12 +137,12 @@ function ManagerDashboard() {
   }, [location.pathname]);
 
   const sortedData = useMemo(() => {
-    // Filter to show only DRAFT status items
-    const draftItems = tasks.filter(item => {
+    // Filter to show only PENDING status items
+    const pendingItems = tasks.filter(item => {
       const rawStatus = item.rawData?.status || '';
-      return rawStatus === 'DRAFT';
+      return rawStatus === 'PENDING';
     });
-    return [...draftItems].sort((a, b) => new Date(b.date) - new Date(a.date));
+    return [...pendingItems].sort((a, b) => new Date(b.date) - new Date(a.date));
   }, [tasks]);
 
   const filtered = useMemo(() => {

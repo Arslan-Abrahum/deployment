@@ -284,6 +284,63 @@
   margin: 0;
 }
 
+.admin-auction-details-bids-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.admin-auction-details-bid-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.admin-auction-details-bid-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.admin-auction-details-bid-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.admin-auction-details-bid-amount {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #8CC63F;
+}
+
+.admin-auction-details-bid-bidder {
+  font-size: 0.875rem;
+  color: #cbd5e1;
+}
+
+.admin-auction-details-bid-time {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.admin-auction-details-bid-highest {
+  padding: 0.25rem 0.5rem;
+  background: rgba(140, 198, 63, 0.2);
+  border: 1px solid rgba(140, 198, 63, 0.4);
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #8CC63F;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .admin-auction-details-loading,
 .admin-auction-details-error {
   display: flex;

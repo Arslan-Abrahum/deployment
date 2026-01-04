@@ -39,6 +39,7 @@ import ManagerPublishNew from './pages/ManagerPublishNew'
 import ManagerLiveAuctions from './pages/ManagerLiveAuctions'
 import ManagerAuctionControlPanel from './pages/ManagerAuctionControlPanel'
 import ManagerAuctionResults from './pages/ManagerAuctionResults'
+import ManagerAuctionDetails from './pages/ManagerAuctionDetails'
 import CategoryManagement from './pages/categoryManagement/CategoryManagement'
 import ManagerCreateCategory from './pages/managerCreateCategory/ManagerCreateCategory'
 import ManagerProductFields from './pages/managerProductFields/ManagerProductFields'
@@ -149,6 +150,11 @@ function App() {
                 <Route path="/manager/controlpanel" element={
                   <>
                     <ManagerAuctionControlPanel />
+                  </>
+                } />
+                <Route path="/manager/auction-details" element={
+                  <>
+                    <ManagerAuctionDetails />
                   </>
                 } />
 

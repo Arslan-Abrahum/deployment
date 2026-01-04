@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { adminService } from '../../services/interceptors/admin.service';
+import { API_CONFIG } from '../../config/api.config';
 import './AdminAuctionDetails.css';
 
 const AdminAuctionDetails = () => {
@@ -11,13 +12,43 @@ const AdminAuctionDetails = () => {
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
 
+  // Helper function to construct media URL
+  const getMediaUrl = (filePath) => {
+    if (!filePath) return null;
+    // If it's already a full URL, return as is
+    if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
+      return filePath;
+    }
+    // If it starts with /, prepend the base URL
+    if (filePath.startsWith('/')) {
+      return `${API_CONFIG.BASE_URL}${filePath}`;
+    }
+    // Otherwise return as is (might be a relative path)
+    return filePath;
+  };
+
   useEffect(() => {
     const fetchAuction = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        const data = await adminService.getAuctionById(id);
-        setAuction(data);
+        // Try to fetch from dashboard endpoint and filter by ID
+        // If that doesn't work, fall back to the existing getAuctionById
+        try {
+          const dashboardData = await adminService.getDashboard();
+          const foundAuction = dashboardData.results?.find((auction) => auction.id === parseInt(id));
+          if (foundAuction) {
+            setAuction(foundAuction);
+          } else {
+            // Fall back to getAuctionById if not found in dashboard
+            const data = await adminService.getAuctionById(id);
+            setAuction(data);
+          }
+        } catch (dashboardError) {
+          // If dashboard fails, try the existing endpoint
+          const data = await adminService.getAuctionById(id);
+          setAuction(data);
+        }
       } catch (err) {
         console.error('Error fetching auction:', err);
         setError(err.message || 'Failed to load auction details');
@@ -110,6 +141,9 @@ const AdminAuctionDetails = () => {
   }) || [];
   const fileMedia = auction.media?.filter(m => m.media_type === 'file') || [];
 
+  // Check if auction is active or closed for conditional bidding history placement
+  const isActiveOrClosed = auction.status === 'ACTIVE' || auction.status === 'CLOSED';
+
   return (
     <div className="admin-auction-details-container">
       <div className="admin-auction-details-header">
@@ -132,7 +166,7 @@ const AdminAuctionDetails = () => {
             <>
               <div className="admin-auction-details-main-image">
                 <img 
-                  src={imageMedia[selectedImage]?.file} 
+                  src={getMediaUrl(imageMedia[selectedImage]?.file)} 
                   alt={auction.title}
                   onError={(e) => {
                     e.target.onerror = null;
@@ -149,7 +183,7 @@ const AdminAuctionDetails = () => {
                       onClick={() => setSelectedImage(index)}
                     >
                       <img 
-                        src={media.file} 
+                        src={getMediaUrl(media.file)} 
                         alt={media.label || `Image ${index + 1}`}
                         onError={(e) => {
                           e.target.onerror = null;
@@ -173,6 +207,33 @@ const AdminAuctionDetails = () => {
               </div>
             </div>
           )}
+
+          {/* Bids History - Show in left column for ACTIVE/CLOSED auctions */}
+          {isActiveOrClosed && auction.bids && auction.bids.length > 0 && (
+            <div className="admin-auction-details-card">
+              <h3 className="admin-auction-details-section-title">Bidding History</h3>
+              <div className="admin-auction-details-bids-list">
+                {auction.bids.map((bid, index) => (
+                  <div key={bid.id} className="admin-auction-details-bid-item">
+                    <div className="admin-auction-details-bid-info">
+                      <div className="admin-auction-details-bid-amount">
+                        {auction.currency || 'USD'} {formatPrice(bid.amount)}
+                      </div>
+                      <div className="admin-auction-details-bid-bidder">
+                        {bid.bidder_name || bid.bidder_email || 'Unknown Bidder'}
+                      </div>
+                      <div className="admin-auction-details-bid-time">
+                        {formatDate(bid.created_at)}
+                      </div>
+                    </div>
+                    {index === 0 && (
+                      <span className="admin-auction-details-bid-highest">Highest Bid</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right Column - Details */}
@@ -193,17 +254,43 @@ const AdminAuctionDetails = () => {
 
               <div className="admin-auction-details-info-item">
                 <label>Seller</label>
-                <span>{auction.seller_name || 'N/A'}</span>
+                <span>
+                  {auction.seller_details?.name || auction.seller_name || 'N/A'}
+                  {auction.seller_details?.business_name && ` (${auction.seller_details.business_name})`}
+                  {auction.seller_details?.is_verified !== undefined && (
+                    <span style={{ marginLeft: '0.5rem', color: auction.seller_details.is_verified ? '#8CC63F' : '#f87171' }}>
+                      {auction.seller_details.is_verified ? '✓ Verified' : '✗ Not Verified'}
+                    </span>
+                  )}
+                </span>
               </div>
+
+              {auction.seller_details?.email && (
+                <div className="admin-auction-details-info-item">
+                  <label>Seller Email</label>
+                  <span>{auction.seller_details.email}</span>
+                </div>
+              )}
 
               <div className="admin-auction-details-info-item">
                 <label>Manager</label>
-                <span>{auction.auction_manager_name || 'Not assigned'}</span>
+                <span>
+                  {auction.manager_details 
+                    ? `${auction.manager_details.first_name || ''} ${auction.manager_details.last_name || ''}`.trim() || auction.manager_details.email || 'Not assigned'
+                    : auction.auction_manager_name || 'Not assigned'}
+                </span>
               </div>
+
+              {auction.manager_details?.email && (
+                <div className="admin-auction-details-info-item">
+                  <label>Manager Email</label>
+                  <span>{auction.manager_details.email}</span>
+                </div>
+              )}
 
               <div className="admin-auction-details-info-item">
                 <label>Total Bids</label>
-                <span>{auction.total_bids || 0}</span>
+                <span>{auction.bids?.length || 0}</span>
               </div>
 
               <div className="admin-auction-details-info-item">
@@ -213,18 +300,13 @@ const AdminAuctionDetails = () => {
 
               <div className="admin-auction-details-info-item">
                 <label>Initial Price</label>
-                <span>{auction.currency} {formatPrice(auction.initial_price)}</span>
+                <span>{auction.currency || 'USD'} {formatPrice(auction.initial_price)}</span>
               </div>
 
-              <div className="admin-auction-details-info-item">
-                <label>Seller Expected Price</label>
-                <span>{auction.currency} {formatPrice(auction.seller_expected_price)}</span>
-              </div>
-
-              {auction.buy_now_price && (
+              {auction.is_buy_now_enabled && auction.buy_now_price && (
                 <div className="admin-auction-details-info-item">
                   <label>Buy Now Price</label>
-                  <span>{auction.currency} {formatPrice(auction.buy_now_price)}</span>
+                  <span>{auction.currency || 'USD'} {formatPrice(auction.buy_now_price)}</span>
                 </div>
               )}
 
@@ -232,6 +314,13 @@ const AdminAuctionDetails = () => {
                 <label>Handover Type</label>
                 <span>{auction.handover_type || 'N/A'}</span>
               </div>
+
+              {auction.delivery_datetime && (
+                <div className="admin-auction-details-info-item">
+                  <label>Delivery Datetime</label>
+                  <span>{formatDate(auction.delivery_datetime)}</span>
+                </div>
+              )}
 
               <div className="admin-auction-details-info-item">
                 <label>Pickup Address</label>
@@ -260,6 +349,13 @@ const AdminAuctionDetails = () => {
                 <label>End Date</label>
                 <span>{formatDate(auction.end_date)}</span>
               </div>
+
+              {auction.extended_time_seconds > 0 && (
+                <div className="admin-auction-details-info-item">
+                  <label>Extended Time</label>
+                  <span>{Math.floor(auction.extended_time_seconds / 3600)}h {Math.floor((auction.extended_time_seconds % 3600) / 60)}m</span>
+                </div>
+              )}
 
               <div className="admin-auction-details-info-item">
                 <label>Created At</label>
@@ -304,7 +400,7 @@ const AdminAuctionDetails = () => {
                 {fileMedia.map((file) => (
                   <a
                     key={file.id}
-                    href={file.file}
+                    href={getMediaUrl(file.file)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="admin-auction-details-file-link"
@@ -323,6 +419,33 @@ const AdminAuctionDetails = () => {
                       <line x1="10" y1="14" x2="21" y2="3"/>
                     </svg>
                   </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Bids History - Show in right column for non-ACTIVE/CLOSED auctions */}
+          {!isActiveOrClosed && auction.bids && auction.bids.length > 0 && (
+            <div className="admin-auction-details-card">
+              <h3 className="admin-auction-details-section-title">Bidding History</h3>
+              <div className="admin-auction-details-bids-list">
+                {auction.bids.map((bid, index) => (
+                  <div key={bid.id} className="admin-auction-details-bid-item">
+                    <div className="admin-auction-details-bid-info">
+                      <div className="admin-auction-details-bid-amount">
+                        {auction.currency || 'USD'} {formatPrice(bid.amount)}
+                      </div>
+                      <div className="admin-auction-details-bid-bidder">
+                        {bid.bidder_name || bid.bidder_email || 'Unknown Bidder'}
+                      </div>
+                      <div className="admin-auction-details-bid-time">
+                        {formatDate(bid.created_at)}
+                      </div>
+                    </div>
+                    {index === 0 && (
+                      <span className="admin-auction-details-bid-highest">Highest Bid</span>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
