@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { createCategory, updateCategory, fetchCategories } from '../../store/actions/adminActions';
+import { managerService } from '../../services/interceptors/manager.service';
+import { toast } from 'react-toastify';
 import './ManagerProductFields.css';
 
 const ManagerProductFields = () => {
@@ -86,6 +88,77 @@ const ManagerProductFields = () => {
     }
   }, [categoriesFromStore, isEditMode, editingCategoryId]);
 
+  // Load existing checklist in edit mode using GET /api/inspections/templates/
+  useEffect(() => {
+    const loadExistingChecklist = async () => {
+      if (isEditMode && editingCategoryId && categoryName) {
+        try {
+          // Fetch all checklists from GET /api/inspections/templates/
+          const checklists = await managerService.getChecklists();
+          console.log('Fetched checklists:', checklists);
+          console.log('Looking for category:', categoryName);
+          
+          // Match checklist title with category name
+          // e.g., "town sub" should match "town sub Inspection"
+          const expectedTitle = `${categoryName} Inspection`;
+          const matchingChecklist = Array.isArray(checklists) 
+            ? checklists.find(cl => {
+                // Case-insensitive comparison and handle variations
+                const checklistTitle = cl.title?.trim() || '';
+                const normalizedChecklistTitle = checklistTitle.toLowerCase();
+                const normalizedExpectedTitle = expectedTitle.toLowerCase();
+                
+                // Exact match or category name matches the beginning of checklist title
+                return normalizedChecklistTitle === normalizedExpectedTitle ||
+                       normalizedChecklistTitle === `${categoryName.toLowerCase()} inspection` ||
+                       checklistTitle.toLowerCase().startsWith(categoryName.toLowerCase());
+              })
+            : null;
+          
+          console.log('Matching checklist found:', matchingChecklist);
+          
+          if (matchingChecklist) {
+            setExistingChecklistId(matchingChecklist.id);
+            setChecklistDescription(matchingChecklist.description || '');
+            
+            // Convert template_data to checklist categories format
+            if (matchingChecklist.template_data && typeof matchingChecklist.template_data === 'object') {
+              const categories = Object.entries(matchingChecklist.template_data).map(([name, items], index) => ({
+                id: Date.now() + index,
+                name,
+                items: Array.isArray(items) ? items.map((item, itemIndex) => ({
+                  id: Date.now() + index * 1000 + itemIndex,
+                  name: typeof item === 'string' ? item : item.name || String(item)
+                })) : []
+              }));
+              setChecklistCategories(categories);
+              console.log('Loaded checklist categories:', categories);
+            } else {
+              // If template_data is empty or invalid, start with empty categories
+              setChecklistCategories([]);
+            }
+          } else {
+            // No matching checklist found - user will need to create one
+            console.log('No matching checklist found for category:', categoryName);
+            setExistingChecklistId(null);
+            setChecklistCategories([]);
+            setChecklistDescription('');
+          }
+        } catch (error) {
+          console.error('Failed to load checklist:', error);
+          // On error, reset to empty state
+          setExistingChecklistId(null);
+          setChecklistCategories([]);
+          setChecklistDescription('');
+        }
+      }
+    };
+
+    if (categoryName) {
+      loadExistingChecklist();
+    }
+  }, [isEditMode, editingCategoryId, categoryName]);
+
   const [category, setCategory] = useState({
     id: categoryId,
     name: categoryName || 'New Category',
@@ -118,6 +191,15 @@ const ManagerProductFields = () => {
   const [editingField, setEditingField] = useState(null);
   const [showFieldForm, setShowFieldForm] = useState(false);
   const [errors, setErrors] = useState({});
+
+  // Checklist state
+  const [checklistDescription, setChecklistDescription] = useState('');
+  const [checklistCategories, setChecklistCategories] = useState([]);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [editingChecklistCategoryId, setEditingChecklistCategoryId] = useState(null);
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [checklistErrors, setChecklistErrors] = useState({});
+  const [existingChecklistId, setExistingChecklistId] = useState(null);
 
   const fieldTypes = [
     { value: 'text', label: 'Text Field', icon: '📝' },
@@ -304,6 +386,14 @@ const ManagerProductFields = () => {
       return;
     }
 
+    // Validate checklist
+    const checklistValidationErrors = validateChecklist();
+    if (Object.keys(checklistValidationErrors).length > 0) {
+      setChecklistErrors(checklistValidationErrors);
+      alert('Please complete the checklist creation. Checklist is required.');
+      return;
+    }
+
     // Build validation_schema from fields
     const validationSchema = {};
     fields.forEach(field => {
@@ -326,28 +416,68 @@ const ManagerProductFields = () => {
     };
 
     try {
+      let createdCategoryId = null;
+
       if (isEditMode && editingCategoryId) {
         // Update existing category
-        await dispatch(updateCategory({ 
+        console.log('Updating category:', { categoryId: editingCategoryId, categoryData });
+        const result = await dispatch(updateCategory({ 
           categoryId: parseInt(editingCategoryId), 
           categoryData 
         })).unwrap();
-        // Clear localStorage
-        localStorage.removeItem('pendingCategoryName');
-        localStorage.removeItem('editingCategoryId');
-        // Refresh categories list
-        dispatch(fetchCategories());
+        createdCategoryId = result?.id || parseInt(editingCategoryId);
+        console.log('Category updated successfully:', result);
       } else {
         // Create new category
-        await dispatch(createCategory(categoryData)).unwrap();
-        // Clear localStorage
-        localStorage.removeItem('pendingCategoryName');
+        const result = await dispatch(createCategory(categoryData)).unwrap();
+        createdCategoryId = result?.id;
       }
+
+      // Create or update checklist
+      const checklistTitle = `${categoryName} Inspection`;
+      const templateData = {};
+      checklistCategories.forEach(category => {
+        templateData[category.name] = category.items.map(item => item.name);
+      });
+
+      const checklistData = {
+        title: checklistTitle,
+        description: checklistDescription,
+        is_active: true,
+        template_data: templateData
+      };
+
+      if (isEditMode && existingChecklistId) {
+        // Update existing checklist using PUT API
+        await managerService.updateChecklist(existingChecklistId, checklistData);
+        toast.success('Category and checklist updated successfully!');
+      } else {
+        // Create new checklist
+        await managerService.createChecklist(checklistData);
+        toast.success('Category and checklist created successfully!');
+      }
+
+      // Clear localStorage
+      localStorage.removeItem('pendingCategoryName');
+      if (isEditMode) {
+        localStorage.removeItem('editingCategoryId');
+      }
+      
+      // Refresh categories list
+      dispatch(fetchCategories());
+      
       // Navigate back to category list
       navigate('/admin/category');
     } catch (error) {
-      console.error(`Failed to ${isEditMode ? 'update' : 'create'} category:`, error);
-      // Error is already handled by the action (toast notification)
+      console.error(`Failed to ${isEditMode ? 'update' : 'create'} category/checklist:`, error);
+      // Don't show duplicate error toast - the action already shows one
+      // Only show error if it's a checklist-specific error
+      if (error.message && error.message.includes('checklist')) {
+        const errorMessage = error.response?.data?.message || 
+                            error.response?.data?.error || 
+                            `Failed to ${isEditMode ? 'update' : 'create'} checklist. Please try again.`;
+        toast.error(errorMessage);
+      }
     }
   };
 
@@ -359,6 +489,109 @@ const ManagerProductFields = () => {
   const getFieldTypeLabel = (type) => {
     const typeInfo = fieldTypes.find(t => t.value === type);
     return typeInfo ? typeInfo.label : 'Text Field';
+  };
+
+  // Checklist handlers
+  const handleAddCategory = () => {
+    if (!newCategoryName.trim()) {
+      setChecklistErrors({ categoryName: 'Category name is required' });
+      return;
+    }
+
+    if (checklistCategories.some(cat => cat.name.toLowerCase() === newCategoryName.trim().toLowerCase())) {
+      setChecklistErrors({ categoryName: 'Category with this name already exists' });
+      return;
+    }
+
+    setChecklistCategories(prev => [...prev, {
+      id: Date.now(),
+      name: newCategoryName.trim(),
+      items: []
+    }]);
+    setNewCategoryName('');
+    setShowCategoryForm(false);
+    setChecklistErrors({});
+  };
+
+  const handleEditCategory = (categoryId) => {
+    const category = checklistCategories.find(cat => cat.id === categoryId);
+    if (category) {
+      setEditingChecklistCategoryId(categoryId);
+      setNewCategoryName(category.name);
+      setShowCategoryForm(true);
+    }
+  };
+
+  const handleUpdateCategory = () => {
+    if (!newCategoryName.trim()) {
+      setChecklistErrors({ categoryName: 'Category name is required' });
+      return;
+    }
+
+    setChecklistCategories(prev => prev.map(cat =>
+      cat.id === editingChecklistCategoryId
+        ? { ...cat, name: newCategoryName.trim() }
+        : cat
+    ));
+    setEditingChecklistCategoryId(null);
+    setNewCategoryName('');
+    setShowCategoryForm(false);
+    setChecklistErrors({});
+  };
+
+  const handleDeleteCategory = (categoryId) => {
+    if (window.confirm('Are you sure you want to delete this inspection category? All items in this category will be deleted.')) {
+      setChecklistCategories(prev => prev.filter(cat => cat.id !== categoryId));
+    }
+  };
+
+  const handleAddChecklistItem = (categoryId, itemName) => {
+    if (!itemName.trim()) {
+      return;
+    }
+
+    setChecklistCategories(prev => prev.map(cat =>
+      cat.id === categoryId
+        ? {
+          ...cat,
+          items: [...cat.items, {
+            id: Date.now(),
+            name: itemName.trim()
+          }]
+        }
+        : cat
+    ));
+  };
+
+  const handleDeleteChecklistItem = (categoryId, itemId) => {
+    setChecklistCategories(prev => prev.map(cat =>
+      cat.id === categoryId
+        ? {
+          ...cat,
+          items: cat.items.filter(item => item.id !== itemId)
+        }
+        : cat
+    ));
+  };
+
+  const validateChecklist = () => {
+    const newErrors = {};
+
+    if (!checklistDescription.trim()) {
+      newErrors.description = 'Checklist description is required';
+    }
+
+    if (checklistCategories.length === 0) {
+      newErrors.categories = 'At least one inspection category is required';
+    } else {
+      // Check if all categories have at least one item
+      const emptyCategories = checklistCategories.filter(cat => cat.items.length === 0);
+      if (emptyCategories.length > 0) {
+        newErrors.categories = 'All inspection categories must have at least one checklist item';
+      }
+    }
+
+    return newErrors;
   };
 
   return (
@@ -677,10 +910,231 @@ const ManagerProductFields = () => {
                 </div>
               </div>
             </div>
+
+            {/* Checklist Creation Section */}
+            <div className="checklist-section">
+              <div className="section-card">
+                <div className="section-header">
+                  <h3 className="section-title">Checklist Creation</h3>
+                  <div className="section-description">
+                    Create inspection checklist for <strong>{categoryName || 'New Category'} Inspection</strong>. This checklist will be shown to managers during inspections.
+                  </div>
+                </div>
+
+                <div className="checklist-form">
+                  <div className="form-group">
+                    <label className="form-label required">Checklist Description</label>
+                    <textarea
+                      value={checklistDescription}
+                      onChange={(e) => {
+                        setChecklistDescription(e.target.value);
+                        if (checklistErrors.description) {
+                          setChecklistErrors(prev => ({ ...prev, description: '' }));
+                        }
+                      }}
+                      placeholder="e.g., Comprehensive inspection checklist for Sedans and SUVs used by Hammer & Tongues."
+                      className={`form-textarea ${checklistErrors.description ? 'error' : ''}`}
+                      rows="3"
+                    />
+                    {checklistErrors.description && (
+                      <span className="error-message">{checklistErrors.description}</span>
+                    )}
+                  </div>
+
+                  <div className="checklist-categories-section">
+                    <div className="section-header">
+                      <h4 className="section-subtitle">Inspection Categories ({checklistCategories.length})</h4>
+                      {checklistErrors.categories && (
+                        <span className="error-message">{checklistErrors.categories}</span>
+                      )}
+                    </div>
+
+                    {checklistCategories.length > 0 && (
+                      <div className="checklist-categories-list">
+                        {checklistCategories.map((category) => (
+                          <div key={category.id} className="checklist-category-item">
+                            <div className="category-header">
+                              <h5 className="category-name">{category.name}</h5>
+                              <div className="category-actions">
+                                <button
+                                  className="field-action-btn field-edit-btn"
+                                  onClick={() => handleEditCategory(category.id)}
+                                  title="Edit category"
+                                >
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                  </svg>
+                                </button>
+                                <button
+                                  className="field-action-btn field-delete-btn"
+                                  onClick={() => handleDeleteCategory(category.id)}
+                                  title="Delete category"
+                                >
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                    <polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="checklist-items">
+                              {category.items.map((item) => (
+                                <div key={item.id} className="checklist-item">
+                                  <span className="checklist-item-name">{item.name}</span>
+                                  <button
+                                    className="field-action-btn field-delete-btn"
+                                    onClick={() => handleDeleteChecklistItem(category.id, item.id)}
+                                    title="Delete item"
+                                  >
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                                      <polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              ))}
+
+                              <ChecklistItemInput
+                                categoryId={category.id}
+                                onAddItem={handleAddChecklistItem}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className={`category-form-section ${showCategoryForm ? 'expanded' : ''}`}>
+                      {!showCategoryForm ? (
+                        <button
+                          className="add-field-btn"
+                          onClick={() => setShowCategoryForm(true)}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                          </svg>
+                          Create Inspection Category
+                        </button>
+                      ) : (
+                        <div className="category-form">
+                          <div className="form-group">
+                            <label className="form-label required">Category Name</label>
+                            <input
+                              type="text"
+                              value={newCategoryName}
+                              onChange={(e) => {
+                                setNewCategoryName(e.target.value);
+                                if (checklistErrors.categoryName) {
+                                  setChecklistErrors(prev => ({ ...prev, categoryName: '' }));
+                                }
+                              }}
+                              placeholder="e.g., Exterior Analysis, Interior & Electrical"
+                              className={`form-input ${checklistErrors.categoryName ? 'error' : ''}`}
+                            />
+                            {checklistErrors.categoryName && (
+                              <span className="error-message">{checklistErrors.categoryName}</span>
+                            )}
+                          </div>
+                          <div className="form-actions">
+                            <button
+                              type="button"
+                              className="field-secondary-btn"
+                              onClick={() => {
+                                setShowCategoryForm(false);
+                                setEditingChecklistCategoryId(null);
+                                setNewCategoryName('');
+                                setChecklistErrors(prev => ({ ...prev, categoryName: '' }));
+                              }}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="button"
+                              className="field-primary-btn"
+                              onClick={editingChecklistCategoryId ? handleUpdateCategory : handleAddCategory}
+                            >
+                              {editingChecklistCategoryId ? 'Update Category' : 'Add Category'}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>
     </div>
+  );
+};
+
+// Checklist Item Input Component
+const ChecklistItemInput = ({ categoryId, onAddItem }) => {
+  const [itemName, setItemName] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (itemName.trim()) {
+      onAddItem(categoryId, itemName);
+      setItemName('');
+      setIsAdding(false);
+    }
+  };
+
+  if (!isAdding) {
+    return (
+      <button
+        className="add-checklist-item-btn"
+        onClick={() => setIsAdding(true)}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        Add Checklist Item
+      </button>
+    );
+  }
+
+  return (
+    <form className="checklist-item-input" onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={itemName}
+        onChange={(e) => setItemName(e.target.value)}
+        placeholder="e.g., Front Bumper, Dashboard Condition"
+        className="form-input"
+        autoFocus
+        onBlur={() => {
+          if (!itemName.trim()) {
+            setIsAdding(false);
+          }
+        }}
+      />
+      <div className="checklist-item-actions">
+        <button
+          type="button"
+          className="checklist-cancel-btn"
+          onClick={() => {
+            setIsAdding(false);
+            setItemName('');
+          }}
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="checklist-add-btn"
+          disabled={!itemName.trim()}
+        >
+          Add
+        </button>
+      </div>
+    </form>
   );
 };
 

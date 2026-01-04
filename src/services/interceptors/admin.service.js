@@ -92,8 +92,19 @@ export const adminService = {
   // Update Category
   updateCategory: async (categoryId, categoryData) => {
     try {
-      const { data } = await apiClient.post(`/api/auctions/categories/${categoryId}/`, categoryData);
-      return data;
+      // Some APIs use POST for updates, others use PUT/PATCH
+      // Try PUT first (RESTful standard), fallback to POST if needed
+      try {
+        const { data } = await apiClient.put(`/api/auctions/categories/${categoryId}/`, categoryData);
+        return data;
+      } catch (putError) {
+        // If PUT returns 405 (Method Not Allowed), try POST
+        if (putError.response?.status === 405) {
+          const { data } = await apiClient.post(`/api/auctions/categories/${categoryId}/`, categoryData);
+          return data;
+        }
+        throw putError;
+      }
     } catch (error) {
       if (error.isNetworkError) {
         throw new Error('Unable to connect to server. Please try again later.');

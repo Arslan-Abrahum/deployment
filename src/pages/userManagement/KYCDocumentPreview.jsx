@@ -81,3 +81,4 @@ const KYCDocumentPreview = ({ documents, onPreviewImage, onDownloadImage }) => {
 
 export default KYCDocumentPreview;
 
+
