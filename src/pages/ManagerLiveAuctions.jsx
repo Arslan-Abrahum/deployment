@@ -21,9 +21,9 @@ export default function ManagerLiveAuctions() {
         setLoading(true);
         setError(null);
         const response = await managerService.getAssignedTasks();
-        // Transform API response and filter for COMPLETED or APPROVED status only
+        // Transform API response and filter for CLOSED status only
         const transformedData = Array.isArray(response) ? response
-          .filter(item => item.status === 'COMPLETED' || item.status === 'APPROVED') // Only show COMPLETED or APPROVED status items
+          .filter(item => item.status === 'CLOSED') // Only show CLOSED status items
           .map((item) => ({
             id: `#AUC-${item.id}`,
             name: item.title || 'Untitled Auction',
@@ -255,6 +255,7 @@ export default function ManagerLiveAuctions() {
                       <td>
                         <div className="live-auction-status-cell">
                           <span className={`live-auction-status-badge ${
+                            item.status === "CLOSED" ? "badge-winning" :
                             item.status === "COMPLETED" ? "badge-winning" :
                             item.status === "APPROVED" ? "badge-winning" :
                             "badge-ended"

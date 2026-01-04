@@ -438,6 +438,12 @@ body {
   border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
+.auction-status-badge.badge-approved {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: #8CC63F;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
 .auction-status-badge.badge-upcoming {
   background-color: rgba(59, 130, 246, 0.1);
   color: #3B82F6;

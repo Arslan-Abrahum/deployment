@@ -1,18 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { managerService } from '../services/interceptors/manager.service';
+import { API_CONFIG } from '../config/api.config';
 import "./ManagerInspection.css";
 
 const ManagerInspection = () => {
   const location = useLocation();
-  console.log('location: ', location);
-
   const isStart = location?.state?.startInspection;
-  console.log('Is Start: ', isStart);
+  const auctionData = location?.state?.auctionData;
 
   const [open, setOpen] = useState(null);
   const [mainImage, setMainImage] = useState(0);
   const [imagePreview, setImagePreview] = useState(null);
   const navigate = useNavigate();
+
+  // Checklist state
+  const [checklistCategories, setChecklistCategories] = useState([]);
+  const [checkedItems, setCheckedItems] = useState({}); // { "categoryName-itemIndex": true/false }
+  const [loadingChecklist, setLoadingChecklist] = useState(false);
 
   const [generalRating, setGeneralRating] = useState(7);
   const [conditionSummary, setConditionSummary] = useState("Good");
@@ -22,15 +27,105 @@ const ManagerInspection = () => {
   const [files, setFiles] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
 
-  const toggle = (index) => setOpen(open === index ? null : index);
+  // Helper function to construct media URL
+  const getMediaUrl = (filePath) => {
+    if (!filePath) return null;
+    // If it's already a full URL, return as is
+    if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
+      return filePath;
+    }
+    // If it starts with /, prepend the base URL
+    if (filePath.startsWith('/')) {
+      return `${API_CONFIG.BASE_URL}${filePath}`;
+    }
+    // Otherwise return as is (might be a relative path)
+    return filePath;
+  };
 
-  const images = [
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQs9aiIdnu7FwBk8z2OuOvu1jI7ntYTDdjldQ&s",
-    "https://www.dubicars.com/images/31937b/w_1300x760/target-motors-fze/781e24ac-e639-41e1-8947-a1baa1cdbf8b.jpg",
-    "https://i.ytimg.com/vi/oECQIz0u4m8/hqdefault.jpg",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-ZmZbDfvfebT0of5BybJVk0S7KpOGTuSikA&s",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2NfOVBW4HGBMkdqh1uhLity0Rah6pGH8icw&s"
-  ];
+  // Get images from auctionData media - only use real images from API, no static fallbacks
+  const images = useMemo(() => {
+    if (auctionData?.media?.length > 0) {
+      const imageMedia = auctionData.media
+        .filter(m => m.file && m.media_type !== 'file') // Filter out non-image files
+        .map(m => {
+          const filePath = m.file || m.image || m;
+          return getMediaUrl(filePath);
+        })
+        .filter(url => url !== null); // Remove null values
+      
+      return imageMedia;
+    }
+    return []; // Return empty array if no images
+  }, [auctionData?.media]);
+
+  // Get seller name
+  const sellerName = auctionData?.seller_details?.name || 'Unknown Seller';
+
+  // Get manager name
+  const managerName = auctionData?.manager_details 
+    ? `${auctionData.manager_details.first_name || ''} ${auctionData.manager_details.last_name || ''}`.trim() || auctionData.manager_details.email || 'Unknown Manager'
+    : 'Unknown Manager';
+
+  // Get category name
+  const categoryName = auctionData?.category_name || 'Unknown';
+
+  // Get item title
+  const itemTitle = auctionData?.title || 'Unknown Item';
+
+  // Get item ID
+  const itemId = auctionData?.id ? `INSP-${auctionData.id}` : 'N/A';
+
+  // Fetch checklist on component mount
+  useEffect(() => {
+    const fetchChecklist = async () => {
+      if (!isStart || !categoryName) return;
+
+      try {
+        setLoadingChecklist(true);
+        const checklists = await managerService.getChecklists();
+        
+        if (Array.isArray(checklists) && checklists.length > 0) {
+          // Match category name with checklist title
+          // e.g., "Vehicles" -> "Vehicles Inspection"
+          const normalizedCategoryName = categoryName.toLowerCase().trim();
+          
+          const matchingChecklist = checklists.find(cl => {
+            if (!cl.title) return false;
+            const checklistTitle = cl.title.trim().toLowerCase();
+            return checklistTitle === `${normalizedCategoryName} inspection` ||
+                   checklistTitle === normalizedCategoryName ||
+                   checklistTitle.startsWith(normalizedCategoryName);
+          });
+
+          if (matchingChecklist && matchingChecklist.template_data && typeof matchingChecklist.template_data === 'object') {
+            // Convert template_data to checklist categories format
+            const categories = Object.entries(matchingChecklist.template_data).map(([name, items], index) => ({
+              id: `category-${index}`,
+              name,
+              items: Array.isArray(items) ? items.map((item, itemIndex) => ({
+                id: `item-${index}-${itemIndex}`,
+                name: typeof item === 'string' ? item : item.name || String(item)
+              })) : []
+            }));
+            setChecklistCategories(categories);
+          } else {
+            setChecklistCategories([]);
+          }
+        } else {
+          setChecklistCategories([]);
+        }
+      } catch (error) {
+        console.error('Failed to load checklist:', error);
+        setChecklistCategories([]);
+      } finally {
+        setLoadingChecklist(false);
+      }
+    };
+
+    fetchChecklist();
+  }, [isStart, categoryName]);
+
+  const toggle = (index) => setOpen(open === index ? null : index);
 
   const handleFileUpload = (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -49,6 +144,14 @@ const ManagerInspection = () => {
     setUploadedImages(prev => prev.filter(img => img.id !== id));
   };
 
+  const handleCheckboxChange = (categoryName, itemName, itemId) => {
+    const key = `${categoryName}-${itemId}`;
+    setCheckedItems(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
   const handleApprove = () => {
     const dataToSave = {
       generalRating,
@@ -56,7 +159,8 @@ const ManagerInspection = () => {
       exteriorNotes,
       interiorNotes,
       finalNotes,
-      files: files.map(file => file.name)
+      files: files.map(file => file.name),
+      checklistData: checkedItems
     };
 
     localStorage.setItem("inspectionData", JSON.stringify(dataToSave));
@@ -68,16 +172,26 @@ const ManagerInspection = () => {
     navigate("/manager/dashboard");
   };
 
+  // Get specific data for display (e.g., make, model, year for vehicles)
+  const getSpecificData = () => {
+    if (!auctionData?.specific_data) return {};
+    return auctionData.specific_data;
+  };
+
+  const specificData = getSpecificData();
+  const makeModelYear = specificData.make && specificData.model && specificData.year
+    ? `${specificData.year} ${specificData.make} ${specificData.model}`
+    : itemTitle;
+
   return (
     <div className="inspection-dashboard">
-
       <main className="inspection-main">
         <div className="inspection-container">
           <div className="inspection-page">
             <div className="inspection-header">
               <div className="welcome-content">
-                <h1 className="welcome-title">Vehicle Inspection Review</h1>
-                <p className="welcome-subtitle">Review and approve vehicle inspection details</p>
+                <h1 className="welcome-title">{categoryName} Inspection Review</h1>
+                <p className="welcome-subtitle">Review and approve {categoryName.toLowerCase()} inspection details</p>
               </div>
               {
                 isStart ? (
@@ -95,15 +209,12 @@ const ManagerInspection = () => {
                       Approve Inspection
                     </button>
                   </div>
-
                 ) : (
                   <div className="inspection-actions">
                     <button className="action-button primary" onClick={() => navigate('/manager/dashboard')}>
-
                       Go Back
                     </button>
                   </div>
-
                 )
               }
             </div>
@@ -111,44 +222,61 @@ const ManagerInspection = () => {
             <div className="inspection-layout">
               <div className="inspection-left">
                 <div className="vehicle-image-section">
-                  <div className="vehicle-main-image">
-                    <img
-                      src={images[mainImage]}
-                      alt="Vehicle"
-                      className="main-image"
-                      onClick={() => setImagePreview(images[mainImage])}
-                    />
-                  </div>
-                  <div className="vehicle-thumbnails">
-                    {images.map((img, index) => (
-                      <div
-                        key={index}
-                        className={`thumbnail-container ${mainImage === index ? 'active' : ''}`}
-                        onClick={() => setMainImage(index)}
-                      >
-                        <img src={img} alt={`Thumbnail ${index + 1}`} />
+                  {images.length > 0 ? (
+                    <>
+                      <div className="vehicle-main-image">
+                        <img
+                          src={images[mainImage] || images[0]}
+                          alt={itemTitle}
+                          className="main-image"
+                          onClick={() => setImagePreview(images[mainImage] || images[0])}
+                        />
                       </div>
-                    ))}
-                  </div>
+                      {images.length > 1 && (
+                        <div className="vehicle-thumbnails">
+                          {images.map((img, index) => (
+                            <div
+                              key={index}
+                              className={`thumbnail-container ${mainImage === index ? 'active' : ''}`}
+                              onClick={() => setMainImage(index)}
+                            >
+                              <img src={img} alt={`Thumbnail ${index + 1}`} />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="vehicle-main-image">
+                      <div className="no-image-placeholder">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                          <circle cx="8.5" cy="8.5" r="1.5"/>
+                          <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                        <p>No images available</p>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="vehicle-details">
-                    <h3 className="vehicle-title">2018 Toyota Hilux SR5</h3>
+                    <h3 className="vehicle-title">{makeModelYear}</h3>
                     <div className="vehicle-meta">
                       <div className="meta-item">
                         <span className="meta-label">Item ID:</span>
-                        <span className="meta-value">GHI789</span>
+                        <span className="meta-value">{itemId}</span>
                       </div>
                       <div className="meta-item">
                         <span className="meta-label">Category:</span>
-                        <span className="meta-value">Vehicles</span>
+                        <span className="meta-value">{categoryName}</span>
                       </div>
                       <div className="meta-item">
-                        <span className="meta-label">Mileage:</span>
-                        <span className="meta-value">45,000 miles</span>
+                        <span className="meta-label">Seller:</span>
+                        <span className="meta-value">{sellerName}</span>
                       </div>
                       <div className="meta-item">
-                        <span className="meta-label">Owner:</span>
-                        <span className="meta-value">John Smith</span>
+                        <span className="meta-label">Assigned Manager:</span>
+                        <span className="meta-value">{managerName}</span>
                       </div>
                     </div>
                   </div>
@@ -156,159 +284,85 @@ const ManagerInspection = () => {
               </div>
 
               <div className="inspection-right">
+                {isStart ? (
+                  <div className="inspection-form">
+                    <div className="form-section">
+                      <div className="form-header">
+                        <h3>Inspection Checklist</h3>
+                        <p className="form-subtitle">Review and provide feedback for each category</p>
+                      </div>
 
-                {isStart ?
-                  (
-                    <div className="inspection-form">
-                      <div className="form-section">
-                        <div className="form-header">
-                          <h3>Inspection Checklist</h3>
-                          <p className="form-subtitle">Review and provide feedback for each category</p>
+                      {loadingChecklist ? (
+                        <div style={{ padding: '2rem', textAlign: 'center', color: '#8CC63F' }}>
+                          Loading checklist...
                         </div>
-
+                      ) : checklistCategories.length > 0 ? (
                         <div className="inspection-accordions">
-                          <div className="accordion-item">
-                            <div className="accordion-header" onClick={() => toggle(1)}>
-                              <div className="accordion-title">
-                                <div className="accordion-icon">
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                  </svg>
-                                </div>
-                                <span>General Condition</span>
-                              </div>
-                              <div className="accordion-arrow">
-                                {open === 1 ? (
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M6 15L12 9L18 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                  </svg>
-                                ) : (
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                  </svg>
-                                )}
-                              </div>
-                            </div>
-                            {open === 1 && (
-                              <div className="accordion-content">
-                                <div className="form-group">
-                                  <label className="form-label">
-                                    Overall Rating: <span className="rating-value">{generalRating}/10</span>
-                                  </label>
-                                  <input
-                                    type="range"
-                                    min="0"
-                                    max="10"
-                                    value={generalRating}
-                                    onChange={(e) => setGeneralRating(Number(e.target.value))}
-                                    className="rating-slider"
-                                  />
-                                  <div className="rating-marks">
-                                    <span>Poor</span>
-                                    <span>Fair</span>
-                                    <span>Good</span>
-                                    <span>Very Good</span>
-                                    <span>Excellent</span>
+                          {checklistCategories.map((category, categoryIndex) => {
+                            const accordionIndex = categoryIndex + 1;
+                            return (
+                              <div key={category.id} className="accordion-item">
+                                <div className="accordion-header" onClick={() => toggle(accordionIndex)}>
+                                  <div className="accordion-title">
+                                    <div className="accordion-icon">
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                      </svg>
+                                    </div>
+                                    <span>{category.name}</span>
+                                    {category.items.length > 0 && (
+                                      <span style={{ marginLeft: '0.5rem', fontSize: '0.875rem', opacity: 0.7 }}>
+                                        ({category.items.filter(item => checkedItems[`${category.name}-${item.id}`]).length}/{category.items.length})
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="accordion-arrow">
+                                    {open === accordionIndex ? (
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path d="M6 15L12 9L18 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                      </svg>
+                                    ) : (
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                      </svg>
+                                    )}
                                   </div>
                                 </div>
-                                <div className="form-group">
-                                  <label className="form-label">Condition Summary</label>
-                                  <select
-                                    className="form-select"
-                                    value={conditionSummary}
-                                    onChange={(e) => setConditionSummary(e.target.value)}
-                                  >
-                                    <option value="Poor">Poor</option>
-                                    <option value="Fair">Fair</option>
-                                    <option value="Good">Good</option>
-                                    <option value="Very Good">Very Good</option>
-                                    <option value="Excellent">Excellent</option>
-                                  </select>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="accordion-item">
-                            <div className="accordion-header" onClick={() => toggle(2)}>
-                              <div className="accordion-title">
-                                <div className="accordion-icon">
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    <path d="M1 12H4M20 12H23M12 1V4M12 20V23" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                  </svg>
-                                </div>
-                                <span>Exterior / Cosmetic Inspection</span>
-                              </div>
-                              <div className="accordion-arrow">
-                                {open === 2 ? (
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M6 15L12 9L18 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                  </svg>
-                                ) : (
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                  </svg>
+                                {open === accordionIndex && (
+                                  <div className="accordion-content">
+                                    {category.items.length > 0 ? (
+                                      <div className="checklist-items-container">
+                                        {category.items.map((item) => {
+                                          const checkboxKey = `${category.name}-${item.id}`;
+                                          const isChecked = checkedItems[checkboxKey] || false;
+                                          return (
+                                            <div key={item.id} className="checklist-item-row">
+                                              <label className="checklist-checkbox-label">
+                                                <input
+                                                  type="checkbox"
+                                                  checked={isChecked}
+                                                  onChange={() => handleCheckboxChange(category.name, item.name, item.id)}
+                                                  className="checklist-checkbox"
+                                                />
+                                                <span className="checklist-item-text">{item.name}</span>
+                                              </label>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    ) : (
+                                      <div className="checklist-empty">No items in this category</div>
+                                    )}
+                                  </div>
                                 )}
                               </div>
-                            </div>
-                            {open === 2 && (
-                              <div className="accordion-content">
-                                <div className="form-group">
-                                  <label className="form-label">Notes & Observations</label>
-                                  <textarea
-                                    className="form-textarea"
-                                    rows="4"
-                                    placeholder="Describe any exterior damage, paint issues, bodywork, etc."
-                                    value={exteriorNotes}
-                                    onChange={(e) => setExteriorNotes(e.target.value)}
-                                  />
-                                </div>
-                              </div>
-                            )}
-                          </div>
+                            );
+                          })}
 
+                          {/* Upload Inspection Images section */}
                           <div className="accordion-item">
-                            <div className="accordion-header" onClick={() => toggle(3)}>
-                              <div className="accordion-title">
-                                <div className="accordion-icon">
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M19 21V5C19 3.89543 18.1046 3 17 3H7C5.89543 3 5 3.89543 5 5V21M19 21L21 21M19 21H14M5 21L3 21M5 21H10M9 7H15M9 11H15M10 21V16C10 15.4477 10.4477 15 11 15H13C13.5523 15 14 15.4477 14 16V21M10 21H14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                  </svg>
-                                </div>
-                                <span>Interior / Mechanical Inspection</span>
-                              </div>
-                              <div className="accordion-arrow">
-                                {open === 3 ? (
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M6 15L12 9L18 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                  </svg>
-                                ) : (
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                  </svg>
-                                )}
-                              </div>
-                            </div>
-                            {open === 3 && (
-                              <div className="accordion-content">
-                                <div className="form-group">
-                                  <label className="form-label">Notes & Observations</label>
-                                  <textarea
-                                    className="form-textarea"
-                                    rows="4"
-                                    placeholder="Describe interior condition, mechanical issues, electronics, etc."
-                                    value={interiorNotes}
-                                    onChange={(e) => setInteriorNotes(e.target.value)}
-                                  />
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="accordion-item">
-                            <div className="accordion-header" onClick={() => toggle(4)}>
+                            <div className="accordion-header" onClick={() => toggle(999)}>
                               <div className="accordion-title">
                                 <div className="accordion-icon">
                                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -323,7 +377,7 @@ const ManagerInspection = () => {
                                 )}
                               </div>
                               <div className="accordion-arrow">
-                                {open === 4 ? (
+                                {open === 999 ? (
                                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                                     <path d="M6 15L12 9L18 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                   </svg>
@@ -334,7 +388,7 @@ const ManagerInspection = () => {
                                 )}
                               </div>
                             </div>
-                            {open === 4 && (
+                            {open === 999 && (
                               <div className="accordion-content">
                                 <div className="upload-section">
                                   <div className="upload-area" onClick={() => document.getElementById('file-upload').click()}>
@@ -381,8 +435,9 @@ const ManagerInspection = () => {
                             )}
                           </div>
 
+                          {/* Final Assessment & Notes section */}
                           <div className="accordion-item">
-                            <div className="accordion-header" onClick={() => toggle(5)}>
+                            <div className="accordion-header" onClick={() => toggle(1000)}>
                               <div className="accordion-title">
                                 <div className="accordion-icon">
                                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -393,7 +448,7 @@ const ManagerInspection = () => {
                                 <span>Final Assessment & Notes</span>
                               </div>
                               <div className="accordion-arrow">
-                                {open === 5 ? (
+                                {open === 1000 ? (
                                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                                     <path d="M6 15L12 9L18 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                   </svg>
@@ -404,7 +459,7 @@ const ManagerInspection = () => {
                                 )}
                               </div>
                             </div>
-                            {open === 5 && (
+                            {open === 1000 && (
                               <div className="accordion-content">
                                 <div className="form-group">
                                   <label className="form-label">Final Inspection Summary</label>
@@ -420,60 +475,44 @@ const ManagerInspection = () => {
                             )}
                           </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div style={{ padding: '2rem', textAlign: 'center', color: '#8CC63F' }}>
+                          No checklist available for this category.
+                        </div>
+                      )}
                     </div>
+                  </div>
+                ) : (
+                  <div className="inspection-form">
+                    <div className="form-header">
+                      <h3>Inspection Report</h3>
+                      <p className="form-subtitle">Review and check the rejection reason.</p>
+                    </div>
+                    <div className="inspection-accordions">
+                      <div className="rejection-report">
+                        <div className="rejection-section row-status">
+                          <h4 className="rejection-title">Inspection Status</h4>
+                          <p className="rejection-status">❌ Rejected</p>
+                        </div>
 
-                  ) : (
-                    <div className="inspection-form">
-                      <div className="form-header">
-                        <h3>Inspection Report</h3>
-                        <p className="form-subtitle">Review and check the rejection reason.</p>
-                      </div>
-                      <div className="inspection-accordions">
-                        {/* Here you print the message of rejection by manager of any product which was came for inspection to the manager. */}
-                        <div className="rejection-report">
-                          <div className="rejection-section row-status">
-                            <h4 className="rejection-title">Inspection Status</h4>
-                            <p className="rejection-status">❌ Rejected</p>
-                          </div>
+                        <div className="rejection-section">
+                          <h4 className="rejection-title">Reason for Rejection</h4>
+                          <p className="rejection-text">
+                            {auctionData?.rejection_reason || 'The item did not meet the minimum inspection requirements set by the management.'}
+                          </p>
+                        </div>
 
-                          <div className="rejection-section">
-                            <h4 className="rejection-title">Reason for Rejection</h4>
-                            <p className="rejection-text">
-                              The vehicle did not meet the minimum inspection requirements set by the management.
-                            </p>
-                          </div>
-
-                          <div className="rejection-section">
-                            <h4 className="rejection-title">Key Observations</h4>
-                            <ul className="rejection-list">
-                              <li>Visible exterior scratches and paint damage on multiple panels.</li>
-                              <li>Interior condition was below acceptable standards.</li>
-                              <li>Engine noise and mechanical concerns were identified.</li>
-                              <li>Uploaded inspection images were insufficient for approval.</li>
-                            </ul>
-                          </div>
-
-                          <div className="rejection-section">
-                            <h4 className="rejection-title">Manager Remarks</h4>
-                            <p className="rejection-text">
-                              Please resolve the highlighted issues and resubmit the vehicle for inspection.
-                              Approval will only be considered after necessary repairs and complete documentation.
-                            </p>
-                          </div>
-
-                          <div className="rejection-section">
-                            <h4 className="rejection-title">Reviewed By</h4>
-                            <p className="rejection-text">
-                              Inspection Manager<br />
-                              Date: 12 Jan 2026
-                            </p>
-                          </div>
+                        <div className="rejection-section">
+                          <h4 className="rejection-title">Reviewed By</h4>
+                          <p className="rejection-text">
+                            {managerName}<br />
+                            Date: {auctionData?.updated_at ? new Date(auctionData.updated_at).toLocaleDateString() : new Date().toLocaleDateString()}
+                          </p>
                         </div>
                       </div>
                     </div>
-                  )
-                }
+                  </div>
+                )}
               </div>
             </div>
           </div>

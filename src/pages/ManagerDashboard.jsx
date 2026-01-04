@@ -61,19 +61,26 @@ function ManagerDashboard() {
         setError(null);
         const response = await managerService.getAssignedTasks();
         // Transform API response to dashboard format
-        const transformedData = Array.isArray(response) ? response.map((item) => ({
-          id: `INSP-${item.id}`,
-          originalId: item.id,
-          category: item.category_name || 'Unknown',
-          seller: item.seller_details?.name || 'Unknown Seller',
-          status: mapStatusToDisplay(item.status),
-          officer: item.seller_details?.name || 'Unassigned',
-          date: item.created_at ? new Date(item.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-          title: item.title,
-          description: item.description,
-          rejection_reason: item.rejection_reason,
-          rawData: item // Keep original data for reference
-        })) : [];
+        const transformedData = Array.isArray(response) ? response.map((item) => {
+          // Get manager name from manager_details
+          const managerName = item.manager_details 
+            ? `${item.manager_details.first_name || ''} ${item.manager_details.last_name || ''}`.trim() || item.manager_details.email || 'Unassigned'
+            : 'Unassigned';
+          
+          return {
+            id: `INSP-${item.id}`,
+            originalId: item.id,
+            category: item.category_name || 'Unknown',
+            seller: item.seller_details?.name || 'Unknown Seller',
+            status: mapStatusToDisplay(item.status),
+            officer: managerName,
+            date: item.created_at ? new Date(item.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+            title: item.title,
+            description: item.description,
+            rejection_reason: item.rejection_reason,
+            rawData: item // Keep original data for reference
+          };
+        }) : [];
         setTasks(transformedData);
       } catch (err) {
         console.error('Error fetching manager tasks:', err);

@@ -20,14 +20,14 @@ export default function ManagerAuctions() {
         setLoading(true);
         setError(null);
         const response = await managerService.getAssignedTasks();
-        // Transform API response to auction format and filter for ACTIVE status only
+        // Transform API response to auction format and filter for ACTIVE and APPROVED statuses
         const transformedData = Array.isArray(response) ? response
-          .filter(item => item.status === 'ACTIVE') // Only show ACTIVE status items
+          .filter(item => item.status === 'ACTIVE' || item.status === 'APPROVED') // Show both ACTIVE and APPROVED status items
           .map((item) => ({
             name: item.title || 'Untitled Auction',
             id: `#AUC-${item.id}`,
             originalId: item.id,
-            status: "Live", // Map ACTIVE to "Live" for display
+            status: item.status === 'ACTIVE' ? "Live" : "Approved", // Map ACTIVE to "Live" and APPROVED to "Approved" for display
             start: item.start_date ? new Date(item.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-',
             end: item.end_date ? new Date(item.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-',
             lots: 0, // Not available in API response
@@ -313,11 +313,12 @@ export default function ManagerAuctions() {
 
                       <td className="auction-table-status">
                         <div className="auction-status-cell">
-                          <span className={`auction-status-badge ${item.status === "Live" ? "badge-live" :
-                              item.status === "Live" ? "badge-upcoming" :
-                                item.status === "Draft" ? "badge-draft" :
-                                  "badge-draft"
-                            }`}>
+                          <span className={`auction-status-badge ${
+                            item.status === "Live" ? "badge-live" :
+                            item.status === "Approved" ? "badge-approved" :
+                            item.status === "Draft" ? "badge-draft" :
+                            "badge-draft"
+                          }`}>
                             {item.status}
                           </span>
                         </div>
