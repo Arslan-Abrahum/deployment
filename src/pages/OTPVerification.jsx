@@ -184,7 +184,7 @@ const OTPVerification = () => {
                     <span className="otp-spinner"></span>
                     Verifying Otp
                   </>
-                ) : 'Verify & Proceed'
+                ) : "Verify & Proceed"
 
               }
             </button>
