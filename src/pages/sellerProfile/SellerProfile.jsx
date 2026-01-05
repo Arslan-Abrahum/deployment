@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import "./SellerProfile.css";
 import { useNavigate } from "react-router-dom";
+import { logout } from "../../store/slices/authSlice";
+import { useDispatch } from "react-redux";
 
 const SellerProfile = () => {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -669,7 +672,7 @@ const SellerProfile = () => {
                         <h4>Two-Factor Authentication</h4>
                         <p>Add an extra layer of security to your account</p>
                       </div>
-                      <button className="action-btn outline small">Enable</button>
+                      <button className="s-action-btn s-outline small">Enable</button>
                     </div>
                     <div className="setting-item">
                       <div className="setting-info">
@@ -717,7 +720,12 @@ const SellerProfile = () => {
                 <div className="danger-zone">
                                     <h3 className="section-title">Logout Here</h3>
 
-                    <button className="danger-btn red" onClick={()=> navigate('/signin', {replace: true})}>
+                    <button className="danger-btn red" onClick={()=>
+                       {
+                        dispatch(logout())
+                         navigate('/signin', {replace: true})
+                       }
+                       }>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <path d="M3 6h18M5 6l1 13a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-13M10 11v6M14 11v6" stroke="currentColor" strokeWidth="2"/>
                       </svg>

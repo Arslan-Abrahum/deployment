@@ -188,16 +188,20 @@ const OTPVerification = () => {
 
               }
             </button>
-            <button type="submit" className="resend-verify-button" disabled={isResendingOtp}>
-              {isResendingOtp ?
-                (
-                  <>
-                    <span className="otp-spinner"></span>
-                    Resending Otp
-                  </>
-                ) : 'Resend Otp'
-
-              }
+            <button
+              type="button"
+              className="resend-verify-button"
+              onClick={handleResend}
+              disabled={!canResend || isResendingOtp}
+            >
+              {isResendingOtp ? (
+                <>
+                  <span className="otp-spinner"></span>
+                  Resending OTP
+                </>
+              ) : (
+                'Resend OTP'
+              )}
             </button>
           </form>
 

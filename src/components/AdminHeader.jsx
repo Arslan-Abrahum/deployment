@@ -102,7 +102,7 @@ function AdminHeader() {
     <>
       <header className="admin-header">
         <div className="admin-header__container" ref={menuRef}>
-          <Link to="/" className="admin-header__logo">
+          <Link to="/admin/dashboard" className="admin-header__logo">
             <img src={logo} alt="Hammer & Tongues Logo" />
             <span>Hammer & Tongues</span>
           </Link>

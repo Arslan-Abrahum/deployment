@@ -19,7 +19,7 @@ function SellerHeader() {
     <>
       <header className="seller-header">
         <div className="seller-header__container">
-          <Link to="/" className="seller-header__logo">
+          <Link to="/seller/dashboard" className="seller-header__logo">
             <img src={logo} alt="Hammer & Tongues Logo" />
             <span>Hammer & Tongues</span>
           </Link>
