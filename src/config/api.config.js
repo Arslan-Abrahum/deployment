@@ -17,34 +17,34 @@ export const API_CONFIG = {
 
 export const API_ROUTES = {
   // Authentication
-  REGISTER: '/api/users/register/',
-  LOGIN: '/api/users/login/',
-  VERIFY_OTP: '/api/users/verify-otp/',
-  RESEND_OTP: '/api/users/resend-otp/',
-  REFRESH_TOKEN: '/api/users/token/refresh/',
-  PASSWORD_RESET_REQUEST: '/api/users/password-reset-request/',
-  PASSWORD_OTP_VERIFY: '/api/users/password-OTP-verify/',
-  PASSWORD_RESET_CONFIRM: '/api/users/password-reset-confirm/',
+  REGISTER: '/users/register/',
+  LOGIN: '/users/login/',
+  VERIFY_OTP: '/users/verify-otp/',
+  RESEND_OTP: '/users/resend-otp/',
+  REFRESH_TOKEN: '/users/token/refresh/',
+  PASSWORD_RESET_REQUEST: '/users/password-reset-request/',
+  PASSWORD_OTP_VERIFY: '/users/password-OTP-verify/',
+  PASSWORD_RESET_CONFIRM: '/users/password-reset-confirm/',
 
   // Profile
-  PROFILE: '/api/users/profile/',
-  PROFILE_DELETE: '/api/users/profile/delete/',
-  PROFILE_UPDATE: '/api/users/profile/',
+  PROFILE: '/users/profile/',
+  PROFILE_DELETE: '/users/profile/delete/',
+  PROFILE_UPDATE: '/users/profile/',
 
   // Admin Routes
-  ADMIN_DASHBOARD: '/api/inspections/admin/dashboard/',
-  ADMIN_USER_ACTION: '/api/inspections/admin/user-action/',
-  ADMIN_ASSIGN_AUCTION: '/api/inspections/admin/assign/',
-  ADMIN_USERS_LIST: '/api/inspections/admin/users/',
-  AUCTION_LISTINGS: '/api/auctions/listings/',
+  ADMIN_DASHBOARD: '/inspections/admin/dashboard/',
+  ADMIN_USER_ACTION: '/inspections/admin/user-action/',
+  ADMIN_ASSIGN_AUCTION: '/inspections/admin/assign/',
+  ADMIN_USERS_LIST: '/inspections/admin/users/',
+  AUCTION_LISTINGS: '/auctions/listings/',
 
   // Manager Routes
-  MANAGER_TASKS: '/api/inspections/manager/tasks/',
-  MANAGER_INSPECT: '/api/inspections/manager/inspect/', // + auction_id
-  INSPECTION_REPORTS: '/api/inspections/reports/',
-  INSPECTION_REPORT_DETAIL: '/api/inspections/reports/', // + report_id
+  MANAGER_TASKS: '/inspections/manager/tasks/',
+  MANAGER_INSPECT: '/inspections/manager/inspect/', // + auction_id
+  INSPECTION_REPORTS: '/inspections/reports/',
+  INSPECTION_REPORT_DETAIL: '/inspections/reports/', // + report_id
 
   // Checklist/Template Routes
-  INSPECTION_TEMPLATES: '/api/inspections/templates/',
-  INSPECTION_TEMPLATE_DETAIL: '/api/inspections/templates/', // + template_id
+  INSPECTION_TEMPLATES: '/inspections/templates/',
+  INSPECTION_TEMPLATE_DETAIL: '/inspections/templates/', // + template_id
 };
