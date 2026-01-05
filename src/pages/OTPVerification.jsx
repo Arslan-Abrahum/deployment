@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import logo from '../assets/logo.png'
 import './OTPVerification.css'
+import { useSelector, useDispatch } from 'react-redux'
+import { verifyOtp, resendOtp } from '../store/actions/authActions'
 
 const OTPVerification = () => {
   const navigate = useNavigate()
@@ -10,13 +12,17 @@ const OTPVerification = () => {
   const [timer, setTimer] = useState(600) // 10 minutes in seconds
   const [canResend, setCanResend] = useState(false)
   const inputRefs = useRef([])
+  const dispatch = useDispatch()
+  const {
+    isVerifyingOtp,
+    isResendingOtp
+  } = useSelector((state) => state.auth)
 
   // Get userType and email from location state
-  const userType = location.state?.userType || 'buyer'
   const email = location.state?.email || 'your email'
 
   // Mask email for display
-  const maskedEmail = email.includes('@') 
+  const maskedEmail = email.includes('@')
     ? `******${email.split('@')[0].slice(-4)}@${email.split('@')[1]}`
     : `******${email.slice(-4)}`
 
@@ -51,7 +57,7 @@ const OTPVerification = () => {
 
   const handleOtpChange = (index, value) => {
     if (value.length > 1) return // Only allow single digit
-    
+
     const newOtp = [...otp]
     newOtp[index] = value.replace(/[^0-9]/g, '') // Only allow numbers
     setOtp(newOtp)
@@ -78,24 +84,18 @@ const OTPVerification = () => {
     }
   }
 
-  const handleVerify = (e) => {
+  const handleVerify = async (e) => {
     e.preventDefault()
     const otpCode = otp.join('')
-    
+
     if (otpCode.length === 6) {
       // Handle OTP verification
-      console.log('Verifying OTP:', otpCode)
-      
-      // After successful verification, redirect based on userType
-      if (userType === 'seller') {
-        navigate('/kyc-verification')
-      } else {
-        navigate('/dashboard')
-      }
+      await dispatch(verifyOtp({ email, code: otpCode }))
+      navigate('/signin')
     }
   }
 
-  const handleResend = () => {
+  const handleResend = async () => {
     if (canResend) {
       setTimer(600) // Reset to 10 minutes
       setCanResend(false)
@@ -104,7 +104,7 @@ const OTPVerification = () => {
         inputRefs.current[0].focus()
       }
       // Handle resend OTP logic here
-      console.log('Resending OTP to:', email)
+      await dispatch(resendOtp(email))
     }
   }
 
@@ -115,16 +115,16 @@ const OTPVerification = () => {
           <button
             type="button"
             className="back-button"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/register', {replace: true})}
             aria-label="Go back"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
           <a href="/" className="otp-logo">
             <img src={logo} alt="Hammers & Tongues Logo" />
-            <span>Hammers & Tongues</span>
+            <span>Hammer & Tongues</span>
           </a>
         </div>
       </div>
@@ -134,15 +134,15 @@ const OTPVerification = () => {
           <div className="otp-icon-wrapper">
             <div className="otp-icon">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
           </div>
 
           <h1 className="otp-title">Verify Your Account</h1>
-          
+
           <p className="otp-instructions">
             We've sent a 6-digit code to <strong>{maskedEmail}</strong>. The code is valid for 10 minutes.
           </p>
@@ -180,13 +180,14 @@ const OTPVerification = () => {
               {isVerifyingOtp ?
                 (
                   <>
-                    <span className="otp-spinner"></span>
+                    <span className="spinner"></span>
                     Verifying Otp
                   </>
-                ) : "Verify & Proceed"
+                ) : 'Verify & Proceed'
 
               }
             </button>
+            
             <button
               type="button"
               className="resend-verify-button"
@@ -205,10 +206,6 @@ const OTPVerification = () => {
           </form>
 
           <div className="otp-footer-links">
-            <button type="button" className="footer-link" onClick={handleResend} disabled={!canResend}>
-              Resend Code
-            </button>
-            <span className="footer-separator">|</span>
             <a href="/help" className="footer-link">Having trouble?</a>
           </div>
         </div>

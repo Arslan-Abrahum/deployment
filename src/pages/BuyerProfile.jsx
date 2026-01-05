@@ -629,7 +629,7 @@ const BuyerProfile = () => {
                 <div className="danger-zone">
                   <h3 className="section-title">Logout Here</h3>
                   <div className="danger-actions">
-                    <button className="danger-btn red" onClick={() => {
+                    <button className="b-danger-btn red" onClick={() => {
                       dispatch(logout())
                       navigate('/signin', { replace: true })
                     }
@@ -645,7 +645,7 @@ const BuyerProfile = () => {
                 <div className="danger-zone">
                   <h3 className="section-title">Danger Zone</h3>
                   <div className="danger-actions">
-                    <button className="danger-btn red">
+                    <button className="b-danger-btn red">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <path d="M10 11v6M14 11v6M5 7h14M6 7l1-4h10l1 4M8 7v-4h8v4" stroke="currentColor" strokeWidth="2" />
                       </svg>

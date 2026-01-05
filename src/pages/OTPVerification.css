@@ -216,6 +216,64 @@
   transform: none;
 }
 
+.otp-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  border-top-color: #000000;
+  animation: spin 0.8s linear infinite;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.resend-verify-button {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: 1.5px solid rgba(140, 198, 63, 0.6);
+  border-radius: 8px;
+  color: #8CC63F;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.resend-verify-button:hover:not(:disabled) {
+  background: rgba(140, 198, 63, 0.08);
+  border-color: #8CC63F;
+  color: #8CC63F;
+}
+
+.resend-verify-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.resend-verify-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Spinner alignment inside resend button */
+.resend-verify-button .otp-spinner {
+  border-color: rgba(140, 198, 63, 0.3);
+  border-top-color: #8CC63F;
+}
+
 .otp-footer-links {
   display: flex;
   justify-content: center;
@@ -279,6 +337,12 @@
     width: 35px;
     height: 35px;
   }
+
+  .otp-spinner {
+    width: 14px;
+    height: 14px;
+    margin-right: 0.375rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -296,5 +360,3 @@
     gap: 0.4rem;
   }
 }
-
-

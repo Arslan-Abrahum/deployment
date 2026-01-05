@@ -8,6 +8,7 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: false, // ✅ IMPORTANT
 });
 
 // Request interceptor
@@ -25,7 +26,7 @@ apiClient.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       cookieStorage.clear();
-      window.location.href = '/login';
+      window.location.replace('/login');
     }
     return Promise.reject(error);
   }

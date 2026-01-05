@@ -19,7 +19,7 @@ function BuyerHeader() {
     <>
       <header className="buyer-header">
         <div className="buyer-header__container">
-          <Link to="/" className="buyer-header__logo">
+          <Link to="/buyer/dashboard" className="buyer-header__logo">
             <img src={logo} alt="Hammer & Tongues Logo" />
             <span>Hammer & Tongues</span>
           </Link>

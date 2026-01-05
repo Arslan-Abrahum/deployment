@@ -687,7 +687,7 @@ input:checked + .slider:before {
   margin-top: 1rem;
 }
 
-.danger-btn {
+.b-danger-btn {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -702,19 +702,19 @@ input:checked + .slider:before {
   transition: all 0.2s ease;
 }
 
-.danger-btn:hover {
+.b-danger-btn:hover {
   background: rgba(239, 68, 68, 0.1);
   border-color: rgba(239, 68, 68, 0.3);
   color: #ef4444;
 }
 
-.danger-btn.red {
+.b-danger-btn.red {
   background: rgba(239, 68, 68, 0.1);
   border-color: rgba(239, 68, 68, 0.3);
   color: #ef4444;
 }
 
-.danger-btn.red:hover {
+.b-danger-btn.red:hover {
   background: rgba(239, 68, 68, 0.2);
   border-color: rgba(239, 68, 68, 0.5);
 }
@@ -799,7 +799,7 @@ input:checked + .slider:before {
     flex-direction: column;
   }
   
-  .danger-btn {
+  .b-danger-btn {
     width: 100%;
     justify-content: center;
   }
