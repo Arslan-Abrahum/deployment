@@ -187,22 +187,27 @@ const AdminManagerKYC = () => {
   };
 
   // Document configuration
-  const getDocumentPath = (fieldValue) => {
-    console.log('field Values 1: ', fieldValue);
+  // const getDocumentPath = (fieldValue) => {
+  //   console.log('field Values 1: ', fieldValue);
 
-    if (
-      !fieldValue ||
-      fieldValue === 'null' ||
-      fieldValue === 'undefined' ||
-      fieldValue.trim() === ''
-    ) {
-      return null;
-    }
+  //   if (
+  //     !fieldValue ||
+  //     fieldValue === 'null' ||
+  //     fieldValue === 'undefined' ||
+  //     fieldValue.trim() === ''
+  //   ) {
+  //     return null;
+  //   }
 
-    console.log('field Values 2: ', fieldValue);
+  //   console.log('field Values 2: ', fieldValue);
 
-    return `${API_CONFIG.MEDIA_BASE_URL}${fieldValue}`;
-  };
+  //   return `${API_CONFIG.MEDIA_BASE_URL}${fieldValue}`;
+  // };
+
+  const getDocumentPath = (path) => {
+  if (!path) return null;
+  return `${import.meta.env.VITE_MEDIA_BASE_URL}${path}`;
+};
 
   const documentTypes = useMemo(() => [
     {
