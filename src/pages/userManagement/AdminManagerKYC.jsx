@@ -24,6 +24,8 @@ const AdminManagerKYC = () => {
   const dispatch = useDispatch();
   const { users, isLoading, isPerformingAction, actionSuccess } = useSelector((state) => state.admin);
 
+
+
   // Fetch users on component mount
   useEffect(() => {
     dispatch(fetchUsersList());
@@ -67,6 +69,9 @@ const AdminManagerKYC = () => {
     if (!users?.results) return null;
     return users.results.find((user) => user.id === parseInt(id));
   }, [users, id]);
+
+
+  console.log("selectedUser: ", selectedUser);
 
   const openFullscreen = (src) => {
     setFullscreenImage(src);
@@ -182,23 +187,28 @@ const AdminManagerKYC = () => {
   };
 
   // Document configuration
- const getDocumentPath = (fieldValue) => {
-  if (
-    !fieldValue ||
-    fieldValue === 'null' ||
-    fieldValue === 'undefined' ||
-    fieldValue.trim() === ''
-  ) {
-    return null;
-  }
+  const getDocumentPath = (fieldValue) => {
+    console.log('field Values 1: ', fieldValue);
 
-  const cleanBaseUrl = API_CONFIG.BASE_URL.replace(/\/api\/?$/, '');
+    if (
+      !fieldValue ||
+      fieldValue === 'null' ||
+      fieldValue === 'undefined' ||
+      fieldValue.trim() === ''
+    ) {
+      return null;
+    }
 
-  console.log("cleanBaseUrl KYC: ", cleanBaseUrl);
-  
-  return `${cleanBaseUrl}${fieldValue}`;
-};
-  const documentTypes = [
+    console.log('field Values 2: ', fieldValue);
+
+    const cleanBaseUrl = API_CONFIG.BASE_URL.replace(/\/api\/?$/, '');
+
+    console.log("cleanBaseUrl KYC: ", cleanBaseUrl);
+
+    return `${cleanBaseUrl + fieldValue}`;
+  };
+
+  const documentTypes = useMemo(() => [
     {
       key: "id_front",
       label: "National ID (Front)",
@@ -224,7 +234,7 @@ const AdminManagerKYC = () => {
       label: "Passport",
       path: getDocumentPath(selectedUser?.seller_details?.passport_front),
     },
-  ];
+  ], [selectedUser]);
 
   // Loading state
   if (isLoading) {
@@ -367,8 +377,8 @@ const AdminManagerKYC = () => {
       </div>
 
       {fullscreenImage && (
-        <div 
-          className="fullscreen-overlay" 
+        <div
+          className="fullscreen-overlay"
           onClick={(e) => {
             if (e.target === e.currentTarget) closeFullscreen();
           }}
@@ -378,66 +388,66 @@ const AdminManagerKYC = () => {
           onMouseLeave={handleMouseUp}
         >
           <div className="fullscreen-controls">
-            <button 
+            <button
               className="fullscreen-control-btn"
               onClick={handleZoomOut}
               title="Zoom Out"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-                <path d="M8 12H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                <path d="M8 12H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </button>
             <span className="zoom-level">{Math.round(zoomLevel * 100)}%</span>
-            <button 
+            <button
               className="fullscreen-control-btn"
               onClick={handleZoomIn}
               title="Zoom In"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-                <path d="M12 8V16M8 12H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                <path d="M12 8V16M8 12H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </button>
-            <button 
+            <button
               className="fullscreen-control-btn"
               onClick={handleResetZoom}
               title="Reset Zoom"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z" stroke="currentColor" strokeWidth="2"/>
-                <path d="M12 8V12M12 12V16M12 12H8M12 12H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                <path d="M3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z" stroke="currentColor" strokeWidth="2" />
+                <path d="M12 8V12M12 12V16M12 12H8M12 12H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </button>
-            <button 
+            <button
               className="fullscreen-control-btn"
               onClick={() => downloadImage(fullscreenImage, 'kyc-document.jpg')}
               title="Download"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
-            <button 
+            <button
               className="fullscreen-control-btn close-btn"
               onClick={closeFullscreen}
               title="Close"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
           </div>
-          <div 
+          <div
             className="fullscreen-image-container"
             onMouseDown={handleMouseDown}
             style={{ cursor: zoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
           >
-            <img 
-              src={fullscreenImage} 
-              alt="Full Screen" 
+            <img
+              src={fullscreenImage}
+              alt="Full Screen"
               className="fullscreen-image"
               style={{
                 transform: `scale(${zoomLevel}) translate(${imagePosition.x / zoomLevel}px, ${imagePosition.y / zoomLevel}px)`,

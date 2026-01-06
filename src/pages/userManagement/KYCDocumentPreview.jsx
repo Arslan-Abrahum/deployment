@@ -3,6 +3,8 @@ import './KYCDocumentPreview.css';
 
 const KYCDocumentPreview = ({ documents, onPreviewImage, onDownloadImage }) => {
 
+  console.log("documents: ", documents);
+  
   const documentsWithImages = documents.filter(
     doc => doc.path !== null && doc.path !== undefined && doc.path.trim() !== ''
   );
