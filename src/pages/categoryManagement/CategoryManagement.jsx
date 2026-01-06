@@ -30,8 +30,6 @@ export default function CategoryManagement() {
   const itemsPerPage = 8;
 
   const handleStatusToggle = (id) => {
-    // TODO: Implement status toggle API call
-    console.log('Toggle status for category:', id);
   };
 
   const handleEdit = (id) => {

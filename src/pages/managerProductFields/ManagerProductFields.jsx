@@ -95,8 +95,6 @@ const ManagerProductFields = () => {
         try {
           // Fetch all checklists from GET /api/inspections/templates/
           const checklists = await managerService.getChecklists();
-          console.log('Fetched checklists:', checklists);
-          console.log('Looking for category:', categoryName);
           
           // Match checklist title with category name
           // e.g., "town sub" should match "town sub Inspection"
@@ -114,9 +112,7 @@ const ManagerProductFields = () => {
                        checklistTitle.toLowerCase().startsWith(categoryName.toLowerCase());
               })
             : null;
-          
-          console.log('Matching checklist found:', matchingChecklist);
-          
+                    
           if (matchingChecklist) {
             setExistingChecklistId(matchingChecklist.id);
             setChecklistDescription(matchingChecklist.description || '');
@@ -132,14 +128,12 @@ const ManagerProductFields = () => {
                 })) : []
               }));
               setChecklistCategories(categories);
-              console.log('Loaded checklist categories:', categories);
             } else {
               // If template_data is empty or invalid, start with empty categories
               setChecklistCategories([]);
             }
           } else {
             // No matching checklist found - user will need to create one
-            console.log('No matching checklist found for category:', categoryName);
             setExistingChecklistId(null);
             setChecklistCategories([]);
             setChecklistDescription('');
@@ -235,11 +229,9 @@ const ManagerProductFields = () => {
       const textBeforeCursor = textarea.value.substring(0, cursorPosition);
       const textAfterCursor = textarea.value.substring(cursorPosition);
       
-      // Get the current line (text before cursor on this line)
       const lastNewlineIndex = textBeforeCursor.lastIndexOf('\n');
       const currentLine = lastNewlineIndex === -1 ? textBeforeCursor : textBeforeCursor.substring(lastNewlineIndex + 1);
       
-      // If current line has content and doesn't end with comma, add comma before newline
       if (currentLine.trim() && !currentLine.trim().endsWith(',')) {
         e.preventDefault();
         const newValue = textBeforeCursor + ',' + '\n' + textAfterCursor;
@@ -247,7 +239,6 @@ const ManagerProductFields = () => {
           ...prev,
           options: newValue
         }));
-        // Set cursor position after the newline
         setTimeout(() => {
           textarea.setSelectionRange(cursorPosition + 2, cursorPosition + 2);
         }, 0);
@@ -420,13 +411,11 @@ const ManagerProductFields = () => {
 
       if (isEditMode && editingCategoryId) {
         // Update existing category
-        console.log('Updating category:', { categoryId: editingCategoryId, categoryData });
         const result = await dispatch(updateCategory({ 
           categoryId: parseInt(editingCategoryId), 
           categoryData 
         })).unwrap();
         createdCategoryId = result?.id || parseInt(editingCategoryId);
-        console.log('Category updated successfully:', result);
       } else {
         // Create new category
         const result = await dispatch(createCategory(categoryData)).unwrap();

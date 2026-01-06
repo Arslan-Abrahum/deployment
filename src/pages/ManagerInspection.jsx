@@ -208,12 +208,8 @@ const ManagerInspection = () => {
         inspection_images: files
       };
 
-      console.log("Submitting inspection with data:", inspectionData);
-      console.log("Auction ID:", auctionData.id);
-
       // Submit inspection
       const response = await managerService.performInspection(auctionData.id, inspectionData);
-      console.log("Inspection response:", response);
       toast.success("Inspection approved successfully!");
       
       // Navigate after a short delay to allow toast to be visible
@@ -265,12 +261,8 @@ const ManagerInspection = () => {
         inspection_images: files
       };
 
-      console.log("Submitting rejection with data:", inspectionData);
-      console.log("Auction ID:", auctionData.id);
-
       // Submit inspection rejection
       const response = await managerService.performInspection(auctionData.id, inspectionData);
-      console.log("Rejection response:", response);
       toast.success("Inspection rejected successfully!");
       
       // Navigate after a short delay to allow toast to be visible

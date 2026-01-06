@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import "./SellerProfile.css";
 import { useNavigate } from "react-router-dom";
-
+import { useDispatch } from "react-redux";
+import { logout } from "../../store/slices/authSlice";
 const SellerProfile = () => {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -83,29 +85,29 @@ const SellerProfile = () => {
 
   return (
     <div className="seller-profile-container">
-  
+
       <div className="profile-header">
         <div className="header-content">
           <h1 className="profile-title">Seller Profile</h1>
           <p className="profile-subtitle">Manage your store, track performance, and grow your business</p>
         </div>
         <div className="header-actions">
-          <button 
+          <button
             className={`s-action-btn ${isEditing ? 's-secondary' : 's-primary'}`}
             onClick={() => isEditing ? handleSave() : setIsEditing(true)}
           >
             {isEditing ? (
               <>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 Save Changes
               </>
             ) : (
               <>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2"/>
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" />
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" />
                 </svg>
                 Edit Profile
               </>
@@ -113,8 +115,8 @@ const SellerProfile = () => {
           </button>
           <button className="s-action-btn s-outline">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M3 16v5h5M21 16v5h-5M16 3v5h5M8 3v5H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              <path d="M16 8h5l-5-5v5zM8 8H3l5-5v5zM8 16H3l5 5v-5zM16 16h5l-5 5v-5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M3 16v5h5M21 16v5h-5M16 3v5h5M8 3v5H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path d="M16 8h5l-5-5v5zM8 8H3l5-5v5zM8 16H3l5 5v-5zM16 16h5l-5 5v-5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             Export Data
           </button>
@@ -127,17 +129,17 @@ const SellerProfile = () => {
             <div className="profile-avatar-section">
               <div className="avatar-wrapper">
                 <div className="avatar">
-                  <img 
-                    src="https://www.catholicsingles.com/wp-content/uploads/2020/06/blog-header-3.png" 
+                  <img
+                    src="https://www.catholicsingles.com/wp-content/uploads/2020/06/blog-header-3.png"
                     alt=""
                   />
                   <div className="status-indicator"></div>
                 </div>
                 <button className="b-avatar-upload">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2"/>
-                    <polyline points="17 8 12 3 7 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" />
+                    <polyline points="17 8 12 3 7 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
                 </button>
               </div>
@@ -146,8 +148,8 @@ const SellerProfile = () => {
                 <p className="profile-email">{profileData.basicInfo.email}</p>
                 <div className="verification-badge">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-                    <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                    <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   {profileData.basicInfo.verificationLevel} Seller
                 </div>
@@ -158,8 +160,8 @@ const SellerProfile = () => {
               <div className="stat-card">
                 <div className="stat-icon revenue">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 1v22" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    <path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 1v22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 <div className="stat-content">
@@ -171,7 +173,7 @@ const SellerProfile = () => {
               <div className="stat-card">
                 <div className="stat-icon orders">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 <div className="stat-content">
@@ -183,7 +185,7 @@ const SellerProfile = () => {
               <div className="stat-card">
                 <div className="stat-icon rating">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 <div className="stat-content">
@@ -195,8 +197,8 @@ const SellerProfile = () => {
               <div className="stat-card">
                 <div className="stat-icon satisfaction">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-                    <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                    <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
                 </div>
                 <div className="stat-content">
@@ -235,31 +237,31 @@ const SellerProfile = () => {
         <div className="profile-right">
           {/* Tabs Navigation */}
           <div className="profile-tabs">
-            <button 
+            <button
               className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
               onClick={() => setActiveTab('overview')}
             >
               Overview
             </button>
-            <button 
+            <button
               className={`tab-btn ${activeTab === 'business' ? 'active' : ''}`}
               onClick={() => setActiveTab('business')}
             >
               Business Info
             </button>
-            <button 
+            <button
               className={`tab-btn ${activeTab === 'financial' ? 'active' : ''}`}
               onClick={() => setActiveTab('financial')}
             >
               Financial
             </button>
-            <button 
+            <button
               className={`tab-btn ${activeTab === 'products' ? 'active' : ''}`}
               onClick={() => setActiveTab('products')}
             >
               Products
             </button>
-            <button 
+            <button
               className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
               onClick={() => setActiveTab('settings')}
             >
@@ -276,8 +278,8 @@ const SellerProfile = () => {
                 <div className="info-section">
                   <h3 className="section-title">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2"/>
-                      <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" />
+                      <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" />
                     </svg>
                     Basic Information
                   </h3>
@@ -285,8 +287,8 @@ const SellerProfile = () => {
                     <div className="info-item">
                       <label>Full Name</label>
                       {isEditing ? (
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           className="edit-input"
                           value={profileData.basicInfo.fullName}
                           onChange={(e) => handleInputChange('basicInfo', 'fullName', e.target.value)}
@@ -298,8 +300,8 @@ const SellerProfile = () => {
                     <div className="info-item">
                       <label>Email Address</label>
                       {isEditing ? (
-                        <input 
-                          type="email" 
+                        <input
+                          type="email"
                           className="edit-input"
                           value={profileData.basicInfo.email}
                           onChange={(e) => handleInputChange('basicInfo', 'email', e.target.value)}
@@ -311,8 +313,8 @@ const SellerProfile = () => {
                     <div className="info-item">
                       <label>Phone Number</label>
                       {isEditing ? (
-                        <input 
-                          type="tel" 
+                        <input
+                          type="tel"
                           className="edit-input"
                           value={profileData.basicInfo.phone}
                           onChange={(e) => handleInputChange('basicInfo', 'phone', e.target.value)}
@@ -328,8 +330,8 @@ const SellerProfile = () => {
                     <div className="info-item">
                       <label>Store Name</label>
                       {isEditing ? (
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           className="edit-input"
                           value={profileData.basicInfo.storeName}
                           onChange={(e) => handleInputChange('basicInfo', 'storeName', e.target.value)}
@@ -348,7 +350,7 @@ const SellerProfile = () => {
                 <div className="info-section">
                   <h3 className="section-title">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                      <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke="currentColor" strokeWidth="2" />
                     </svg>
                     Recent Activity
                   </h3>
@@ -387,7 +389,7 @@ const SellerProfile = () => {
                     <div className="info-item">
                       <label>Business Type</label>
                       {isEditing ? (
-                        <select 
+                        <select
                           className="edit-input"
                           value={profileData.businessInfo.businessType}
                           onChange={(e) => handleInputChange('businessInfo', 'businessType', e.target.value)}
@@ -404,8 +406,8 @@ const SellerProfile = () => {
                     <div className="info-item">
                       <label>Tax ID / EIN</label>
                       {isEditing ? (
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           className="edit-input"
                           value={profileData.businessInfo.taxId}
                           onChange={(e) => handleInputChange('businessInfo', 'taxId', e.target.value)}
@@ -417,7 +419,7 @@ const SellerProfile = () => {
                     <div className="info-item">
                       <label>Business Address</label>
                       {isEditing ? (
-                        <textarea 
+                        <textarea
                           className="edit-input"
                           value={profileData.businessInfo.businessAddress}
                           onChange={(e) => handleInputChange('businessInfo', 'businessAddress', e.target.value)}
@@ -430,7 +432,7 @@ const SellerProfile = () => {
                     <div className="info-item">
                       <label>Shipping Origin</label>
                       {isEditing ? (
-                        <select 
+                        <select
                           className="edit-input"
                           value={profileData.businessInfo.shippingOrigin}
                           onChange={(e) => handleInputChange('businessInfo', 'shippingOrigin', e.target.value)}
@@ -448,7 +450,7 @@ const SellerProfile = () => {
                     <div className="info-item">
                       <label>Return Address</label>
                       {isEditing ? (
-                        <textarea 
+                        <textarea
                           className="edit-input"
                           value={profileData.businessInfo.returnAddress}
                           onChange={(e) => handleInputChange('businessInfo', 'returnAddress', e.target.value)}
@@ -472,8 +474,8 @@ const SellerProfile = () => {
                     <div className="info-item">
                       <label>Bank Name</label>
                       {isEditing ? (
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           className="edit-input"
                           value={profileData.bankDetails.bankName}
                           onChange={(e) => handleInputChange('bankDetails', 'bankName', e.target.value)}
@@ -485,8 +487,8 @@ const SellerProfile = () => {
                     <div className="info-item">
                       <label>Account Name</label>
                       {isEditing ? (
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           className="edit-input"
                           value={profileData.bankDetails.accountName}
                           onChange={(e) => handleInputChange('bankDetails', 'accountName', e.target.value)}
@@ -498,8 +500,8 @@ const SellerProfile = () => {
                     <div className="info-item">
                       <label>Account Number</label>
                       {isEditing ? (
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           className="edit-input"
                           value={profileData.bankDetails.accountNumber}
                           onChange={(e) => handleInputChange('bankDetails', 'accountNumber', e.target.value)}
@@ -511,8 +513,8 @@ const SellerProfile = () => {
                     <div className="info-item">
                       <label>Routing Number</label>
                       {isEditing ? (
-                        <input 
-                          type="text" 
+                        <input
+                          type="text"
                           className="edit-input"
                           value={profileData.bankDetails.routingNumber}
                           onChange={(e) => handleInputChange('bankDetails', 'routingNumber', e.target.value)}
@@ -524,7 +526,7 @@ const SellerProfile = () => {
                     <div className="info-item">
                       <label>Currency</label>
                       {isEditing ? (
-                        <select 
+                        <select
                           className="edit-input"
                           value={profileData.bankDetails.currency}
                           onChange={(e) => handleInputChange('bankDetails', 'currency', e.target.value)}
@@ -580,14 +582,14 @@ const SellerProfile = () => {
               <div className="products-content">
                 <div className="products-header">
                   <h3 className="section-title">Top Performing Products</h3>
-                  <button className="s-action-btn s-outline small" onClick={()=> navigate('/seller/product')}>
+                  <button className="s-action-btn s-outline small" onClick={() => navigate('/seller/product')}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                     </svg>
                     Add Product
                   </button>
                 </div>
-                
+
                 <div className="products-table">
                   <div className="table-header">
                     <div className="table-cell">Product</div>
@@ -615,19 +617,19 @@ const SellerProfile = () => {
                         <div className="product-actions">
                           <button className="icon-btn">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2"/>
-                              <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2" />
+                              <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
                             </svg>
                           </button>
                           <button className="icon-btn">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2"/>
-                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2"/>
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" />
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" />
                             </svg>
                           </button>
                           <button className="icon-btn">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                              <path d="M3 6h18M5 6l1 13a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-13M10 11v6M14 11v6" stroke="currentColor" strokeWidth="2"/>
+                              <path d="M3 6h18M5 6l1 13a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-13M10 11v6M14 11v6" stroke="currentColor" strokeWidth="2" />
                             </svg>
                           </button>
                         </div>
@@ -715,28 +717,32 @@ const SellerProfile = () => {
                 </div>
 
                 <div className="danger-zone">
-                                    <h3 className="section-title">Logout Here</h3>
+                  <h3 className="section-title">Logout Here</h3>
 
-                    <button className="danger-btn red" onClick={()=> navigate('/signin', {replace: true})}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M3 6h18M5 6l1 13a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-13M10 11v6M14 11v6" stroke="currentColor" strokeWidth="2"/>
-                      </svg>
-                      Logout
-                    </button>
-                  {/* </div> */}
+                  <button className="danger-btn red" onClick={() => {
+                    dispatch(logout())
+                    navigate('/signin', { replace: true })
+                  }
+                  }>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path d="M3 6h18M5 6l1 13a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-13M10 11v6M14 11v6" stroke="currentColor" strokeWidth="2" />
+                    </svg>
+                    Logout
+                  </button>
+              
                 </div>
                 <div className="danger-zone">
                   <h3 className="section-title">Danger Zone</h3>
                   <div className="danger-actions">
                     <button className="danger-btn">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M3 6h18M5 6l1 13a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-13M10 11v6M14 11v6" stroke="currentColor" strokeWidth="2"/>
+                        <path d="M3 6h18M5 6l1 13a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-13M10 11v6M14 11v6" stroke="currentColor" strokeWidth="2" />
                       </svg>
                       Delete All Products
                     </button>
                     <button className="danger-btn red">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M10 11v6M14 11v6M5 7h14M6 7l1-4h10l1 4M8 7v-4h8v4" stroke="currentColor" strokeWidth="2"/>
+                        <path d="M10 11v6M14 11v6M5 7h14M6 7l1-4h10l1 4M8 7v-4h8v4" stroke="currentColor" strokeWidth="2" />
                       </svg>
                       Close Store Account
                     </button>
