@@ -2,7 +2,7 @@ import React from 'react';
 import './KYCDocumentPreview.css';
 
 const KYCDocumentPreview = ({ documents, onPreviewImage, onDownloadImage }) => {
-  // Filter out documents without images
+
   const documentsWithImages = documents.filter(
     doc => doc.path !== null && doc.path !== undefined && doc.path.trim() !== ''
   );

@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchUsersList, performUserAction } from "../../store/actions/adminActions";
 import { clearActionSuccess } from "../../store/slices/adminSlice";
 import KYCDocumentPreview from "./KYCDocumentPreview";
+import { API_CONFIG } from "../../config/api.config";
+
 const AdminManagerKYC = () => {
   const [comparison, setComparison] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState(null);
@@ -21,9 +23,6 @@ const AdminManagerKYC = () => {
   });
   const dispatch = useDispatch();
   const { users, isLoading, isPerformingAction, actionSuccess } = useSelector((state) => state.admin);
-
-  console.log("selectedAction: ", selectedAction);
-
 
   // Fetch users on component mount
   useEffect(() => {
@@ -183,13 +182,20 @@ const AdminManagerKYC = () => {
   };
 
   // Document configuration
-  const getDocumentPath = (fieldValue) => {
-    if (!fieldValue || fieldValue === 'null' || fieldValue === 'undefined' || fieldValue.trim() === '') {
-      return null;
-    }
-    return `http://207.180.233.44:8001${fieldValue}`;
-  };
+ const getDocumentPath = (fieldValue) => {
+  if (
+    !fieldValue ||
+    fieldValue === 'null' ||
+    fieldValue === 'undefined' ||
+    fieldValue.trim() === ''
+  ) {
+    return null;
+  }
 
+  const cleanBaseUrl = API_CONFIG.BASE_URL.replace(/\/api\/?$/, '');
+
+  return `${cleanBaseUrl}${fieldValue}`;
+};
   const documentTypes = [
     {
       key: "id_front",
@@ -217,9 +223,6 @@ const AdminManagerKYC = () => {
       path: getDocumentPath(selectedUser?.seller_details?.passport_front),
     },
   ];
-
-  console.log("documentTypes: ", documentTypes);
-
 
   // Loading state
   if (isLoading) {
