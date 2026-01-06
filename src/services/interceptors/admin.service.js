@@ -66,7 +66,7 @@ export const adminService = {
   // Get Categories List
   getCategories: async () => {
     try {
-      const { data } = await apiClient.get('/api/auctions/categories/');
+      const { data } = await apiClient.get(API_ROUTES.FETCH_CATEGORIES);
       return data;
     } catch (error) {
       if (error.isNetworkError) {
@@ -79,7 +79,7 @@ export const adminService = {
   // Create Category
   createCategory: async (categoryData) => {
     try {
-      const { data } = await apiClient.post('/api/auctions/categories/', categoryData);
+      const { data } = await apiClient.post(API_ROUTES.CREATE_CATEGORY, categoryData);
       return data;
     } catch (error) {
       if (error.isNetworkError) {
@@ -94,17 +94,17 @@ export const adminService = {
     try {
       // Some APIs use POST for updates, others use PUT/PATCH
       // Try PUT first (RESTful standard), fallback to POST if needed
-      try {
-        const { data } = await apiClient.put(`/api/auctions/categories/${categoryId}/`, categoryData);
-        return data;
-      } catch (putError) {
-        // If PUT returns 405 (Method Not Allowed), try POST
-        if (putError.response?.status === 405) {
-          const { data } = await apiClient.post(`/api/auctions/categories/${categoryId}/`, categoryData);
-          return data;
-        }
-        throw putError;
-      }
+      const { data } = await apiClient.put(`${API_ROUTES.UPDATE_CATEGORY + categoryId}/`, categoryData);
+      return data;
+      // try {
+      // } catch (putError) {
+        // // If PUT returns 405 (Method Not Allowed), try POST
+        // if (putError.response?.status === 405) {
+        //   const { data } = await apiClient.post(`/api/auctions/categories/${categoryId}/`, categoryData);
+        //   return data;
+        // }
+      //   throw putError;
+      // }
     } catch (error) {
       if (error.isNetworkError) {
         throw new Error('Unable to connect to server. Please try again later.');
@@ -116,7 +116,7 @@ export const adminService = {
   // Delete Category
   deleteCategory: async (categoryId) => {
     try {
-      const { data } = await apiClient.delete(`/api/auctions/categories/${categoryId}/`);
+      const { data } = await apiClient.delete(`${ API_ROUTES.DELETE_CATEGORY + categoryId}/`);
       return data;
     } catch (error) {
       if (error.isNetworkError) {

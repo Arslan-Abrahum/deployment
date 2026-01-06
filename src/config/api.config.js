@@ -8,7 +8,7 @@
 // };
 
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.PROD ? '/api' : 'http://207.180.233.44:8001',
+  BASE_URL: import.meta.env.PROD ? '/api' : 'http://207.180.233.44:8001/api',
   TIMEOUT: 30000,
   IS_PRODUCTION: import.meta.env.PROD,
   IS_DEVELOPMENT: import.meta.env.DEV,
@@ -37,6 +37,10 @@ export const API_ROUTES = {
   ADMIN_ASSIGN_AUCTION: '/inspections/admin/assign/',
   ADMIN_USERS_LIST: '/inspections/admin/users/',
   AUCTION_LISTINGS: '/auctions/listings/',
+  FETCH_CATEGORIES: '/auctions/categories/',
+  CREATE_CATEGORY: '/auctions/categories/',
+  UPDATE_CATEGORY: '/auctions/categories/',
+  DELETE_CATEGORY: '/auctions/categories/',
 
   // Manager Routes
   MANAGER_TASKS: '/inspections/manager/tasks/',
