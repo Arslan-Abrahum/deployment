@@ -70,6 +70,9 @@ import { Provider } from "react-redux";
 import store from './store/store'
 
 import { Bounce, ToastContainer } from "react-toastify";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import ResetVerifyOtp from "./pages/ResetVerifyOTP";
 function App() {
   return (
     <Provider store={store}>
@@ -87,6 +90,10 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/otp-verification" element={<OTPVerification />} />
             <Route path="/kyc-verification" element={<KYCVerification />} />
+            {/* // New // */}
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/verify-reset-otp" element={<ResetVerifyOtp />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
             {/* Buyer Routes */}
             <Route element={<BuyerGuard />}>

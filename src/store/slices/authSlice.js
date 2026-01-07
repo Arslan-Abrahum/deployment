@@ -15,15 +15,18 @@ const initialState = {
   isRegistering: false,
   registrationError: null,
 
-  isVerifyingOtp: false,
-  otpError: null,
-  isResendingOtp: false,
-
+  // 
   isRequestingReset: false,
   resetRequestError: null,
-  resetToken: null,
+  resetRequestSuccess: false,
+
   isVerifyingResetOtp: false,
+  resetOtpError: null,
+  resetToken: null,
+
   isConfirmingReset: false,
+  resetConfirmError: null,
+  resetConfirmSuccess: false,
 };
 
 const authSlice = createSlice({
@@ -55,7 +58,16 @@ const authSlice = createSlice({
     clearResetToken: (state) => {
       state.resetToken = null;
     },
+    resetPasswordState: (state) => {
+      state.resetRequestSuccess = false;
+      state.resetConfirmSuccess = false;
+      state.resetToken = null;
+      state.resetRequestError = null;
+      state.resetOtpError = null;
+      state.resetConfirmError = null;
+    },
   },
+
   extraReducers: (builder) => {
     // Register User
     builder
@@ -156,42 +168,52 @@ const authSlice = createSlice({
       .addCase(requestPasswordReset.pending, (state) => {
         state.isRequestingReset = true;
         state.resetRequestError = null;
+        state.resetRequestSuccess = false;
       })
       .addCase(requestPasswordReset.fulfilled, (state) => {
         state.isRequestingReset = false;
+        state.resetRequestSuccess = true;
       })
       .addCase(requestPasswordReset.rejected, (state, action) => {
         state.isRequestingReset = false;
         state.resetRequestError = action.payload;
+        state.resetRequestSuccess = false;
       });
 
     // Verify Password OTP
     builder
       .addCase(verifyPasswordOtp.pending, (state) => {
         state.isVerifyingResetOtp = true;
+        state.resetOtpError = null;
       })
       .addCase(verifyPasswordOtp.fulfilled, (state, action) => {
         state.isVerifyingResetOtp = false;
         state.resetToken = action.payload.reset_token;
       })
-      .addCase(verifyPasswordOtp.rejected, (state) => {
+      .addCase(verifyPasswordOtp.rejected, (state, action) => {
         state.isVerifyingResetOtp = false;
+        state.resetOtpError = action.payload;
       });
 
     // Confirm Password Reset
     builder
       .addCase(confirmPasswordReset.pending, (state) => {
         state.isConfirmingReset = true;
+        state.resetConfirmError = null;
+        state.resetConfirmSuccess = false;
       })
       .addCase(confirmPasswordReset.fulfilled, (state) => {
         state.isConfirmingReset = false;
+        state.resetConfirmSuccess = true;
         state.resetToken = null;
       })
-      .addCase(confirmPasswordReset.rejected, (state) => {
+      .addCase(confirmPasswordReset.rejected, (state, action) => {
         state.isConfirmingReset = false;
+        state.resetConfirmError = action.payload;
+        state.resetConfirmSuccess = false;
       });
   },
 });
 
-export const { logout, clearError, clearRegistrationData, clearResetToken } = authSlice.actions;
+export const { logout, clearError, clearRegistrationData, clearResetToken, resetPasswordState } = authSlice.actions;
 export default authSlice.reducer;

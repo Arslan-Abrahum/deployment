@@ -54,6 +54,8 @@ export const authService = {
   },
 
   verifyPasswordOtp: async (otpData) => {
+    console.log(otpData);
+    
     const { data } = await apiClient.post(
       API_ROUTES.PASSWORD_OTP_VERIFY,
       otpData

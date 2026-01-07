@@ -207,7 +207,7 @@ const AdminManagerKYC = () => {
   const getDocumentPath = (path) => {
     if (!path) return null;
     // Remove leading /media if exists
-    const cleanedPath = path.startsWith("/media") ? path.slice(6) : path;
+    const cleanedPath = path.startsWith("/media") ? '/media' + path.slice(6) : path;
     return `${import.meta.env.VITE_MEDIA_BASE_URL}${cleanedPath}`;
   };
 
