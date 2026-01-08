@@ -3,6 +3,8 @@ import authReducer from './slices/authSlice';
 import profileReducer from './slices/profileSlice';
 import adminReducer from './slices/adminSlice';
 import managerReducer from './slices/managerSlice';
+import sellerReducer from './slices/sellerSlice';
+import buyerReducer from './slices/buyerSlice';
 
 const store = configureStore({
   reducer: {
@@ -10,19 +12,24 @@ const store = configureStore({
     profile: profileReducer,
     admin: adminReducer,
     manager: managerReducer,
+    seller: sellerReducer,
+    buyer: buyerReducer,
   },
-  // middleware: (getDefaultMiddleware) =>
-  //   getDefaultMiddleware({
-  //     serializableCheck: {
-  //       // Ignore these action types
-  //       ignoredActions: ['auth/login/fulfilled', 'auth/register/fulfilled'],
-  //       // Ignore these field paths in all actions
-  //       ignoredActionPaths: ['payload.timestamp', 'meta.arg'],
-  //       // Ignore these paths in the state
-  //       ignoredPaths: ['auth.timestamp'],
-  //     },
-  //   }),
-  // devTools: process.env.NODE_ENV !== 'production',
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [
+          'auth/login/fulfilled',
+          'auth/register/fulfilled',
+          'manager/performInspection/pending',
+          'seller/createAuction/pending',
+          'seller/updateAuction/pending',
+        ],
+        ignoredActionPaths: ['payload.timestamp', 'meta.arg'],
+        ignoredPaths: ['auth.timestamp'],
+      },
+    }),
+  devTools: import.meta.env.DEV,
 });
 
 export { store };

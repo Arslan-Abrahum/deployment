@@ -11,11 +11,10 @@ import Hero from '../components/Hero.jsx'
 import Onboarding from '../components/Onboarding.jsx'
 
 const Home = () => {
-  const [selectedCategory, setSelectedCategory] = useState('All Categories')
+  const [selectedCategory, setSelectedCategory] = useState(null)
   // Redux state
     const navigate = useNavigate()
-    const dispatch = useDispatch()
-  const { isLoading, error, isAuthenticated, user } = useSelector(
+  const { isAuthenticated, user } = useSelector(
     (state) => state.auth
   )
 

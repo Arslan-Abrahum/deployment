@@ -10,7 +10,7 @@
 export const API_CONFIG = {
   BASE_URL: import.meta.env.PROD ? '/api' : 'http://207.180.233.44:8001/api',
   TIMEOUT: 30000,
-  
+
   IS_PRODUCTION: import.meta.env.PROD,
   IS_DEVELOPMENT: import.meta.env.DEV,
   MEDIA_BASE_URL: import.meta.env.VITE_MEDIA_BASE_URL,
@@ -53,4 +53,24 @@ export const API_ROUTES = {
   // Checklist/Template Routes
   INSPECTION_TEMPLATES: '/inspections/templates/',
   INSPECTION_TEMPLATE_DETAIL: '/inspections/templates/', // + template_id
+
+  //// Auction Routes (Common for all)
+  AUCTIONS_LIST: '/auctions/listings/',
+  // AUCTION_DETAIL: '/auctions/listings/', // + auction_id
+  AUCTION_CATEGORIES: '/auctions/categories/',
+  AUCTION_CATEGORY_DETAIL: '/auctions/categories/', // + category_id
+
+  // Seller Routes
+  CREATE_AUCTION: '/auctions/listings/',
+  UPDATE_AUCTION: '/auctions/listings/', // + auction_id
+  DELETE_AUCTION: '/auctions/listings/', // + auction_id
+
+  // Buyer Routes
+  PLACE_BID: '/auctions/bid/',
+  GET_AUCTION_BIDS: '/auctions/listings/', // + auction_id + /bids/
+
+  AUCTION_BID_HISTORY: '/auctions/listings/:id/bids/', // + auction_id + /bid-history/
+  BIDS_LIST: '/auctions/bids/my/',
+  WATCH_LIST: '/auctions/watchlist/',
+
 };
