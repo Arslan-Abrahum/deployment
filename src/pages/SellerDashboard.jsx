@@ -1,10 +1,17 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import './SellerDashboard.css'
 import SummaryCard from './SummaryCard'
+import { useSelector, useDispatch } from 'react-redux'
+import { fetchMyAuctions } from '../store/actions/sellerActions'
 
 const SellerDashboard = () => {
-
+    const dispatch = useDispatch()
+    // Fetch seller data from Redux store
+    const { myAuctions, isLoading } = useSelector(state => state.seller)
+    const activeListings = myAuctions?.results?.filter(auction => auction.status === 'ACTIVE') || []
+    console.log(activeListings, 'Active listings in dashboard');
+    
     const seller = {
         name: 'Seller',
         totalRevenue: 0.0,
@@ -25,9 +32,13 @@ const SellerDashboard = () => {
     }
 
     // For testing empty states, you can set these to empty arrays:
-    const activeListings = [] // Empty array for testing
+    // const activeListings = [] // Empty array for testing
     const recentSales = [] // Empty array for testing
     const sellerActivities = [] // Empty array for testing
+
+    useEffect( ()=> {
+        dispatch( fetchMyAuctions() )
+    }, [dispatch] )
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('en-US', {
@@ -108,7 +119,7 @@ const SellerDashboard = () => {
                                     activeListings.map((listing) => (
                                         <Link key={listing.id} to={`/seller/listing/${listing.id}`} className="s-listing-card">
                                             <div className="s-listing-card-image">
-                                                <img src={listing.image} alt={listing.title} />
+                                                <img src={listing?.media?.[0]?.file} alt={listing.title} />
                                             </div>
                                             <div className="s-listing-card-content">
                                                 <h3 className="s-listing-card-title">{listing.title}</h3>

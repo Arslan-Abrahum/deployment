@@ -23,11 +23,19 @@ export const fetchMyAuctions = createAsyncThunk(
 export const createAuction = createAsyncThunk(
   'seller/createAuction',
   async (auctionData, { rejectWithValue }) => {
+
+    console.log(auctionData, 'Creating auction with data');
+    
+
     try {
       const response = await sellerService.createAuction(auctionData);
       toast.success('Auction created successfully!');
+      console.log('response in seller actions: ', response);
+      
       return response;
     } catch (error) {
+      console.log(error, 'Error creating auction');
+      
       const message =
         error.response?.data?.message ||
         error.response?.data?.error ||

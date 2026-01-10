@@ -74,7 +74,7 @@ const KYCVerification = () => {
     e.preventDefault()
     console.log('Submitting KYC documents', documents)
     
-    navigate( '/seller/dashboard', {
+    navigate( '/seller/profile', {
       state: documents
     } )
 
@@ -121,24 +121,6 @@ const KYCVerification = () => {
 
   return (
     <div className="kyc-page">
-      <div className="kyc-header-top">
-        <div className="kyc-header-left">
-          <button
-            type="button"
-            className="back-button"
-            onClick={() => navigate(-1)}
-            aria-label="Go back"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-          <Link to="/" className="kyc-logo">
-            <img src={logo} alt="Hammers & Tongues Logo" />
-            <span>Hammer & Tongues</span>
-          </Link>
-        </div>
-      </div>
       <div className="kyc-container">
         <div className="kyc-header">
           <h1 className="kyc-title">Document Verification</h1>

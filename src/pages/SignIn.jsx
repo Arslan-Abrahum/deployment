@@ -251,12 +251,12 @@ const SignIn = () => {
             </div>
 
             {/* Divider */}
-            <div className="form-divider">
+            {/* <div className="form-divider">
               <span>OR</span>
-            </div>
+            </div> */}
 
             {/* Social Login Buttons */}
-            <div className="social-buttons">
+            {/* <div className="social-buttons">
               <button
                 type="button"
                 className="social-button google"
@@ -280,7 +280,7 @@ const SignIn = () => {
                 </svg>
                 Sign in with Apple
               </button>
-            </div>
+            </div> */}
           </form>
         </div>
       </div>

@@ -6,6 +6,9 @@ export const sellerService = {
   // Create Auction Draft
   createAuction: async (auctionData) => {
     try {
+
+      console.log(auctionData, 'Inside sellerService createAuction');
+      
       const formData = new FormData();
 
       // Append text fields
@@ -38,6 +41,9 @@ export const sellerService = {
           headers: { 'Content-Type': 'multipart/form-data' },
         }
       );
+
+      console.log('create auction: ', data);
+      
       return data;
     } catch (error) {
       if (error.isNetworkError) {

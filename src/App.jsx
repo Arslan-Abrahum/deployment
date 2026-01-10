@@ -89,7 +89,6 @@ function App() {
             <Route path="/signin" element={<SignIn />} />
             <Route path="/register" element={<Register />} />
             <Route path="/otp-verification" element={<OTPVerification />} />
-            <Route path="/kyc-verification" element={<KYCVerification />} />
             {/* // New // */}
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/verify-reset-otp" element={<ResetVerifyOtp />} />
@@ -119,6 +118,7 @@ function App() {
                 <Route path="/seller/product" element={<SellerCreateProduct />} />
                 <Route path="/seller/analytics" element={<SellerAnalytics />} />
                 <Route path="/seller/profile" element={<SellerProfile />} />
+                <Route path="/kyc-verification" element={<KYCVerification />} />
               </Route>
             </Route>
 

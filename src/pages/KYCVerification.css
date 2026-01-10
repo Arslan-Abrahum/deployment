@@ -60,7 +60,7 @@
 .kyc-container {
   width: 100%;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: 2rem 0rem;
   flex: 1;
 }
 
@@ -364,12 +364,11 @@
 }
 
 .kyc-form-actions {
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 1rem;
   display: flex;
   gap: 1rem;
   align-items: center;
+  width: 50%;
 }
 
 .skip-button {
@@ -449,6 +448,7 @@
 
   .kyc-form-actions {
     flex-direction: column-reverse;
+    width: 100%;
   }
 
   .skip-button,

@@ -1,66 +1,14 @@
 
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { profileService } from '../../services/interceptors/profile.service';
-import { toast } from 'react-toastify';
+import { createSlice } from '@reduxjs/toolkit';
+import { deleteProfile, fetchProfile, updateProfile } from '../actions/profileActions';
 
 const initialState = {
   profile: null,
-  isLoading: false,
-  isUpdating: false,
+  loading: false,
+  isEditing: false,
   isDeleting: false,
   error: null,
 };
-
-// Async Thunks
-export const fetchProfile = createAsyncThunk(
-  'profile/fetch',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await profileService.getProfile();
-      return response;
-    } catch (error) {
-      const message = error.response?.data?.message || 
-                     error.response?.data?.error ||
-                     'Failed to fetch profile';
-      toast.error(message);
-      return rejectWithValue(error.response?.data || { message });
-    }
-  }
-);
-
-export const updateProfile = createAsyncThunk(
-  'profile/update',
-  async (profileData, { rejectWithValue }) => {
-    try {
-      const response = await profileService.updateProfile(profileData);
-      toast.success('Profile updated successfully!');
-      return response;
-    } catch (error) {
-      const message = error.response?.data?.message || 
-                     error.response?.data?.error ||
-                     'Failed to update profile';
-      toast.error(message);
-      return rejectWithValue(error.response?.data || { message });
-    }
-  }
-);
-
-export const deleteProfile = createAsyncThunk(
-  'profile/delete',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await profileService.deleteProfile();
-      toast.success('Profile deleted successfully!');
-      return response;
-    } catch (error) {
-      const message = error.response?.data?.message || 
-                     error.response?.data?.error ||
-                     'Failed to delete profile';
-      toast.error(message);
-      return rejectWithValue(error.response?.data || { message });
-    }
-  }
-);
 
 // Profile Slice
 const profileSlice = createSlice({
@@ -79,30 +27,30 @@ const profileSlice = createSlice({
     // Fetch Profile
     builder
       .addCase(fetchProfile.pending, (state) => {
-        state.isLoading = true;
+        state.loading = true;
         state.error = null;
       })
       .addCase(fetchProfile.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.loading = false;
         state.profile = action.payload;
       })
       .addCase(fetchProfile.rejected, (state, action) => {
-        state.isLoading = false;
+        state.loading = false;
         state.error = action.payload;
       });
 
     // Update Profile
     builder
       .addCase(updateProfile.pending, (state) => {
-        state.isUpdating = true;
+        state.isEditing = true;
         state.error = null;
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
-        state.isUpdating = false;
+        state.isEditing = false;
         state.profile = action.payload;
       })
       .addCase(updateProfile.rejected, (state, action) => {
-        state.isUpdating = false;
+        state.isEditing = false;
         state.error = action.payload;
       });
 

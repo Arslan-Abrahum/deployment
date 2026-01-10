@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchUsersList, performUserAction } from "../../store/actions/adminActions";
 import { clearActionSuccess } from "../../store/slices/adminSlice";
 import KYCDocumentPreview from "./KYCDocumentPreview";
-import { API_CONFIG } from "../../config/api.config";
 
 const AdminManagerKYC = () => {
   const [comparison, setComparison] = useState(false);
@@ -185,30 +184,16 @@ const AdminManagerKYC = () => {
     }
     return "Not Applicable";
   };
-
-  // Document configuration
-  // const getDocumentPath = (fieldValue) => {
-  //   console.log('field Values 1: ', fieldValue);
-
-  //   if (
-  //     !fieldValue ||
-  //     fieldValue === 'null' ||
-  //     fieldValue === 'undefined' ||
-  //     fieldValue.trim() === ''
-  //   ) {
-  //     return null;
-  //   }
-
-  //   console.log('field Values 2: ', fieldValue);
-
-  //   return `${API_CONFIG.MEDIA_BASE_URL}${fieldValue}`;
-  // };
-
   const getDocumentPath = (path) => {
-    if (!path) return null;
-    // Remove leading /media if exists
-    const cleanedPath = path.startsWith("/media") ? '/media' + path.slice(6) : path;
-    return `${import.meta.env.VITE_MEDIA_BASE_URL}${cleanedPath}`;
+    if (
+      !path ||
+      path === 'null' ||
+      path === 'undefined' ||
+      path.trim() === ''
+    ) {
+      return null;
+    }
+    return `${path}`;
   };
 
   const documentTypes = useMemo(() => [

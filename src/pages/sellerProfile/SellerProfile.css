@@ -238,7 +238,6 @@
   cursor: pointer;
   color: white;
   transition: all 0.2s ease;
-  min-height: 44px;
 }
 
 .s-avatar-upload:hover {
@@ -1274,23 +1273,68 @@ input:checked+.slider:before {
   font-size: 0.75rem;
   margin-top: 0.5rem;
 }
-
+/* Upload spinner */
+.upload-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
 .document-upload-btn {
-  width: 100%;
-  padding: 0.625rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.8125rem;
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #000;
+  border: 1px solid #8CC63F;
+  border-radius: 8px;
+  color: #8CC63F;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  min-height: 44px;
 }
 
-.document-upload-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(140, 198, 63, 0.3);
+/* Disabled state for upload buttons */
+.document-upload-btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading overlay for document uploads */
+.document-card .loading {
+  position: relative;
+}
+
+.document-card .loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.75rem;
+}
+
+/* Error state for file uploads */
+.document-upload-btn.error {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.document-upload-btn.error:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
 }
 
 .kyc-instructions {
@@ -1377,6 +1421,7 @@ input:checked+.slider:before {
   outline: 2px solid #8CC63F;
   outline-offset: 2px;
 }
+
 
 
 /* Enhanced responsive breakpoints */
@@ -1708,3 +1753,4 @@ input:checked+.slider:before {
     display: none;
   }
 }
+
