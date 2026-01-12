@@ -1,46 +1,79 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './BuyerProfile.css';
-import { logout } from '../store/slices/authSlice';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import "./BuyerProfile.css";
+import { logout } from "../store/slices/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProfile, updateProfile } from "../store/actions/profileActions";
+import { toast } from "react-toastify";
 
 const BuyerProfile = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch()
-  const [activeTab, setActiveTab] = useState('overview');
+  const dispatch = useDispatch();
+
+  // Get profile data from Redux store
+  const {
+    profile: profileData,
+    loading,
+    error
+  } = useSelector((state) => state.profile);
+
+  const [activeTab, setActiveTab] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    displayName: 'JohnnyD',
-    email: 'john.doe@email.com',
-    phone: '+1 (555) 123-4567',
-    address: '123 Main Street',
-    city: 'Los Angeles',
-    state: 'CA',
-    zipCode: '90001',
-    country: 'United States',
-    bio: 'Auction enthusiast with 5+ years of experience in industrial machinery and art collection.',
-    memberSince: '2022',
-    totalBids: 142,
-    wonAuctions: 38,
-    successRate: '78%',
-    buyerId: 'BYR-5847'
+    firstName: "",
+    lastName: "",
+    displayName: "",
+    email: "",
+    phone: "",
+    bio: "",
+    image: null // Will hold File object if uploading new image
+  });
+
+  // State for image preview
+  const [imagePreviews, setImagePreviews] = useState({
+    image: null
   });
 
   const [securityData, setSecurityData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
   });
 
-  const recentActivity = [
-    { id: 1, action: 'Placed bid on', item: 'Vintage Rolex Watch', amount: '$2,500', time: '2 hours ago', status: 'active' },
-    { id: 2, action: 'Won auction for', item: 'Antique Persian Rug', amount: '$3,200', time: '1 day ago', status: 'won' },
-    { id: 3, action: 'Outbid on', item: 'Industrial Lathe Machine', amount: '$1,800', time: '2 days ago', status: 'lost' },
-    { id: 4, action: 'Saved auction', item: 'Modern Art Painting', time: '3 days ago', status: 'saved' },
-    { id: 5, action: 'Joined auction', item: 'Classic Car Collection', time: '1 week ago', status: 'joined' }
-  ];
+  // Fetch profile on component mount
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, [dispatch]);
+
+  // Update formData when profileData changes from API
+  useEffect(() => {
+    if (profileData) {
+      setFormData({
+        firstName: profileData.first_name || "",
+        lastName: profileData.last_name || "",
+        displayName: profileData.display_name || "",
+        email: profileData.email || "",
+        phone: profileData.phone || "",
+        bio: profileData.bio || "",
+        image: null // Don't set the URL here, it's for new uploads only
+      });
+    }
+  }, [profileData]);
+
+  // Get display name
+  const getDisplayName = useCallback(() => {
+    if (formData.displayName) return formData.displayName;
+    return `${formData.firstName} ${formData.lastName}`.trim() || "Buyer";
+  }, [formData.firstName, formData.lastName, formData.displayName]);
+
+  // Get image source (preview or existing URL)
+  const getImageSource = useCallback(() => {
+    // Priority: preview > API URL > null (no default image)
+    if (imagePreviews.image) {
+      return imagePreviews.image;
+    }
+    return profileData?.image || null;
+  }, [imagePreviews, profileData]);
 
   const handleChange = (e) => {
     setFormData({
@@ -56,31 +89,99 @@ const BuyerProfile = () => {
     });
   };
 
+  const handleInputChange = useCallback((field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+
+  // Handle file selection for profile image
+  const handleImageSelect = useCallback((e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size should be less than 5MB");
+      return;
+    }
+
+    // Update formData with the File object
+    setFormData((prev) => ({
+      ...prev,
+      image: file
+    }));
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreviews((prev) => ({
+        ...prev,
+        image: reader.result
+      }));
+    };
+    reader.readAsDataURL(file);
+
+    // Clear the input
+    if (e.target) {
+      e.target.value = "";
+    }
+  }, []);
+
+  // Handle save - saves everything in one call
+  const handleSave = useCallback(async () => {
+    try {
+      // Prepare data for API - convert camelCase to snake_case
+      const updateData = {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        display_name: formData.displayName,
+        phone: formData.phone,
+        email: formData.email,
+        bio: formData.bio
+      };
+
+      // Add image if user uploaded a new one
+      if (formData.image instanceof File) {
+        updateData.image = formData.image;
+      }
+
+      await dispatch(updateProfile(updateData));
+      setIsEditing(false);
+
+      // Clear image previews and file objects after successful save
+      setImagePreviews({
+        image: null
+      });
+
+      // Refresh profile data
+      dispatch(fetchProfile());
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  }, [formData, dispatch]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Saving profile:', formData);
+    console.log("Saving profile:", formData);
     setIsEditing(false);
   };
 
   const handleSecuritySubmit = (e) => {
     e.preventDefault();
-    console.log('Updating security:', securityData);
+    console.log("Updating security:", securityData);
     setSecurityData({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: ""
     });
-  };
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleSave = () => {
-    setIsEditing(false);
   };
 
   return (
@@ -88,36 +189,49 @@ const BuyerProfile = () => {
       <div className="profile-header">
         <div className="header-content">
           <h1 className="profile-title">Buyer Profile</h1>
-          <p className="profile-subtitle">Manage your account, track bids, and grow your collection</p>
+          <p className="profile-subtitle">
+            Manage your account, track bids, and grow your collection
+          </p>
         </div>
         <div className="header-actions">
           <button
-            className={`b-action-btn ${isEditing ? 'b-secondary' : 'b-primary'}`}
-            onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+            className={`b-action-btn ${
+              isEditing ? "b-secondary" : "b-primary"
+            }`}
+            onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
+            disabled={loading}
           >
             {isEditing ? (
               <>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path
+                    d="M20 6L9 17L4 12"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
                 Save Changes
               </>
             ) : (
               <>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" />
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" />
+                  <path
+                    d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  />
+                  <path
+                    d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  />
                 </svg>
                 Edit Profile
               </>
             )}
           </button>
-          {/* <button className="b-action-btn b-outline">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M3 16v5h5M21 16v5h-5M16 3v5h5M8 3v5H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            Export Data
-          </button> */}
         </div>
       </div>
 
@@ -127,34 +241,103 @@ const BuyerProfile = () => {
             <div className="profile-avatar-section">
               <div className="avatar-wrapper">
                 <div className="avatar">
-                  <img
-                    src="https://www.catholicsingles.com/wp-content/uploads/2020/06/blog-header-3.png"
-                    alt=""
-                  />
+                  {getImageSource() ? (
+                    <img
+                      src={getImageSource()}
+                      alt={getDisplayName()}
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                        const placeholder = e.target.nextElementSibling;
+                        if (placeholder) {
+                          placeholder.style.display = "flex";
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div
+                      className="avatar-placeholder"
+                      style={{ display: "flex" }}
+                    >
+                      <svg
+                        width="40"
+                        height="40"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path
+                          d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <circle
+                          cx="12"
+                          cy="7"
+                          r="4"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <span>No Image</span>
+                    </div>
+                  )}
                   <div className="status-indicator"></div>
                 </div>
-                <button className="b-avatar-upload">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" />
-                    <polyline points="17 8 12 3 7 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </button>
+                {isEditing && (
+                  <button
+                    className="b-avatar-upload"
+                    onClick={() =>
+                      document.getElementById("profile-image-input")?.click()
+                    }
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      />
+                      <polyline
+                        points="17 8 12 3 7 8"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <line
+                        x1="12"
+                        y1="3"
+                        x2="12"
+                        y2="15"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  </button>
+                )}
+                <input
+                  id="profile-image-input"
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleImageSelect}
+                />
               </div>
               <div className="profile-info">
-                <h2 className="profile-name">{formData.firstName} {formData.lastName}</h2>
+                <h2 className="profile-name">{getDisplayName()}</h2>
                 <p className="profile-email">{formData.email}</p>
-                <div className="verification-badge">
+                {/* <div className="verification-badge">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                     <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
                     <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   Gold Buyer
-                </div>
+                </div> */}
               </div>
             </div>
 
-            <div className="profile-stats-grid">
+            {/* <div className="profile-stats-grid">
               <div className="stat-card">
                 <div className="stat-icon bids">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -202,10 +385,10 @@ const BuyerProfile = () => {
                   <div className="stat-label">Total Spent</div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
 
-          <div className="quick-stats-card">
+          {/* <div className="quick-stats-card">
             <h3 className="card-title">Activity Overview</h3>
             <div className="stats-grid">
               <div className="stat-item">
@@ -225,18 +408,18 @@ const BuyerProfile = () => {
                 <span className="stat-value warning">{formData.memberSince}</span>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
 
         <div className="profile-right">
           <div className="profile-tabs">
             <button
-              className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
-              onClick={() => setActiveTab('overview')}
+              className={`tab-btn ${activeTab === "overview" ? "active" : ""}`}
+              onClick={() => setActiveTab("overview")}
             >
               Overview
             </button>
-            <button
+            {/* <button
               className={`tab-btn ${activeTab === 'contact' ? 'active' : ''}`}
               onClick={() => setActiveTab('contact')}
             >
@@ -253,23 +436,33 @@ const BuyerProfile = () => {
               onClick={() => setActiveTab('activity')}
             >
               Activity
-            </button>
+            </button> */}
             <button
-              className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
-              onClick={() => setActiveTab('settings')}
+              className={`tab-btn ${activeTab === "settings" ? "active" : ""}`}
+              onClick={() => setActiveTab("settings")}
             >
               Settings
             </button>
           </div>
 
           <div className="tab-content">
-            {activeTab === 'overview' && (
+            {activeTab === "overview" && (
               <div className="overview-content">
                 <div className="info-section">
                   <h3 className="section-title">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" />
-                      <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" />
+                      <path
+                        d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      />
+                      <circle
+                        cx="12"
+                        cy="7"
+                        r="4"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      />
                     </svg>
                     Personal Information
                   </h3>
@@ -281,10 +474,14 @@ const BuyerProfile = () => {
                           type="text"
                           className="edit-input"
                           value={formData.firstName}
-                          onChange={(e) => handleInputChange('firstName', e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("firstName", e.target.value)
+                          }
                         />
                       ) : (
-                        <div className="info-value">{formData.firstName}</div>
+                        <div className="info-value">
+                          {formData.firstName || "-"}
+                        </div>
                       )}
                     </div>
                     <div className="info-item">
@@ -294,10 +491,14 @@ const BuyerProfile = () => {
                           type="text"
                           className="edit-input"
                           value={formData.lastName}
-                          onChange={(e) => handleInputChange('lastName', e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("lastName", e.target.value)
+                          }
                         />
                       ) : (
-                        <div className="info-value">{formData.lastName}</div>
+                        <div className="info-value">
+                          {formData.lastName || "-"}
+                        </div>
                       )}
                     </div>
                     <div className="info-item">
@@ -307,15 +508,15 @@ const BuyerProfile = () => {
                           type="text"
                           className="edit-input"
                           value={formData.displayName}
-                          onChange={(e) => handleInputChange('displayName', e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("displayName", e.target.value)
+                          }
                         />
                       ) : (
-                        <div className="info-value">{formData.displayName}</div>
+                        <div className="info-value">
+                          {formData.displayName || "-"}
+                        </div>
                       )}
-                    </div>
-                    <div className="info-item">
-                      <label>Buyer ID</label>
-                      <div className="info-value code">{formData.buyerId}</div>
                     </div>
                     <div className="info-item">
                       <label>Email Address</label>
@@ -324,10 +525,14 @@ const BuyerProfile = () => {
                           type="email"
                           className="edit-input"
                           value={formData.email}
-                          onChange={(e) => handleInputChange('email', e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("email", e.target.value)
+                          }
                         />
                       ) : (
-                        <div className="info-value">{formData.email}</div>
+                        <div className="info-value">
+                          {formData.email || "-"}
+                        </div>
                       )}
                     </div>
                     <div className="info-item">
@@ -337,16 +542,41 @@ const BuyerProfile = () => {
                           type="tel"
                           className="edit-input"
                           value={formData.phone}
-                          onChange={(e) => handleInputChange('phone', e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("phone", e.target.value)
+                          }
                         />
                       ) : (
-                        <div className="info-value">{formData.phone}</div>
+                        <div className="info-value">
+                          {formData.phone || "-"}
+                        </div>
+                      )}
+                    </div>
+                    <div className="info-item" style={{ gridColumn: "1 / -1" }}>
+                      <label>Bio</label>
+                      {isEditing ? (
+                        <textarea
+                          className="edit-input"
+                          value={formData.bio}
+                          onChange={(e) =>
+                            handleInputChange("bio", e.target.value)
+                          }
+                          rows={4}
+                          style={{ resize: "vertical", minHeight: "80px" }}
+                        />
+                      ) : (
+                        <div
+                          className="info-value"
+                          style={{ whiteSpace: "pre-wrap" }}
+                        >
+                          {formData.bio || "-"}
+                        </div>
                       )}
                     </div>
                   </div>
                 </div>
 
-                <div className="info-section">
+                {/* <div className="info-section">
                   <h3 className="section-title">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                       <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke="currentColor" strokeWidth="2" />
@@ -375,91 +605,11 @@ const BuyerProfile = () => {
                       </div>
                     ))}
                   </div>
-                </div>
+                </div> */}
               </div>
             )}
 
-            {activeTab === 'contact' && (
-              <div className="contact-content">
-                <div className="info-section">
-                  <h3 className="section-title">Contact Details</h3>
-                  <div className="info-grid">
-                    <div className="info-item">
-                      <label>Street Address</label>
-                      {isEditing ? (
-                        <input
-                          type="text"
-                          className="edit-input"
-                          value={formData.address}
-                          onChange={(e) => handleInputChange('address', e.target.value)}
-                        />
-                      ) : (
-                        <div className="info-value">{formData.address}</div>
-                      )}
-                    </div>
-                    <div className="info-item">
-                      <label>City</label>
-                      {isEditing ? (
-                        <input
-                          type="text"
-                          className="edit-input"
-                          value={formData.city}
-                          onChange={(e) => handleInputChange('city', e.target.value)}
-                        />
-                      ) : (
-                        <div className="info-value">{formData.city}</div>
-                      )}
-                    </div>
-                    <div className="info-item">
-                      <label>State</label>
-                      {isEditing ? (
-                        <input
-                          type="text"
-                          className="edit-input"
-                          value={formData.state}
-                          onChange={(e) => handleInputChange('state', e.target.value)}
-                        />
-                      ) : (
-                        <div className="info-value">{formData.state}</div>
-                      )}
-                    </div>
-                    <div className="info-item">
-                      <label>Zip Code</label>
-                      {isEditing ? (
-                        <input
-                          type="text"
-                          className="edit-input"
-                          value={formData.zipCode}
-                          onChange={(e) => handleInputChange('zipCode', e.target.value)}
-                        />
-                      ) : (
-                        <div className="info-value">{formData.zipCode}</div>
-                      )}
-                    </div>
-                    <div className="info-item">
-                      <label>Country</label>
-                      {isEditing ? (
-                        <select
-                          className="edit-input"
-                          value={formData.country}
-                          onChange={(e) => handleInputChange('country', e.target.value)}
-                        >
-                          <option value="United States">United States</option>
-                          <option value="Canada">Canada</option>
-                          <option value="United Kingdom">United Kingdom</option>
-                          <option value="Australia">Australia</option>
-                          <option value="Germany">Germany</option>
-                        </select>
-                      ) : (
-                        <div className="info-value">{formData.country}</div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'security' && (
+            {activeTab === "security" && (
               <div className="security-content">
                 <div className="info-section">
                   <h3 className="section-title">Password & Security</h3>
@@ -498,7 +648,11 @@ const BuyerProfile = () => {
                       />
                     </div>
                   </div>
-                  <button className="b-action-btn primary-button b-primary" onClick={handleSecuritySubmit} style={{ marginTop: '1rem' }}>
+                  <button
+                    className="b-action-btn primary-button b-primary"
+                    onClick={handleSecuritySubmit}
+                    style={{ marginTop: "1rem" }}
+                  >
                     Update Password
                   </button>
                 </div>
@@ -521,34 +675,40 @@ const BuyerProfile = () => {
                         <h4>Authenticator App</h4>
                         <p>Use Google Authenticator or similar app</p>
                       </div>
-                      <button className="action-btn outline small">Set Up</button>
+                      <button className="action-btn outline small">
+                        Set Up
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             )}
 
-            {activeTab === 'activity' && (
+            {activeTab === "activity" && (
               <div className="activity-content">
                 <div className="info-section">
                   <h3 className="section-title">Bidding History</h3>
                   <div className="activity-list">
-                    {recentActivity.map(activity => (
+                    {recentActivity.map((activity) => (
                       <div key={activity.id} className="activity-item">
                         <div className="activity-icon">
                           <div className={`icon-circle ${activity.status}`}>
-                            {activity.status === 'active' && '🔄'}
-                            {activity.status === 'won' && '✓'}
-                            {activity.status === 'lost' && '✗'}
-                            {activity.status === 'saved' && '💾'}
-                            {activity.status === 'joined' && '👥'}
+                            {activity.status === "active" && "🔄"}
+                            {activity.status === "won" && "✓"}
+                            {activity.status === "lost" && "✗"}
+                            {activity.status === "saved" && "💾"}
+                            {activity.status === "joined" && "👥"}
                           </div>
                         </div>
                         <div className="activity-content">
-                          <div className="activity-title">{activity.action} {activity.item}</div>
+                          <div className="activity-title">
+                            {activity.action} {activity.item}
+                          </div>
                           <div className="activity-meta">
                             {activity.amount && <span>{activity.amount}</span>}
-                            <span className="activity-time">{activity.time}</span>
+                            <span className="activity-time">
+                              {activity.time}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -558,9 +718,9 @@ const BuyerProfile = () => {
               </div>
             )}
 
-            {activeTab === 'settings' && (
+            {activeTab === "settings" && (
               <div className="settings-content">
-                <div className="info-section">
+                {/* <div className="info-section">
                   <h3 className="section-title">Account Settings</h3>
                   <div className="settings-grid">
                     <div className="setting-item">
@@ -624,18 +784,31 @@ const BuyerProfile = () => {
                       </select>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="danger-zone">
                   <h3 className="section-title">Logout Here</h3>
                   <div className="danger-actions">
-                    <button className="b-danger-btn red" onClick={() => {
-                      dispatch(logout())
-                      navigate('/signin', { replace: true })
-                    }
-                    }>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9M16 17L21 12M21 12L16 7M21 12H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <button
+                      className="b-danger-btn red"
+                      onClick={() => {
+                        dispatch(logout());
+                        navigate("/signin", { replace: true });
+                      }}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path
+                          d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9M16 17L21 12M21 12L16 7M21 12H9"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                       Logout
                     </button>
@@ -646,8 +819,17 @@ const BuyerProfile = () => {
                   <h3 className="section-title">Danger Zone</h3>
                   <div className="danger-actions">
                     <button className="b-danger-btn red">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M10 11v6M14 11v6M5 7h14M6 7l1-4h10l1 4M8 7v-4h8v4" stroke="currentColor" strokeWidth="2" />
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path
+                          d="M10 11v6M14 11v6M5 7h14M6 7l1-4h10l1 4M8 7v-4h8v4"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        />
                       </svg>
                       Delete Account
                     </button>

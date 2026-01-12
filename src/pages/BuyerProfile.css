@@ -138,6 +138,30 @@
   object-fit: cover;
 }
 
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.5);
+  gap: 0.25rem;
+}
+
+.avatar-placeholder svg {
+  width: 24px;
+  height: 24px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.avatar-placeholder span {
+  font-size: 0.625rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+}
+
 .status-indicator {
   position: absolute;
   bottom: 5px;

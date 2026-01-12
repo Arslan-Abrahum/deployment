@@ -1005,6 +1005,94 @@ input[type="datetime-local"].create-auction-form-input::-webkit-calendar-picker-
   }
 }
 
+/* KYC Verification Required Message */
+.kyc-verification-required {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin-top: 2rem;
+  min-height: 400px;
+}
+
+.kyc-verification-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  background-color: rgba(140, 198, 63, 0.1);
+  border: 2px solid rgba(140, 198, 63, 0.3);
+  color: #8CC63F;
+}
+
+.kyc-verification-icon svg {
+  width: 40px;
+  height: 40px;
+}
+
+.kyc-verification-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 1rem;
+}
+
+.kyc-verification-message {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.5rem;
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+.kyc-verification-submessage {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 2rem;
+  max-width: 500px;
+  line-height: 1.5;
+}
+
+.kyc-verification-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.kyc-verification-actions .action-button.primary {
+  background-color: #8CC63F !important;
+  color: #000000 !important;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.kyc-verification-actions .action-button.primary:hover {
+  background-color: #7BB337 !important;
+  box-shadow: 0 6px 20px rgba(140, 198, 63, 0.3);
+}
+
+.kyc-verification-actions .action-button.primary svg {
+  color: #000000 !important;
+  width: 16px;
+  height: 16px;
+}
+
 /* Print Styles */
 @media print {
   .create-auction-loading-state,

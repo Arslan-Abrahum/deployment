@@ -25,13 +25,18 @@
   width: 100%;
 }
 
+.buyer-dashboard-container {
+  margin: 0 auto;
+  width: 100%;
+}
+
 .dashboard-welcome {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: none;
 }
 
 .welcome-content {
@@ -43,7 +48,7 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: #ffffff;
-  margin-bottom: 0.375rem;
+  margin-bottom: 0;
   letter-spacing: -0.3px;
   line-height: 1.2;
   word-wrap: break-word;
@@ -54,6 +59,106 @@
   color: rgba(255, 255, 255, 0.7);
   margin: 0;
   line-height: 1.4;
+}
+
+/* Auctions Grid Styles */
+.auctions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+/* Loading States */
+.auctions-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  padding: 2rem;
+}
+
+.auctions-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(140, 198, 63, 0.2);
+  border-top: 3px solid #8CC63F;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error States */
+.auctions-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  padding: 2rem;
+}
+
+.auctions-error svg {
+  margin-bottom: 1.5rem;
+  opacity: 0.5;
+}
+
+.auctions-error-message {
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 1.5rem;
+}
+
+.auctions-retry-btn {
+  background: rgba(248, 113, 113, 0.2);
+  border: 1.5px solid rgba(248, 113, 113, 0.4);
+  color: #fecaca;
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.auctions-retry-btn:hover:not(:disabled) {
+  background: #f87171;
+  border-color: #f87171;
+  color: #fff;
+}
+
+/* Empty States */
+.auctions-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  padding: 2rem;
+}
+
+.auctions-empty svg {
+  margin-bottom: 1.5rem;
+  opacity: 0.5;
+}
+
+.auctions-empty h2 {
+  color: #ffffff;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.auctions-empty p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
 }
 
 .welcome-actions {
@@ -720,6 +825,11 @@
     grid-template-columns: 1fr;
   }
 
+  .auctions-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
   .bid-card {
     max-width: 100%;
   }
@@ -746,6 +856,10 @@
   .welcome-title {
     font-size: 1rem;
     text-align: center;
+  }
+
+  .auctions-grid {
+    grid-template-columns: 1fr;
   }
 
   .welcome-subtitle {

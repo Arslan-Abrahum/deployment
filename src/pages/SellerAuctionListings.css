@@ -252,6 +252,20 @@
   text-decoration: none;
 }
 
+.action-button.primary {
+  background-color: #8CC63F !important;
+  color: #000000 !important;
+}
+
+.action-button.primary:hover {
+  background-color: #7BB337 !important;
+  box-shadow: 0 6px 20px rgba(140, 198, 63, 0.3);
+}
+
+.action-button.primary svg {
+  color: #000000 !important;
+}
+
 .s-primary-button,
 .secondary-button {
   padding: 0.625rem 1.25rem;

@@ -4,6 +4,7 @@ import './SellerCreateProduct.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { createAuction, updateAuction, fetchMyAuctions } from '../store/actions/sellerActions';
 import { fetchCategories } from '../store/actions/AuctionsActions';
+import { fetchProfile } from '../store/actions/profileActions';
 import { toast } from 'react-toastify';
 import { getCurrentLocation } from '../utils/location';
 
@@ -20,6 +21,7 @@ const SellerCreateProduct = () => {
   // console.log('auction id in create product: ', id, auctionList);
   const { categories, isLoading } = useSelector(state => state.buyer);
   const { isCreating } = useSelector(state => state.seller || {});
+  const { profile: profileData, loading: profileLoading } = useSelector(state => state.profile || {});
   const [selectedCategory, setSelectedCategory] = useState('');
   const [formData, setFormData] = useState({
     title: '',
@@ -59,6 +61,16 @@ const SellerCreateProduct = () => {
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
+
+  // Fetch profile to check KYC status
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, [dispatch]);
+
+  // Check KYC verification status
+  const isKycVerified = useMemo(() => {
+    return profileData?.seller_profile?.verified === true;
+  }, [profileData]);
 
 
   useEffect(() => {
@@ -560,6 +572,14 @@ const SellerCreateProduct = () => {
   // Handle save as draft
   const handleSaveAsDraft = async (e) => {
     e.preventDefault();
+    
+    // Check KYC verification
+    if (!isKycVerified && !isUpdating) {
+      toast.error('Please verify your KYC to create auctions');
+      navigate('/seller/profile');
+      return;
+    }
+    
     if (!selectedCategory) {
       toast.error('Please select a category');
       return;
@@ -628,6 +648,44 @@ const SellerCreateProduct = () => {
     }
   };
 
+  // Show KYC verification message if not verified
+  if (!profileLoading && !isKycVerified && !isUpdating) {
+    return (
+      <div className="create-auction-page">
+        <main className="create-auction-main">
+          <div className="create-auction-container">
+            <div className="kyc-verification-required">
+              <div className="kyc-verification-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#8CC63F" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M12 16V12M12 8H12.01" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <h2 className="kyc-verification-title">KYC Verification Required</h2>
+              <p className="kyc-verification-message">
+                Please verify your KYC (Know Your Customer) documents to create and upload auctions.
+              </p>
+              <p className="kyc-verification-submessage">
+                Complete your identity verification in your profile settings to unlock auction creation.
+              </p>
+              <div className="kyc-verification-actions">
+                <Link to="/seller/profile" className="action-button primary">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Verify KYC to Upload Auction
+                </Link>
+                <Link to="/seller/auction-listings" className="create-auction-secondary-button">
+                  Go Back
+                </Link>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="create-auction-page">
       <main className="create-auction-main">
@@ -671,7 +729,7 @@ const SellerCreateProduct = () => {
                       disabled={isUpdating}
                     >
                       <option value="">Select a category</option>
-                      {categories?.map(category => (
+                      {categories?.filter(category => category.is_active === true).map(category => (
                         <option key={category.id} value={category.id}>
                           {category.name}
                         </option>

@@ -1,177 +1,176 @@
-import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
-import './Register.css'
-import { clearRegistrationData, clearError } from '../store/slices/authSlice'
-import { registerUser } from '../store/actions/authActions'
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import "./Register.css";
+import { clearRegistrationData, clearError } from "../store/slices/authSlice";
+import { registerUser } from "../store/actions/authActions";
 
 const Register = () => {
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // Redux state
   const { isRegistering, registrationError, registrationData } = useSelector(
     (state) => state.auth
-  )
+  );
 
-  const [userType, setUserType] = useState('buyer')
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [userType, setUserType] = useState("buyer");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
-    role: 'buyer',
-    business_name: '',
-    business_reg_no: ''
-  })
-  const [formErrors, setFormErrors] = useState({})
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+    role: "buyer",
+    business_name: "",
+    business_reg_no: ""
+  });
+  const [formErrors, setFormErrors] = useState({});
 
   // Handle successful registration - navigate to OTP page
   useEffect(() => {
     if (registrationData) {
-      navigate('/otp-verification', {
-        state: {
-          email: formData.email,
-          userType: formData.role
-        }
-      }, { replace: true })
+      navigate(
+        "/otp-verification",
+        {
+          state: {
+            email: formData.email,
+            userType: formData.role
+          }
+        },
+        { replace: true }
+      );
     }
-  }, [registrationData, navigate, formData.email, formData.role])
+  }, [registrationData, navigate, formData.email, formData.role]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      dispatch(clearRegistrationData())
-      dispatch(clearError())
-    }
-  }, [dispatch])
+      dispatch(clearRegistrationData());
+      dispatch(clearError());
+    };
+  }, [dispatch]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value
-    })
+    });
     // Clear error for this field when user starts typing
     if (formErrors[name]) {
       setFormErrors({
         ...formErrors,
-        [name]: ''
-      })
+        [name]: ""
+      });
     }
-  }
+  };
 
   const handlePhoneChange = (e) => {
-    let value = e.target.value.replace(/\D/g, '')
+    let value = e.target.value.replace(/\D/g, "");
 
     if (value.length > 9) {
-      value = value.slice(0, 9)
+      value = value.slice(0, 9);
     }
     if (value.length > 3 && value.length <= 6) {
-      value = value.replace(/(\d{3})(\d+)/, '$1 $2')
+      value = value.replace(/(\d{3})(\d+)/, "$1 $2");
     } else if (value.length > 6) {
-      value = value.replace(/(\d{3})(\d{3})(\d+)/, '$1 $2 $3')
+      value = value.replace(/(\d{3})(\d{3})(\d+)/, "$1 $2 $3");
     }
 
     setFormData((prev) => ({
       ...prev,
       phone: value
-    }))
+    }));
 
     if (formErrors.phone) {
       setFormErrors((prev) => ({
         ...prev,
-        phone: ''
-      }))
+        phone: ""
+      }));
     }
-  }
+  };
 
   const handleUserTypeChange = (type) => {
-    setUserType(type)
-    setFormData(prev => ({
+    setUserType(type);
+    setFormData((prev) => ({
       ...prev,
       role: type
-    }))
-  }
+    }));
+  };
 
   // Form validation
   const validateForm = () => {
-    const errors = {}
+    const errors = {};
 
     // Name validation
     if (!formData.first_name.trim()) {
-      errors.first_name = 'First name is required'
+      errors.first_name = "First name is required";
     }
 
     if (!formData.last_name.trim()) {
-      errors.last_name = 'Last name is required'
+      errors.last_name = "Last name is required";
     }
 
     // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email) {
-      errors.email = 'Email is required'
+      errors.email = "Email is required";
     } else if (!emailRegex.test(formData.email)) {
-      errors.email = 'Please enter a valid email address'
+      errors.email = "Please enter a valid email address";
     }
 
     // Phone validation - Zimbabwe format
     if (formData.phone) {
-      const phoneDigits = formData.phone.replace(/\s/g, '')
-      const phoneRegex = /^7[1-9]\d{7}$/
+      const phoneDigits = formData.phone.replace(/\s/g, "");
+      const phoneRegex = /^7[1-9]\d{7}$/;
       if (!phoneRegex.test(phoneDigits)) {
-        errors.phone = 'Invalid Zimbabwe phone format. Use 77X XXX XXX'
+        errors.phone = "Invalid Zimbabwe phone format. Use 77X XXX XXX";
       }
     }
 
     // Seller requires phone
-    if (formData.role === 'seller' && !formData.phone) {
-      errors.phone = 'Phone number is required for sellers'
+    if (formData.role === "seller" && !formData.phone) {
+      errors.phone = "Phone number is required for sellers";
     }
 
     // Password validation
     if (!formData.password) {
-      errors.password = 'Password is required'
+      errors.password = "Password is required";
     } else if (formData.password.length < 8) {
-      errors.password = 'Password must be at least 8 characters long'
-    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(formData.password)) {
-      errors.password = 'Password must contain uppercase, lowercase, number and special character'
+      errors.password = "Password must be at least 8 characters long";
+    } else if (
+      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(formData.password)
+    ) {
+      errors.password =
+        "Password must contain uppercase, lowercase, number and special character";
     }
 
     // Confirm password validation
     if (!formData.confirmPassword) {
-      errors.confirmPassword = 'Please confirm your password'
+      errors.confirmPassword = "Please confirm your password";
     } else if (formData.password !== formData.confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match'
+      errors.confirmPassword = "Passwords do not match";
     }
 
-    // Seller-specific validations
-    if (formData.role === 'seller') {
-      if (!formData.business_name.trim()) {
-        errors.business_name = 'Business name is required for sellers'
-      }
-      if (!formData.business_reg_no.trim()) {
-        errors.business_reg_no = 'Business registration number is required for sellers'
-      }
-    }
+    // Business fields are optional (no validation required)
 
-    setFormErrors(errors)
-    return Object.keys(errors).length === 0
-  }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     // Clear previous errors
-    dispatch(clearError())
+    dispatch(clearError());
 
     // Validate form
     if (!validateForm()) {
-      return
+      return;
     }
 
     // Prepare data for API (matching your API structure)
@@ -180,19 +179,21 @@ const Register = () => {
       first_name: formData.first_name,
       last_name: formData.last_name,
       email: formData.email,
-      phone: formData.phone ? `+263${formData.phone.replace(/\s/g, '')}` : '',
-      password: formData.password,
-    }
+      phone: formData.phone ? `+263${formData.phone.replace(/\s/g, "")}` : "",
+      password: formData.password
+    };
 
-    // Add business fields only for sellers
-    if (formData.role === 'seller') {
-      registrationData.business_name = formData.business_name
-      registrationData.business_reg_no = formData.business_reg_no
+    // Add business fields if provided (optional for both buyer and seller)
+    if (formData.business_name.trim()) {
+      registrationData.business_name = formData.business_name;
+    }
+    if (formData.business_reg_no.trim()) {
+      registrationData.business_reg_no = formData.business_reg_no;
     }
 
     // Dispatch registration action
-    await dispatch(registerUser(registrationData))
-  }
+    await dispatch(registerUser(registrationData));
+  };
 
   return (
     <div className="register-page">
@@ -201,28 +202,39 @@ const Register = () => {
           <button
             type="button"
             className="back-button"
-            onClick={() => navigate('/', { replace: true })}
+            onClick={() => navigate("/", { replace: true })}
             aria-label="Go back"
             disabled={isRegistering}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M19 12H5M12 19L5 12L12 5"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
             Back to Home
           </button>
         </div>
         <div className="register-header-link">
           <span>Already have an account?</span>
-          <Link to="/signin" className="header-link-button">Log In</Link>
+          <Link to="/signin" className="header-link-button">
+            Log In
+          </Link>
         </div>
       </div>
 
       <div className="register-image-section">
         <div className="register-image-overlay"></div>
         <div className="register-image-content">
-          <h2 className="register-image-title">Your Gateway to Exclusive Auctions</h2>
+          <h2 className="register-image-title">
+            Your Gateway to Exclusive Auctions
+          </h2>
           <p className="register-image-description">
-            Discover unique items, bid with confidence, and never miss an opportunity to own something extraordinary.
+            Discover unique items, bid with confidence, and never miss an
+            opportunity to own something extraordinary.
           </p>
         </div>
       </div>
@@ -230,28 +242,46 @@ const Register = () => {
       <div className="register-container">
         <div className="register-form-wrapper-1">
           <h1 className="register-title">Create Your H&T Account</h1>
-          
+
           <div className="user-type-tabs">
             <button
               type="button"
-              className={`user-type-tab ${userType === 'buyer' ? 'active' : ''}`}
-              onClick={() => handleUserTypeChange('buyer')}
+              className={`user-type-tab ${
+                userType === "buyer" ? "active" : ""
+              }`}
+              onClick={() => handleUserTypeChange("buyer")}
               disabled={isRegistering}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" strokeWidth="2" />
-                <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="currentColor" strokeWidth="2" />
+                <path
+                  d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+                <path
+                  d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
               </svg>
               As a Buyer
             </button>
             <button
               type="button"
-              className={`user-type-tab ${userType === 'seller' ? 'active' : ''}`}
-              onClick={() => handleUserTypeChange('seller')}
+              className={`user-type-tab ${
+                userType === "seller" ? "active" : ""
+              }`}
+              onClick={() => handleUserTypeChange("seller")}
               disabled={isRegistering}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M3 21H21M3 7V8C3 8.79565 3.31607 9.55871 3.87868 10.1213C4.44129 10.6839 5.20435 11 6 11C6.79565 11 7.55871 10.6839 8.12132 10.1213C8.68393 9.55871 9 8.79565 9 8M9 8C9 8.79565 9.31607 9.55871 9.87868 10.1213C10.4413 10.6839 11.2044 11 12 11C12.7956 11 13.5587 10.6839 14.1213 10.1213C14.6839 9.55871 15 8.79565 15 8M15 8C15 8.79565 15.3161 9.55871 15.8787 10.1213C16.4413 10.6839 17.2044 11 18 11C18.7956 11 19.5587 10.6839 20.1213 10.1213C20.6839 9.55871 21 8.79565 21 8V7L18 3H6L3 7Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M3 21H21M3 7V8C3 8.79565 3.31607 9.55871 3.87868 10.1213C4.44129 10.6839 5.20435 11 6 11C6.79565 11 7.55871 10.6839 8.12132 10.1213C8.68393 9.55871 9 8.79565 9 8M9 8C9 8.79565 9.31607 9.55871 9.87868 10.1213C10.4413 10.6839 11.2044 11 12 11C12.7956 11 13.5587 10.6839 14.1213 10.1213C14.6839 9.55871 15 8.79565 15 8M15 8C15 8.79565 15.3161 9.55871 15.8787 10.1213C16.4413 10.6839 17.2044 11 18 11C18.7956 11 19.5587 10.6839 20.1213 10.1213C20.6839 9.55871 21 8.79565 21 8V7L18 3H6L3 7Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
               As a Seller
             </button>
@@ -261,10 +291,17 @@ const Register = () => {
             {/* Display API errors */}
             {registrationError && (
               <div className="form-error-message">
-                {registrationError.message || 'Registration failed. Please try again.'}
-                {registrationError.email && <div>{registrationError.email[0]}</div>}
-                {registrationError.phone && <div>{registrationError.phone[0]}</div>}
-                {registrationError.password && <div>{registrationError.password[0]}</div>}
+                {registrationError.message ||
+                  "Registration failed. Please try again."}
+                {registrationError.email && (
+                  <div>{registrationError.email[0]}</div>
+                )}
+                {registrationError.phone && (
+                  <div>{registrationError.phone[0]}</div>
+                )}
+                {registrationError.password && (
+                  <div>{registrationError.password[0]}</div>
+                )}
               </div>
             )}
 
@@ -278,7 +315,9 @@ const Register = () => {
                     type="text"
                     id="first_name"
                     name="first_name"
-                    className={`form-input ${formErrors.first_name ? 'error' : ''}`}
+                    className={`form-input ${
+                      formErrors.first_name ? "error" : ""
+                    }`}
                     placeholder="John"
                     value={formData.first_name}
                     onChange={handleChange}
@@ -298,7 +337,9 @@ const Register = () => {
                     type="text"
                     id="last_name"
                     name="last_name"
-                    className={`form-input ${formErrors.last_name ? 'error' : ''}`}
+                    className={`form-input ${
+                      formErrors.last_name ? "error" : ""
+                    }`}
                     placeholder="Doe"
                     value={formData.last_name}
                     onChange={handleChange}
@@ -322,7 +363,7 @@ const Register = () => {
                     type="email"
                     id="email"
                     name="email"
-                    className={`form-input ${formErrors.email ? 'error' : ''}`}
+                    className={`form-input ${formErrors.email ? "error" : ""}`}
                     placeholder="yourname@example.com"
                     value={formData.email}
                     onChange={handleChange}
@@ -336,7 +377,10 @@ const Register = () => {
 
                 <div className="form-group">
                   <label htmlFor="phone" className="form-label">
-                    Phone Number {formData.role === 'seller' && <span className="required">*</span>}
+                    Phone Number{" "}
+                    {formData.role === "seller" && (
+                      <span className="required">*</span>
+                    )}
                   </label>
                   <div className="phone-input-wrapper">
                     <div className="phone-prefix">
@@ -352,7 +396,9 @@ const Register = () => {
                       type="tel"
                       id="phone"
                       name="phone"
-                      className={`form-input ${formErrors.phone ? 'error' : ''}`}
+                      className={`form-input ${
+                        formErrors.phone ? "error" : ""
+                      }`}
                       placeholder="77X XXX XXX"
                       value={formData.phone}
                       onChange={handlePhoneChange}
@@ -370,52 +416,6 @@ const Register = () => {
               </div>
             </div>
 
-            {formData.role === 'seller' && (
-              <div className="register-form-section">
-                <div className="form-grid">
-                  <div className="form-group">
-                    <label htmlFor="business_name" className="form-label">
-                      Business Name <span className="required">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="business_name"
-                      name="business_name"
-                      className={`form-input ${formErrors.business_name ? 'error' : ''}`}
-                      placeholder="Your Business Name"
-                      value={formData.business_name}
-                      onChange={handleChange}
-                      disabled={isRegistering}
-                      required
-                    />
-                    {formErrors.business_name && (
-                      <span className="field-error">{formErrors.business_name}</span>
-                    )}
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="business_reg_no" className="form-label">
-                      Business Registration <span className="required">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="business_reg_no"
-                      name="business_reg_no"
-                      className={`form-input ${formErrors.business_reg_no ? 'error' : ''}`}
-                      placeholder="BRN-00923898"
-                      value={formData.business_reg_no}
-                      onChange={handleChange}
-                      disabled={isRegistering}
-                      required
-                    />
-                    {formErrors.business_reg_no && (
-                      <span className="field-error">{formErrors.business_reg_no}</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
             <div className="register-form-section">
               <div className="form-grid">
                 <div className="form-group">
@@ -427,7 +427,9 @@ const Register = () => {
                       type={showPassword ? "text" : "password"}
                       id="password"
                       name="password"
-                      className={`form-input ${formErrors.password ? 'error' : ''}`}
+                      className={`form-input ${
+                        formErrors.password ? "error" : ""
+                      }`}
                       placeholder="Create a password"
                       value={formData.password}
                       onChange={handleChange}
@@ -440,17 +442,56 @@ const Register = () => {
                       onClick={() => setShowPassword(!showPassword)}
                       disabled={isRegistering}
                     >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
                         {showPassword ? (
                           <>
-                            <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <path
+                              d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <circle
+                              cx="12"
+                              cy="12"
+                              r="3"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
                           </>
                         ) : (
                           <>
-                            <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M1 1L23 23" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <path
+                              d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <circle
+                              cx="12"
+                              cy="12"
+                              r="3"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M1 1L23 23"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
                           </>
                         )}
                       </svg>
@@ -460,7 +501,8 @@ const Register = () => {
                     <span className="field-error">{formErrors.password}</span>
                   )}
                   <small className="field-hint">
-                    8+ characters with uppercase, lowercase, number & special character
+                    8+ characters with uppercase, lowercase, number & special
+                    character
                   </small>
                 </div>
 
@@ -473,7 +515,9 @@ const Register = () => {
                       type={showConfirmPassword ? "text" : "password"}
                       id="confirmPassword"
                       name="confirmPassword"
-                      className={`form-input ${formErrors.confirmPassword ? 'error' : ''}`}
+                      className={`form-input ${
+                        formErrors.confirmPassword ? "error" : ""
+                      }`}
                       placeholder="Confirm your password"
                       value={formData.confirmPassword}
                       onChange={handleChange}
@@ -483,27 +527,120 @@ const Register = () => {
                     <button
                       type="button"
                       className="password-toggle"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       disabled={isRegistering}
                     >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
                         {showConfirmPassword ? (
                           <>
-                            <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <path
+                              d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <circle
+                              cx="12"
+                              cy="12"
+                              r="3"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
                           </>
                         ) : (
                           <>
-                            <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M1 1L23 23" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <path
+                              d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <circle
+                              cx="12"
+                              cy="12"
+                              r="3"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M1 1L23 23"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
                           </>
                         )}
                       </svg>
                     </button>
                   </div>
                   {formErrors.confirmPassword && (
-                    <span className="field-error">{formErrors.confirmPassword}</span>
+                    <span className="field-error">
+                      {formErrors.confirmPassword}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="register-form-section">
+              <div className="form-grid">
+                <div className="form-group">
+                  <label htmlFor="business_name" className="form-label">
+                    Business Name
+                  </label>
+                  <input
+                    type="text"
+                    id="business_name"
+                    name="business_name"
+                    className={`form-input ${
+                      formErrors.business_name ? "error" : ""
+                    }`}
+                    placeholder="Your Business Name"
+                    value={formData.business_name}
+                    onChange={handleChange}
+                    disabled={isRegistering}
+                  />
+                  {formErrors.business_name && (
+                    <span className="field-error">
+                      {formErrors.business_name}
+                    </span>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="business_reg_no" className="form-label">
+                    Business Registration
+                  </label>
+                  <input
+                    type="text"
+                    id="business_reg_no"
+                    name="business_reg_no"
+                    className={`form-input ${
+                      formErrors.business_reg_no ? "error" : ""
+                    }`}
+                    placeholder="BRN-00923898"
+                    value={formData.business_reg_no}
+                    onChange={handleChange}
+                    disabled={isRegistering}
+                  />
+                  {formErrors.business_reg_no && (
+                    <span className="field-error">
+                      {formErrors.business_reg_no}
+                    </span>
                   )}
                 </div>
               </div>
@@ -514,15 +651,14 @@ const Register = () => {
                 <label className="checkbox-label terms">
                   <input type="checkbox" required disabled={isRegistering} />
                   <span>
-                    I agree to the{' '}
-                    <Link  className="terms-link">Terms of Service</Link>{' '}
-                    and{' '}
+                    I agree to the{" "}
+                    <Link className="terms-link">Terms of Service</Link> and{" "}
                     <Link className="terms-link">Privacy Policy</Link>
                   </span>
                 </label>
               </div>
 
-              <div className='button-container'>
+              <div className="button-container">
                 <button
                   type="submit"
                   className="submit-button"
@@ -534,7 +670,7 @@ const Register = () => {
                       Creating Account...
                     </>
                   ) : (
-                    'Create Account'
+                    "Create Account"
                   )}
                 </button>
               </div>
@@ -569,28 +705,44 @@ const Register = () => {
                 </button>
               </div> */}
 
-              <div className="kyc-notice">
-                <div className="kyc-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-                    <path d="M12 16V12M12 8H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
+              {formData.role === "seller" && (
+                <div className="kyc-notice">
+                  <div className="kyc-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      />
+                      <path
+                        d="M12 16V12M12 8H12.01"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  </div>
+                  <p>
+                    <strong>Note:</strong> To place adds, you'll need to
+                    complete identity verification (KYC) after registration.
+                  </p>
                 </div>
-                <p>
-                  <strong>Note:</strong> To place bids, you'll need to complete identity verification (KYC) after registration.
-                </p>
-              </div>
+              )}
 
               <div className="login-redirect">
                 <span>Already have an account?</span>
-                <Link to="/signin" className="login-link">Log In</Link>
+                <Link to="/signin" className="login-link">
+                  Log In
+                </Link>
               </div>
             </div>
           </form>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;

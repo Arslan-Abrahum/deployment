@@ -37,6 +37,13 @@
   margin-bottom: 1.5rem;
 }
 
+.dashboard-single-column {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
 .dashboard-column {
   display: flex;
   flex-direction: column;
@@ -46,6 +53,20 @@
 .action-button {
   text-decoration: none;
   transform: translateY(0px) !important;
+}
+
+.action-button.primary {
+  background-color: #8CC63F !important;
+  color: #000000 !important;
+}
+
+.action-button.primary:hover {
+  background-color: #7BB337 !important;
+  box-shadow: 0 6px 20px rgba(140, 198, 63, 0.3);
+}
+
+.action-button.primary svg {
+  color: #000000 !important;
 }
 
 .listings-grid-1 {

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../store/slices/authSlice";
 import { fetchProfile, updateProfile, deleteProfile } from "../../store/actions/profileActions";
+import { fetchMyAuctions } from "../../store/actions/sellerActions";
 import { toast } from "react-toastify";
 
 const SellerProfile = () => {
@@ -12,6 +13,9 @@ const SellerProfile = () => {
 
   // Get profile data from Redux store
   const { profile: profileData, loading, error } = useSelector((state) => state.profile);
+  
+  // Get seller auctions for dashboard stats
+  const { myAuctions } = useSelector((state) => state.seller);
 
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
@@ -59,17 +63,81 @@ const SellerProfile = () => {
     passport_front: null,
   });
 
-  // Performance stats (memoized)
-  const performanceStats = useMemo(() => [
-    { id: 1, label: "Total Sales", value: "$0", icon: "revenue", color: "#8CC63F" },
-    { id: 2, label: "Total Orders", value: "0", icon: "orders", color: "#3B82F6" },
-    { id: 3, label: "Avg Rating", value: "0.0", icon: "rating", color: "#F59E0B" },
-    { id: 4, label: "Response Rate", value: "0%", icon: "response", color: "#8B5CF6" },
-  ], []);
+  // Calculate dashboard stats from auctions (matching dashboard)
+  const dashboardStats = useMemo(() => {
+    const allAuctions = myAuctions?.results || [];
+    
+    // Calculate metrics from auction data
+    const totalVehicles = allAuctions.length;
+    const soldVehicles = allAuctions.filter(auction => auction.status === 'CLOSED' || auction.status === 'COMPLETED').length;
+    const unsoldVehicles = allAuctions.filter(auction => auction.status !== 'CLOSED' && auction.status !== 'COMPLETED').length;
+    
+    // Calculate total earnings from sold auctions (using currentBid as sold price for closed/completed auctions)
+    const totalEarnings = allAuctions
+      .filter(auction => auction.status === 'CLOSED' || auction.status === 'COMPLETED')
+      .reduce((sum, auction) => sum + (parseFloat(auction.currentBid) || 0), 0);
 
-  // Fetch profile on component mount
+    const formatCurrency = (amount) => {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(amount);
+    };
+
+    return [
+      { 
+        id: 1, 
+        label: "Total Earnings", 
+        sublabel: "Lifetime earnings",
+        value: formatCurrency(totalEarnings), 
+        icon: "earnings", 
+        color: "#FFC107",
+        gradient: "linear-gradient(135deg, rgba(255, 193, 7, 0.4) 50%, rgba(255, 193, 7, 0.05) 100%)",
+        iconBg: "rgba(255, 193, 7, 0.25)",
+        iconBorder: "rgba(255, 193, 7, 0.5)"
+      },
+      { 
+        id: 2, 
+        label: "Total Vehicles", 
+        sublabel: "All vehicles listed",
+        value: totalVehicles.toString(), 
+        icon: "vehicles", 
+        color: "#3B82F6",
+        gradient: "linear-gradient(135deg, rgba(59, 130, 246, 0.4) 50%, rgba(59, 130, 246, 0.05) 100%)",
+        iconBg: "rgba(59, 130, 246, 0.2)",
+        iconBorder: "rgba(59, 130, 246, 0.4)"
+      },
+      { 
+        id: 3, 
+        label: "Sold Vehicles", 
+        sublabel: "Successfully sold",
+        value: soldVehicles.toString(), 
+        icon: "sold", 
+        color: "#8CC63F",
+        gradient: "linear-gradient(135deg, rgba(140, 198, 63, 0.4) 50%, rgba(140, 198, 63, 0.05) 100%)",
+        iconBg: "rgba(140, 198, 63, 0.2)",
+        iconBorder: "rgba(140, 198, 63, 0.4)"
+      },
+      { 
+        id: 4, 
+        label: "Unsold Vehicles", 
+        sublabel: "Not yet sold",
+        value: unsoldVehicles.toString(), 
+        icon: "unsold", 
+        color: "#EF4444",
+        gradient: "linear-gradient(135deg, rgba(239, 68, 68, 0.4) 50%, rgba(239, 68, 68, 0.05) 100%)",
+        iconBg: "rgba(239, 68, 68, 0.2)",
+        iconBorder: "rgba(239, 68, 68, 0.4)"
+      },
+    ];
+  }, [myAuctions]);
+
+  // Fetch profile and auctions on component mount
   useEffect(() => {
     dispatch(fetchProfile());
+    dispatch(fetchMyAuctions());
   }, [dispatch]);
 
   // Update formData when profileData changes from API
@@ -334,13 +402,13 @@ const SellerProfile = () => {
 
   // Get image source (preview or existing URL)
   const getImageSource = useCallback((fieldName) => {
-    // Priority: preview > API URL > default
+    // Priority: preview > API URL > null (no default image)
     if (imagePreviews[fieldName]) {
       return imagePreviews[fieldName];
     }
 
     if (fieldName === 'image') {
-      return profileData?.image || "https://www.catholicsingles.com/wp-content/uploads/2020/06/blog-header-3.png";
+      return profileData?.image || null;
     }
 
     // For KYC documents, return API URL if exists
@@ -429,28 +497,42 @@ const SellerProfile = () => {
     );
   }, [formData.seller_profile, profileData?.seller_profile, getImageSource, handleFileSelect]);
 
-  // Stat Card Component
+  // Stat Card Component - matching dashboard design
   const StatCard = useMemo(() => ({ stat }) => (
-    <div key={stat.id} className="stat-card">
-      <div className="stat-icon" style={{ backgroundColor: `${stat.color}15` }}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          {stat.icon === 'revenue' && (
-            <path d="M12 1v22M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6" stroke={stat.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <div key={stat.id} className="summary-card profile-stat-card">
+      <div className="card-background-gradient" style={{ background: stat.gradient }}></div>
+      <div className="card-icon" style={{ backgroundColor: stat.iconBg, borderColor: stat.iconBorder }}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={stat.color} strokeWidth="2">
+          {stat.icon === 'earnings' && (
+            <path d="M12 2V22M17 5H9.5C8.57174 5 7.6815 5.36875 7.02513 6.02513C6.36875 6.6815 6 7.57174 6 8.5C6 9.42826 6.36875 10.3185 7.02513 10.9749C7.6815 11.6312 8.57174 12 9.5 12H14.5C15.4283 12 16.3185 12.3687 16.9749 13.0251C17.6312 13.6815 18 14.5717 18 15.5C18 16.4283 17.6312 17.3185 16.9749 17.9749C16.3185 18.6312 15.4283 19 14.5 19H6" strokeLinecap="round" strokeLinejoin="round" />
           )}
-          {stat.icon === 'orders' && (
-            <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke={stat.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          {stat.icon === 'vehicles' && (
+            <>
+              <path d="M5 17H4C2.89543 17 2 16.1046 2 15V5C2 3.89543 2.89543 3 4 3H14C15.1046 3 16 3.89543 16 5V6M20 9H8C6.89543 9 6 9.89543 6 11V19C6 20.1046 6.89543 21 8 21H20C21.1046 21 22 20.1046 22 19V11C22 9.89543 21.1046 9 20 9Z" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M12 14L14 16L18 12" strokeLinecap="round" strokeLinejoin="round" />
+            </>
           )}
-          {stat.icon === 'rating' && (
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke={stat.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          {stat.icon === 'sold' && (
+            <>
+              <path d="M20 7H4C2.89543 7 2 7.89543 2 9V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19V9C22 7.89543 21.1046 7 20 7Z" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M8 21V5C8 4.46957 8.21071 3.96086 8.58579 3.58579C8.96086 3.21071 9.46957 3 10 3H14C14.5304 3 15.0391 3.21071 15.4142 3.58579C15.0391 3.96086 15 4.46957 15 5V21" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M12 10V14" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M9 12H15" strokeLinecap="round" strokeLinejoin="round" />
+            </>
           )}
-          {stat.icon === 'response' && (
-            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke={stat.color} strokeWidth="2" />
+          {stat.icon === 'unsold' && (
+            <>
+              <path d="M20 7H4C2.89543 7 2 7.89543 2 9V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19V9C22 7.89543 21.1046 7 20 7Z" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M16 21V5C16 4.46957 15.7893 3.96086 15.4142 3.58579C15.0391 3.21071 14.5304 3 14 3H10C9.46957 3 8.96086 3.21071 8.58579 3.58579C8.21071 3.96086 8 4.46957 8 5V21" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M12 11V13" strokeLinecap="round" strokeLinejoin="round" />
+            </>
           )}
         </svg>
       </div>
-      <div className="stat-content">
-        <div className="stat-value" style={{ color: stat.color }}>{stat.value}</div>
-        <div className="stat-label">{stat.label}</div>
+      <div className="card-content">
+        <span className="card-label">{stat.label.toUpperCase()}</span>
+        <span className={`card-value ${stat.icon === 'earnings' ? 'currency' : ''}`} style={{ color: stat.icon === 'earnings' ? '#FFC107' : stat.color }}>{stat.value}</span>
+        <span className="card-sublabel">{stat.sublabel}</span>
       </div>
     </div>
   ), []);
@@ -538,13 +620,27 @@ const SellerProfile = () => {
             <div className="profile-avatar-section">
               <div className="avatar-wrapper">
                 <div className="avatar">
-                  <img
-                    src={getImageSource('image')}
-                    alt={getDisplayName()}
-                    onError={(e) => {
-                      e.target.src = "https://www.catholicsingles.com/wp-content/uploads/2020/06/blog-header-3.png";
-                    }}
-                  />
+                  {getImageSource('image') ? (
+                    <img
+                      src={getImageSource('image')}
+                      alt={getDisplayName()}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        const placeholder = e.target.nextElementSibling;
+                        if (placeholder) {
+                          placeholder.style.display = 'flex';
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div className="avatar-placeholder" style={{ display: 'flex' }}>
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" strokeLinecap="round" strokeLinejoin="round" />
+                        <circle cx="12" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      <span>No Image</span>
+                    </div>
+                  )}
                   <div className={`status-indicator ${formData.seller_profile.verified ? 'verified' : 'unverified'}`}></div>
                 </div>
                 <input
@@ -554,17 +650,19 @@ const SellerProfile = () => {
                   style={{ display: 'none' }}
                   onChange={(e) => handleFileSelect('image', e)}
                 />
-                <button
-                  className="s-avatar-upload"
-                  onClick={() => fileInputRefs.current.image?.click()}
-                  title="Upload profile image"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" />
-                    <polyline points="17 8 12 3 7 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </button>
+                {isEditing && (
+                  <button
+                    className="s-avatar-upload"
+                    onClick={() => fileInputRefs.current.image?.click()}
+                    title="Upload profile image"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" />
+                      <polyline points="17 8 12 3 7 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                )}
               </div>
               <div className="profile-info">
                 <h2 className="profile-name">{getDisplayName()}</h2>
@@ -581,21 +679,9 @@ const SellerProfile = () => {
               </div>
             </div>
 
-            {/* Profile Completion */}
-            <div className="completion-section">
-              <div className="completion-header">
-                <span>Profile Completion</span>
-                <span className="completion-percentage">{profileCompletion}%</span>
-              </div>
-              <div className="completion-bar">
-                <div className="completion-fill" style={{ width: `${profileCompletion}%` }}></div>
-              </div>
-              <p className="completion-note">Complete your profile to unlock all seller features</p>
-            </div>
-
-            {/* Performance Stats */}
-            <div className="profile-stats-grid">
-              {performanceStats.map(stat => (
+            {/* Dashboard Stats - Same as Dashboard */}
+            <div className="summary-cards profile-stats-grid">
+              {dashboardStats.map(stat => (
                 <StatCard key={stat.id} stat={stat} />
               ))}
             </div>
@@ -611,12 +697,6 @@ const SellerProfile = () => {
               onClick={() => setActiveTab('overview')}
             >
               Overview
-            </button>
-            <button
-              className={`tab-btn ${activeTab === 'business' ? 'active' : ''}`}
-              onClick={() => setActiveTab('business')}
-            >
-              Business Info
             </button>
             <button
               className={`tab-btn ${activeTab === 'kyc' ? 'active' : ''}`}
@@ -722,90 +802,113 @@ const SellerProfile = () => {
               </div>
             )}
 
-            {/* Business Info Tab */}
-            {activeTab === 'business' && (
-              <div className="business-content">
-                <div className="info-section">
-                  <h3 className="section-title">Business Details</h3>
-                  <div className="info-grid">
-                    <div className="info-item">
-                      <label>Business Name</label>
-                      {isEditing ? (
-                        <input
-                          type="text"
-                          className="edit-input"
-                          value={formData.seller_profile.business_name}
-                          onChange={(e) => handleSellerProfileChange('business_name', e.target.value)}
-                        />
-                      ) : (
-                        <div className="info-value">{formData.seller_profile.business_name || "Not set"}</div>
-                      )}
-                    </div>
-                    <div className="info-item">
-                      <label>Business Registration Number</label>
-                      {isEditing ? (
-                        <input
-                          type="text"
-                          className="edit-input"
-                          value={formData.seller_profile.business_reg_no}
-                          onChange={(e) => handleSellerProfileChange('business_reg_no', e.target.value)}
-                        />
-                      ) : (
-                        <div className="info-value">{formData.seller_profile.business_reg_no || "Not set"}</div>
-                      )}
-                    </div>
-                    <div className="info-item full-width">
-                      <label>Verification Status</label>
-                      <div className="info-value">
-                        <span className={`verification-status ${formData.seller_profile.verified ? 'verified' : 'pending'}`}>
-                          {formData.seller_profile.verified ? "✓ Verified" : "⏳ Pending Verification"}
-                        </span>
-                        {!formData.seller_profile.verified && (
-                          <p className="verification-note">Complete KYC verification to get verified seller status</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* KYC Documents Tab */}
             {activeTab === 'kyc' && (
-              <div className="kyc-content">
-                <div className="info-section">
-                  <h3 className="section-title">Identity Verification Documents</h3>
-                  <p className="section-subtitle">
-                    Upload your documents to complete KYC verification. All documents are securely encrypted.
-                  </p>
-
-                  <div className="documents-grid">
-                    <DocumentCard documentType="id_front" title="ID Card - Front" />
-                    <DocumentCard documentType="id_back" title="ID Card - Back" />
-                    <DocumentCard documentType="driving_license_front" title="Driving License - Front" />
-                    <DocumentCard documentType="driving_license_back" title="Driving License - Back" />
-                    <DocumentCard documentType="passport_front" title="Passport" />
-                  </div>
-                  <div className="kyc-actions">
-                    <button
-                      className="action-button primary"
-                      onClick={handleKycUpload}
-                      disabled={kycUploading}
-                    >
-                      {kycUploading ? 'Uploading...' : 'Upload KYC Documents'}
-                    </button>
-                  </div>
-                  <div className="kyc-instructions">
-                    <h4>Instructions:</h4>
-                    <ul>
-                      <li>Upload clear, high-quality images</li>
-                      <li>Ensure all text is readable</li>
-                      <li>File size should be less than 5MB</li>
-                      <li>Accepted formats: JPG, PNG</li>
-                      <li>Click "Save Changes" to upload all selected documents</li>
-                    </ul>
+              <div className="kyc-content-new">
+                <div className={`kyc-status-card ${profileData?.seller_profile?.verified ? 'verified' : profileData?.seller_profile?.is_rejected ? 'rejected' : 'pending'}`}>
+                  <div className="kyc-status-header">
+                    <div className="kyc-status-icon">
+                      {profileData?.seller_profile?.verified ? (
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
+                          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                        </svg>
+                      ) : profileData?.seller_profile?.is_rejected ? (
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="12" cy="12" r="10" />
+                          <path d="M15 9l-6 6M9 9l6 6" strokeLinecap="round" />
+                        </svg>
+                      ) : (
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="12" cy="12" r="10" />
+                          <path d="M12 16v-4M12 8h.01" strokeLinecap="round" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="kyc-status-info">
+                      <h3 className="kyc-status-title">
+                        {profileData?.seller_profile?.verified 
+                          ? 'KYC Verified' 
+                          : profileData?.seller_profile?.is_rejected 
+                          ? 'KYC Rejected' 
+                          : profileData?.seller_profile?.id_front || profileData?.seller_profile?.passport_front || profileData?.seller_profile?.driving_license_front
+                          ? 'KYC Pending Review'
+                          : 'KYC Not Started'}
+                      </h3>
+                      <p className="kyc-status-description">
+                        {profileData?.seller_profile?.verified 
+                          ? 'Your identity has been successfully verified. You can now participate in auctions.'
+                          : profileData?.seller_profile?.is_rejected 
+                          ? profileData.seller_profile.rejection_reason || 'Your documents did not meet verification requirements. Please upload new documents.'
+                          : profileData?.seller_profile?.id_front || profileData?.seller_profile?.passport_front || profileData?.seller_profile?.driving_license_front
+                          ? 'Your documents are under review. You will be notified once verification is complete.'
+                          : 'Complete your identity verification to participate in auctions. Upload your documents to get started.'}
+                      </p>
+                    </div>
                   </div>
                 </div>
+
+                <div className="kyc-verification-cta">
+                  <div className="kyc-cta-content">
+                    <h4 className="kyc-cta-title">Verify Your Identity</h4>
+                    <p className="kyc-cta-description">
+                      Upload your identity documents to complete KYC verification. All documents are securely encrypted and processed.
+                    </p>
+                    <button
+                      className="kyc-cta-button"
+                      onClick={() => navigate('/seller/kyc-verification')}
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      {profileData?.seller_profile?.verified 
+                        ? 'View Verification Status'
+                        : profileData?.seller_profile?.is_rejected
+                        ? 'Upload New Documents'
+                        : 'Start KYC Verification'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Document Summary - Only show if documents exist */}
+                {(profileData?.seller_profile?.id_front || 
+                  profileData?.seller_profile?.id_back || 
+                  profileData?.seller_profile?.driving_license_front || 
+                  profileData?.seller_profile?.driving_license_back || 
+                  profileData?.seller_profile?.passport_front) && (
+                  <div className="kyc-documents-summary">
+                    <h4 className="kyc-summary-title">Uploaded Documents</h4>
+                    <div className="kyc-summary-grid">
+                      {profileData.seller_profile.id_front && profileData.seller_profile.id_back && (
+                        <div className="kyc-summary-item">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                          </svg>
+                          <span>National ID</span>
+                        </div>
+                      )}
+                      {profileData.seller_profile.driving_license_front && profileData.seller_profile.driving_license_back && (
+                        <div className="kyc-summary-item">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                          </svg>
+                          <span>Driver's License</span>
+                        </div>
+                      )}
+                      {profileData.seller_profile.passport_front && (
+                        <div className="kyc-summary-item">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                          </svg>
+                          <span>Passport</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -815,7 +918,7 @@ const SellerProfile = () => {
                 <div className="info-section">
                   <h3 className="section-title">Security Settings</h3>
                   <div className="settings-grid">
-                    <div className="setting-item">
+                    {/* <div className="setting-item">
                       <div className="setting-info">
                         <h4>Change Password</h4>
                         <p>Update your account password</p>
@@ -826,7 +929,7 @@ const SellerProfile = () => {
                       >
                         Change
                       </button>
-                    </div>
+                    </div> */}
                     {/* <div className="setting-item">
                       <div className="setting-info">
                         <h4>Two-Factor Authentication</h4>
@@ -853,8 +956,10 @@ const SellerProfile = () => {
                     <button
                       className="danger-btn"
                       onClick={() => {
-                        dispatch(logout());
-                        navigate('/signin', { replace: true });
+                        if (window.confirm('Are you sure you want to logout?')) {
+                          dispatch(logout());
+                          navigate('/signin', { replace: true });
+                        }
                       }}
                     >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">

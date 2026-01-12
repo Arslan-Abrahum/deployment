@@ -29,6 +29,8 @@ import SellerAuctions from "./pages/SellerAuctions";
 import SellerCreateProduct from "./pages/SellerCreateProduct";
 import SellerAnalytics from "./pages/SellerAnalytics";
 import SellerProfile from "./pages/sellerProfile/SellerProfile";
+import SellerKYCVerification from "./pages/sellerProfile/SellerKYCVerification";
+import SellerKYCDocumentUpload from "./pages/sellerProfile/SellerKYCDocumentUpload";
 
 // Manager
 import ManagerDashboard from "./pages/ManagerDashboard";
@@ -126,6 +128,8 @@ function App() {
                 <Route path="/seller/product" element={<SellerCreateProduct />} />
                 <Route path="/seller/analytics" element={<SellerAnalytics />} />
                 <Route path="/seller/profile" element={<SellerProfile />} />
+                <Route path="/seller/kyc-verification" element={<SellerKYCVerification />} />
+                <Route path="/seller/kyc-verification/upload/:documentType" element={<SellerKYCDocumentUpload />} />
                 <Route path="/kyc-verification" element={<KYCVerification />} />
               </Route>
             </Route>
