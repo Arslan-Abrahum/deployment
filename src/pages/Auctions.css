@@ -290,8 +290,8 @@
   gap: 1rem;
 }
 
-.auctions-page-title {
-  font-size: 0.7rem;
+.guest-auctions-page-title {
+  font-size: 1.5rem;
   font-weight: 700;
   margin: 0;
   letter-spacing: -0.5px;

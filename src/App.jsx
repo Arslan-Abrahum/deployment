@@ -78,6 +78,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ResetVerifyOtp from "./pages/ResetVerifyOTP";
 import SellerSales from "./pages/SellerSales";
+import BuyerBidDetails from "./components/buyerBidDetails";
 function App() {
   return (
     <Provider store={store}>
@@ -109,6 +110,7 @@ function App() {
                 <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
                 <Route path="/buyer/auctions" element={<BuyerAuctions />} />
                 <Route path="/buyer/auction/:id" element={<BuyerAuctionDetails />} />
+                <Route path="/buyer/bid/:id" element={<BuyerBidDetails />} />
                 <Route path="/buyer/bids" element={<BuyerBids />} />
                 <Route path="/buyer/won-items" element={<BuyerWonItems />} />
                 <Route path="/buyer/invoices" element={<BuyerInvoices />} />

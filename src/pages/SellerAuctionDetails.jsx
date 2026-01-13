@@ -1,358 +1,479 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react'
-import { useNavigate, Link, useParams, useLocation } from 'react-router-dom'
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAuctionBids } from '../store/actions/buyerActions';
+import { fetchMyAuctions } from '../store/actions/sellerActions';
 import './SellerAuctionDetails.css'
-import { deleteAuction, updateAuction } from '../store/actions/sellerActions'
-import { useSelector, useDispatch } from 'react-redux'
 
-const formatCurrency = (amount) => {
+const SellerAuctionDetails = () => {
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const { myAuctions, isLoading } = useSelector((state) => state.seller);
+  const { auctionBids  } = useSelector((state) => state.buyer);
+  
+
+
+  const selectedAuction = useMemo(() => 
+    myAuctions?.results?.find((auction) => auction?.id === parseInt(id)),
+    [myAuctions, id]
+  );
+
+  const [activeTab, setActiveTab] = useState('bid-info');
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [timeRemaining, setTimeRemaining] = useState({ hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    dispatch(fetchMyAuctions());
+    dispatch(fetchAuctionBids(id));
+  }, [dispatch, id]);
+
+  // Memoized values
+  const images = useMemo(() => 
+    selectedAuction?.media?.filter(m => m.media_type === 'image').map(m => m.file) || [],
+    [selectedAuction?.media]
+  );
+
+  const isLive = useMemo(() => selectedAuction?.status === 'ACTIVE', [selectedAuction?.status]);
+  const isUpcoming = useMemo(() => selectedAuction?.status === 'APPROVED', [selectedAuction?.status]);
+  const isClosed = useMemo(() => selectedAuction?.status === 'CLOSED', [selectedAuction?.status]);
+  const isAwaitingPayment = useMemo(() => selectedAuction?.status === 'AWAITING_PAYMENT', [selectedAuction?.status]);
+
+  const formatCurrency = useCallback((amount) => {
     return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }).format(amount)
-}
+      style: 'currency',
+      currency: selectedAuction?.currency || 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  }, [selectedAuction?.currency]);
 
-const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: 'UTC'
-    })
-}
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
-const ImageGallery = ({ images, activeImage, onImageChange }) => (
-    <div className="image-gallery">
-        <div className="main-image">
-            <img src={images[activeImage]?.file || images[activeImage]} alt="Main view" />
-        </div>
-        <div className="thumbnail-images">
-            {images.map((image, index) => (
-                <button
-                    key={`thumb-${image.id || index}`}
-                    className={`thumbnail ${activeImage === index ? 'active' : ''}`}
-                    onClick={() => onImageChange(index)}
-                    aria-label={`View image ${index + 1}`}
-                >
-                    <img src={image.file || image} alt={`Thumbnail ${index + 1}`} />
-                </button>
-            ))}
-        </div>
-    </div>
-)
+  const calculateTimeRemaining = useCallback((endDate) => {
+    const now = new Date().getTime();
+    const endDateMs = new Date(endDate).getTime();
+    const difference = endDateMs - now;
 
-const StatItem = ({ icon, value, label }) => (
-    <div className="stat-item">
-        <div className="stat-icon">
-            {icon}
-        </div>
-        <div className="stat-content">
-            <span className="stat-value">{value}</span>
-            <span className="stat-label">{label}</span>
-        </div>
-    </div>
-)
-
-const SellerListingDetails = () => {
-    const location = useLocation();
-    const dispatch = useDispatch()
-    const auction = location?.state?.listing || [];
-    const [activeImage, setActiveImage] = useState(0)
-    const [showFullDescription, setShowFullDescription] = useState(false)
-    const [timeRemaining, setTimeRemaining] = useState('')
-    const [listing, setListing] = useState( auction || {})
-
-    const navigate = useNavigate()
-
-    const calculateTimeRemaining = useCallback(() => {
-        if (!listing?.end_date) return 'Loading...'
-        
-        const now = new Date()
-        const endDate = new Date(listing.end_date)
-        const diff = endDate - now
-
-        if (diff <= 0) return 'Auction ended'
-
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-
-        return `${days}d ${hours}h ${minutes}m`
-    }, [listing?.end_date])
-
-    useEffect(() => {
-        if (!listing) return;
-
-        const updateTime = () => {
-            setTimeRemaining(calculateTimeRemaining())
-        }
-
-        updateTime()
-        const interval = setInterval(updateTime, 60000)
-
-        return () => clearInterval(interval)
-    }, [calculateTimeRemaining, listing])
-
-    const handleEditListing = () => {
-        if (!listing) return;
-
-        navigate(`/seller/product`, {
-            state: {
-                isEditing: true,
-                listingData: listing
-            }
-        })
+    if (difference > 0) {
+      const hours = Math.floor(difference / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+      return { hours, minutes, seconds };
     }
+    return { hours: 0, minutes: 0, seconds: 0 };
+  }, []);
 
-    const handleRemoveListing = () => {
-        if (!listing) return;
-        
-        if (window.confirm('Are you sure you want to remove this listing? This action cannot be undone.')) {
-            console.log('Remove listing clicked for ID:', listing.id)
-            dispatch(deleteAuction(listing.id));
-            navigate('/seller/auction-listings');
-        }
+  // Timer effect
+  useEffect(() => {
+    if (isLive && selectedAuction?.end_date) {
+      setTimeRemaining(calculateTimeRemaining(selectedAuction.end_date));
+
+      const interval = setInterval(() => {
+        setTimeRemaining(calculateTimeRemaining(selectedAuction.end_date));
+      }, 1000);
+
+      return () => clearInterval(interval);
     }
+  }, [isLive, selectedAuction?.end_date, calculateTimeRemaining]);
 
-    const handleSendForApproval = async () => {
-        if (!listing) return;
-        
-        if (window.confirm('Send this listing for admin approval?')) {
-            try {
-                // Call the edit API with PENDING status
-                await dispatch(updateAuction({
-                    auctionId: listing.id,
-                    auctionData: { status: 'PENDING' }
-                })).unwrap();
-                
-                // Navigate back to listings page after successful submission
-                navigate('/seller/auction-listings');
-            } catch (error) {
-                console.error('Error sending for approval:', error);
-            }
-        }
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'ACTIVE':
+        return { bg: 'rgba(34, 197, 94, 0.2)', border: 'rgba(34, 197, 94, 0.5)', color: '#22c55e' };
+      case 'APPROVED':
+        return { bg: 'rgba(59, 130, 246, 0.2)', border: 'rgba(59, 130, 246, 0.5)', color: '#3b82f6' };
+      case 'CLOSED':
+        return { bg: 'rgba(107, 114, 128, 0.2)', border: 'rgba(107, 114, 128, 0.5)', color: '#9ca3af' };
+      case 'AWAITING_PAYMENT':
+        return { bg: 'rgba(251, 146, 60, 0.2)', border: 'rgba(251, 146, 60, 0.5)', color: '#fb923c' };
+      default:
+        return { bg: 'rgba(107, 114, 128, 0.2)', border: 'rgba(107, 114, 128, 0.5)', color: '#9ca3af' };
     }
+  };
 
-    const handleEndAuction = () => {
-        if (!listing) return;
-        
-        if (window.confirm('Are you sure you want to end this auction early?')) {
-            console.log('End auction clicked for ID:', listing.id)
-            // Add API call to end auction
-        }
-    }
+  // Calculate bid statistics
+  const bidStats = useMemo(() => {
+    const bids = auctionBids || [];
+    const today = new Date().toDateString();
+    const bidsToday = bids.filter(bid => new Date(bid.created_at).toDateString() === today).length;
+    const highestBid = bids.length > 0 ? Math.max(...bids.map(b => parseFloat(b.amount))) : null;
+    const highestBidder = bids.length > 0 ? bids.find(b => parseFloat(b.amount) === highestBid)?.bidder_name : null;
+    const lastBid = bids.length > 0 ? parseFloat(bids[0].amount) : null;
 
-    if (!listing) {
-        return (
-            <div className="seller-page">
-                <main className="seller-main">
-                    <div className="page-container">
-                        <div className="loading-state">
-                            <p>Loading listing details...</p>
-                        </div>
-                    </div>
-                </main>
-            </div>
-        )
-    }
+    return {
+      total: bids.length,
+      today: bidsToday,
+      highest: highestBid,
+      highestBidder: highestBidder,
+      last: lastBid
+    };
+  }, [auctionBids]);
 
-    const images = listing.media || []
-    const specificData = listing.specific_data || {}
-
+  // Loading state
+  if (isLoading && !selectedAuction) {
     return (
-        <div className="seller-page">
-            <main className="seller-main">
-                <div className="page-container">
-                    <div className="page-header">
-                        <div className="page-title-section">
-                            <h1 className="page-title">Listing Details</h1>
-                            <p className="page-subtitle">Manage and monitor your listing performance</p>
-                        </div>
-                        <div className="page-actions">
-                            <Link to="/seller/auction-listings" className="s-secondary-button">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                                Back to Listings
-                            </Link>
-                        </div>
-                    </div>
-
-                    <div className="breadcrumb">
-                        <Link to="/seller/dashboard" className="breadcrumb-item">Dashboard</Link>
-                        <span className="breadcrumb-separator">/</span>
-                        <Link to="/seller/auction-listings" className="breadcrumb-item">My Listings</Link>
-                        <span className="breadcrumb-separator">/</span>
-                        <span className="breadcrumb-item active">{listing.title}</span>
-                    </div>
-
-                    <div className="listing-details-grid">
-                        <div className="listing-details-left">
-                            {images.length > 0 && (
-                                <ImageGallery
-                                    images={images}
-                                    activeImage={activeImage}
-                                    onImageChange={setActiveImage}
-                                />
-                            )}
-
-                            <div className="details-card">
-                                <h3 className="details-card-title">Item Details</h3>
-                                <div className="details-list">
-                                    {Object.entries(specificData).map(([key, value]) => (
-                                        <div className="detail-item" key={key}>
-                                            <span className="detail-label">{key.replace(/_/g, ' ').toUpperCase()}:</span>
-                                            <span className="detail-value">{value}</span>
-                                        </div>
-                                    ))}
-                                    <div className="detail-item">
-                                        <span className="detail-label">HANDOVER TYPE:</span>
-                                        <span className="detail-value">{listing.handover_type}</span>
-                                    </div>
-                                    {listing.pickup_address && (
-                                        <div className="detail-item">
-                                            <span className="detail-label">PICKUP ADDRESS:</span>
-                                            <span className="detail-value">{listing.pickup_address}</span>
-                                        </div>
-                                    )}
-                                    <div className="detail-item">
-                                        <span className="detail-label">CURRENCY:</span>
-                                        <span className="detail-value">{listing.currency}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="listing-details-right">
-                            <div className="info-card">
-                                <div className="info-card-header">
-                                    <h2 className="listing-title">{listing.title}</h2>
-                                    <div className="listing-category">{listing.category_name}</div>
-                                    <div className="listing-status">
-                                        <span className={`status-badge ${listing.status.toLowerCase()}`}>
-                                            {listing.status}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="info-card-body">
-                                    <div className="listing-description">
-                                        <h3 className="description-title">Description</h3>
-                                        <p className={`description-text ${showFullDescription ? 'expanded' : ''}`}>
-                                            {listing.description}
-                                        </p>
-                                        {listing.description && listing.description.length > 200 && !showFullDescription && (
-                                            <button
-                                                className="show-more-button"
-                                                onClick={() => setShowFullDescription(true)}
-                                            >
-                                                Show More
-                                            </button>
-                                        )}
-                                    </div>
-
-                                    {/* Auction Details - Only show when status is LIVE or COMPLETED */}
-                                    {(listing.status?.toUpperCase() === 'LIVE' || listing.status?.toUpperCase() === 'COMPLETED' || listing.status?.toUpperCase() === 'CLOSED') && (
-                                        <div className="auction-details-card">
-                                            <h3 className="details-title">
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <path d="M9 11l3 3L22 4" strokeLinecap="round" strokeLinejoin="round" />
-                                                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h7" strokeLinecap="round" strokeLinejoin="round" />
-                                                </svg>
-                                                Auction Details
-                                            </h3>
-                                            <div className="details-grid">
-                                                <div className="detail-row">
-                                                    <span className="detail-label">Initial Price:</span>
-                                                    <span className="detail-value highlight">{formatCurrency(listing.initial_price)}</span>
-                                                </div>
-                                                <div className="detail-row">
-                                                    <span className="detail-label">Seller Expected Price:</span>
-                                                    <span className="detail-value">{formatCurrency(listing.seller_expected_price)}</span>
-                                                </div>
-                                                {listing.is_buy_now_enabled && listing.buy_now_price && (
-                                                    <div className="detail-row">
-                                                        <span className="detail-label">Buy Now Price:</span>
-                                                        <span className="detail-value">{formatCurrency(listing.buy_now_price)}</span>
-                                                    </div>
-                                                )}
-                                                <div className="detail-row">
-                                                    <span className="detail-label">Start Date:</span>
-                                                    <span className="detail-value">{formatDate(listing.start_date)}</span>
-                                                </div>
-                                                <div className="detail-row">
-                                                    <span className="detail-label">End Date:</span>
-                                                    <span className="detail-value">{formatDate(listing.end_date)}</span>
-                                                </div>
-                                                <div className="detail-row">
-                                                    <span className="detail-label">Extended Time:</span>
-                                                    <span className="detail-value">{listing.extended_time_seconds} seconds</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Seller Information - Removed as per requirements */}
-
-                                    {/* Listing Actions - Only show when status is DRAFT */}
-                                    {listing.status?.toUpperCase() === 'DRAFT' && (
-                                        <div className="listing-actions-card">
-                                            <h3 className="actions-title">
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <path d="M12 15v3M15 21H9a2 2 0 01-2-2V5a2 2 0 012-2h6a2 2 0 012 2v7" strokeLinecap="round" strokeLinejoin="round" />
-                                                    <path d="M17 21l5-5-5-5M17 16h6" strokeLinecap="round" strokeLinejoin="round" />
-                                                </svg>
-                                                Listing Actions
-                                            </h3>
-                                            <div className="action-buttons-grid">
-                                                <button className="action-btn-primary" onClick={handleEditListing}>
-                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                        <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" strokeLinecap="round" strokeLinejoin="round" />
-                                                        <path d="M18.5 2.5C18.8978 2.10217 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10217 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10217 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" strokeLinecap="round" strokeLinejoin="round" />
-                                                    </svg>
-                                                    <span>Edit Listing</span>
-                                                </button>
-                                                <button className="action-btn-secondary" onClick={handleSendForApproval}>
-                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                        <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.709 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.7649 14.1003 1.98232 16.07 2.85999" strokeLinecap="round" strokeLinejoin="round" />
-                                                        <path d="M22 4L12 14.01L9 11.01" strokeLinecap="round" strokeLinejoin="round" />
-                                                    </svg>
-                                                    <span>Send for Approval</span>
-                                                </button>
-                                                <button className="action-btn-danger" onClick={handleRemoveListing}>
-                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                        <path d="M3 6H5H21" strokeLinecap="round" strokeLinejoin="round" />
-                                                        <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" strokeLinecap="round" strokeLinejoin="round" />
-                                                    </svg>
-                                                    <span>Remove Listing</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {listing.rejection_reason && (
-                                <div className="rejection-card">
-                                    <div className="card-header">
-                                        <h3 className="card-title">Rejection Reason</h3>
-                                    </div>
-                                    <div className="rejection-content">
-                                        <p>{listing.rejection_reason}</p>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </main>
+      <div className="seller-details-page">
+        <div className="seller-details-container">
+          <div className="seller-details-loading">
+            <div className="loading-spinner"></div>
+            <p>Loading auction details...</p>
+          </div>
         </div>
-    )
-}
+      </div>
+    );
+  }
 
-export default SellerListingDetails
+  // Not found state
+  if (!selectedAuction) {
+    return (
+      <div className="seller-details-page">
+        <div className="seller-details-container">
+          <div className="seller-details-not-found">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+              <path d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 20a8 8 0 100-16 8 8 0 000 16z" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <h2>Auction Not Found</h2>
+            <p>The auction you're looking for doesn't exist or has been removed.</p>
+            <Link to="/seller/auction-listings" className="seller-details-back-btn">Back to My Auctions</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const statusColors = getStatusColor(selectedAuction.status);
+
+  return (
+    <div className="seller-details-page">
+      <div className="seller-details-container">
+        {/* Breadcrumbs */}
+        <nav className="seller-details-breadcrumbs">
+          <Link to="/seller/dashboard">Home</Link>
+          <span>/</span>
+          <Link to="/seller/auctions">My Auctions</Link>
+          <span>/</span>
+          <span>{selectedAuction.category_name || 'Category'}</span>
+          {/* <span>/</span> */}
+          {/* <span>Lot #{selectedAuction.id}</span> */}
+        </nav>
+
+        {/* Header */}
+        <div className="seller-details-header">
+          <div className="seller-details-header-content">
+            <h1 className="seller-details-title">{selectedAuction.title || 'Untitled Auction'}</h1>
+            <p className="seller-details-subtitle">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{display: 'inline', marginRight: '6px'}}>
+                <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              {selectedAuction.pickup_address || 'N/A'}
+            </p>
+            {/* <p className="seller-details-subtitle">ID: {selectedAuction.id}</p> */}
+          </div>
+          <div 
+            className="seller-details-status-badge"
+            style={{
+              backgroundColor: statusColors.bg,
+              borderColor: statusColors.border,
+              color: statusColors.color
+            }}
+          >
+            {selectedAuction.status === 'ACTIVE' && 'ACTIVE'}
+            {selectedAuction.status === 'APPROVED' && 'UPCOMING'}
+            {selectedAuction.status === 'CLOSED' && 'CLOSED'}
+            {selectedAuction.status === 'AWAITING_PAYMENT' && 'AWAITING PAYMENT'}
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="seller-details-content">
+          {/* Image Gallery */}
+          <div className="seller-details-gallery">
+            <div className="seller-details-main-image">
+              {images.length > 0 ? (
+                <img src={images[selectedImage]} alt={selectedAuction.title} />
+              ) : (
+                <div className="seller-details-no-image">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="3" width="18" height="18" rx="2" stroke="rgba(255,255,255,0.3)" strokeWidth="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" fill="rgba(255,255,255,0.3)" />
+                    <path d="M21 15L16 10L5 21" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <p>No Image Available</p>
+                </div>
+              )}
+            </div>
+            {images.length > 1 && (
+              <div className="seller-details-thumbnails">
+                {images.map((image, index) => (
+                  <button
+                    key={index}
+                    className={`seller-details-thumbnail ${selectedImage === index ? 'active' : ''}`}
+                    onClick={() => setSelectedImage(index)}
+                  >
+                    <img src={image} alt={`View ${index + 1}`} />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Info Panel */}
+          <div className="seller-details-info-panel">
+            {/* Category Badge */}
+            <div className="seller-details-category-badge">
+              {selectedAuction.category_name || 'Category'}
+            </div>
+
+            {/* Title and Location */}
+            <h2 className="seller-details-panel-title">{selectedAuction.title || 'Untitled'}</h2>
+            <div className="seller-details-location">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>{selectedAuction.pickup_address || 'N/A'}</span>
+            </div>
+            {/* <p className="seller-details-panel-id">ID: {selectedAuction.id}</p> */}
+
+            {/* Quick Info Cards */}
+            <div className="seller-details-quick-info">
+              <div className="seller-details-quick-card">
+                <div className="seller-details-quick-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                </div>
+                <div className="seller-details-quick-label">Vin</div>
+                <div className="seller-details-quick-value">{selectedAuction.specific_data?.vin || 'N/A'}</div>
+              </div>
+              <div className="seller-details-quick-card">
+                <div className="seller-details-quick-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M8 17a5 5 0 100-10 5 5 0 000 10zm8 0a5 5 0 100-10 5 5 0 000 10z" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M8 12h8M5 8h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                </div>
+                <div className="seller-details-quick-label">Make</div>
+                <div className="seller-details-quick-value">{selectedAuction.specific_data?.make || 'N/A'}</div>
+              </div>
+              <div className="seller-details-quick-card">
+                <div className="seller-details-quick-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M3 10h18M8 2v4M16 2v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                </div>
+                <div className="seller-details-quick-label">Year</div>
+                <div className="seller-details-quick-value">{selectedAuction.specific_data?.year || 'N/A'}</div>
+              </div>
+            </div>
+
+            {/* Timer Section for Live Auctions */}
+            {isLive && timeRemaining.hours + timeRemaining.minutes + timeRemaining.seconds > 0 && (
+              <div className="seller-details-timer-section">
+                <div className="seller-details-timer-label">TIME REMAINING</div>
+                <div className="seller-details-timer">
+                  <div className="seller-details-timer-unit">
+                    <span className="seller-details-timer-value">{String(timeRemaining.hours).padStart(2, '0')}</span>
+                    <span className="seller-details-timer-label-small">Hours</span>
+                  </div>
+                  <span className="seller-details-timer-separator">:</span>
+                  <div className="seller-details-timer-unit">
+                    <span className="seller-details-timer-value">{String(timeRemaining.minutes).padStart(2, '0')}</span>
+                    <span className="seller-details-timer-label-small">Minutes</span>
+                  </div>
+                  <span className="seller-details-timer-separator">:</span>
+                  <div className="seller-details-timer-unit">
+                    <span className={`seller-details-timer-value ${timeRemaining.seconds < 30 ? 'urgent' : ''}`}>
+                      {String(timeRemaining.seconds).padStart(2, '0')}
+                    </span>
+                    <span className="seller-details-timer-label-small">Seconds</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Tabs Section */}
+        <div className="seller-details-tabs-section">
+          <div className="seller-details-tabs">
+            <button
+              className={`seller-details-tab ${activeTab === 'bid-info' ? 'active' : ''}`}
+              onClick={() => setActiveTab('bid-info')}
+            >
+              Bid Information
+            </button>
+            <button
+              className={`seller-details-tab ${activeTab === 'vehicle-info' ? 'active' : ''}`}
+              onClick={() => setActiveTab('vehicle-info')}
+            >
+              Vehicle Information
+            </button>
+            <button
+              className={`seller-details-tab ${activeTab === 'paper-details' ? 'active' : ''}`}
+              onClick={() => setActiveTab('paper-details')}
+            >
+              Paper Details
+            </button>
+            <button
+              className={`seller-details-tab ${activeTab === 'bid-history' ? 'active' : ''}`}
+              onClick={() => setActiveTab('bid-history')}
+            >
+              Bid History
+            </button>
+          </div>
+
+          <div className="seller-details-tab-content">
+            {/* Bid Information Tab */}
+            {activeTab === 'bid-info' && (
+              <div className="seller-details-info-grid">
+                <div className="seller-details-info-row">
+                  <span className="seller-details-info-label">Status</span>
+                  <span className="seller-details-info-value" style={{color: statusColors.color}}>
+                    {selectedAuction.status}
+                  </span>
+                </div>
+                <div className="seller-details-info-row">
+                  <span className="seller-details-info-label">Starting bid</span>
+                  <span className="seller-details-info-value highlight">
+                    {formatCurrency(parseFloat(selectedAuction.initial_price || 0))}
+                  </span>
+                </div>
+                <div className="seller-details-info-row">
+                  <span className="seller-details-info-label">Currency</span>
+                  <span className="seller-details-info-value">{selectedAuction.currency || 'USD'}</span>
+                </div>
+                <div className="seller-details-info-row">
+                  <span className="seller-details-info-label">Expected Price</span>
+                  <span className="seller-details-info-value highlight">
+                    {formatCurrency(parseFloat(selectedAuction.seller_expected_price || 0))}
+                  </span>
+                </div>
+                <div className="seller-details-info-row">
+                  <span className="seller-details-info-label">Handover Type</span>
+                  <span className="seller-details-info-value">{selectedAuction.handover_type || 'N/A'}</span>
+                </div>
+                <div className="seller-details-info-row">
+                  <span className="seller-details-info-label">Pickup Address</span>
+                  <span className="seller-details-info-value">{selectedAuction.pickup_address || 'N/A'}</span>
+                </div>
+                <div className="seller-details-info-row">
+                  <span className="seller-details-info-label">Pickup Location</span>
+                  <span className="seller-details-info-value">
+                    {selectedAuction.pickup_latitude && selectedAuction.pickup_longitude
+                      ? `${selectedAuction.pickup_latitude}, ${selectedAuction.pickup_longitude}`
+                      : 'N/A'}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Vehicle Information Tab */}
+            {activeTab === 'vehicle-info' && (
+              <div className="seller-details-info-grid">
+                <div className="seller-details-info-row">
+                  <span className="seller-details-info-label">Title</span>
+                  <span className="seller-details-info-value">{selectedAuction.title || 'N/A'}</span>
+                </div>
+                <div className="seller-details-info-row">
+                  <span className="seller-details-info-label">Description</span>
+                  <span className="seller-details-info-value">{selectedAuction.description || 'N/A'}</span>
+                </div>
+                <div className="seller-details-info-row">
+                  <span className="seller-details-info-label">Category</span>
+                  <span className="seller-details-info-value">{selectedAuction.category_name || 'N/A'}</span>
+                </div>
+                {selectedAuction.specific_data && Object.entries(selectedAuction.specific_data).map(([key, value]) => (
+                  <div key={key} className="seller-details-info-row">
+                    <span className="seller-details-info-label">{key.replace(/_/g, ' ')}</span>
+                    <span className="seller-details-info-value">{value || 'N/A'}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Paper Details Tab */}
+            {activeTab === 'paper-details' && (
+              <div className="seller-details-info-grid">
+                <div className="seller-details-info-row">
+                  <span className="seller-details-info-label">Inspection Report</span>
+                  <span className="seller-details-info-value">
+                    {selectedAuction.specific_data?.inspection_report || 'N/A'}
+                  </span>
+                </div>
+                <div className="seller-details-info-row">
+                  <span className="seller-details-info-label">Ownership History</span>
+                  <span className="seller-details-info-value">
+                    {selectedAuction.specific_data?.ownership_history || 'N/A'}
+                  </span>
+                </div>
+                <div className="seller-details-info-row">
+                  <span className="seller-details-info-label">Registration Number</span>
+                  <span className="seller-details-info-value">
+                    {selectedAuction.specific_data?.registration_number || 'N/A'}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Bid History Tab */}
+            {activeTab === 'bid-history' && (
+              <div className="seller-details-info-grid">
+                <div className="seller-details-info-row">
+                  <span className="seller-details-info-label">Total Bids</span>
+                  <span className="seller-details-info-value">{bidStats.total}</span>
+                </div>
+                <div className="seller-details-info-row">
+                  <span className="seller-details-info-label">Last bid</span>
+                  <span className="seller-details-info-value">
+                    {bidStats.last ? formatCurrency(bidStats.last) : 'N/A'}
+                  </span>
+                </div>
+                <div className="seller-details-info-row">
+                  <span className="seller-details-info-label">Highest bidder</span>
+                  <span className="seller-details-info-value">{bidStats.highestBidder || 'N/A'}</span>
+                </div>
+                <div className="seller-details-info-row">
+                  <span className="seller-details-info-label">Bids today</span>
+                  <span className="seller-details-info-value">{bidStats.today || 'N/A'}</span>
+                </div>
+
+                {auctionBids && auctionBids.length > 0 && (
+                  <div className="seller-details-bid-list">
+                    <h3>All Bids</h3>
+                    {auctionBids.map((bid, index) => (
+                      <div key={bid.id} className="seller-details-bid-item">
+                        <div className="seller-details-bid-rank">#{index + 1}</div>
+                        <div className="seller-details-bid-info">
+                          <div className="seller-details-bid-name">{bid.bidder_name || 'Anonymous'}</div>
+                          <div className="seller-details-bid-time">{formatDate(bid.created_at)}</div>
+                        </div>
+                        <div className="seller-details-bid-amount">
+                          {formatCurrency(parseFloat(bid.amount))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SellerAuctionDetails;

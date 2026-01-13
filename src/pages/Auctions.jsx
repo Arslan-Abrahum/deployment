@@ -324,7 +324,7 @@ const Auctions = () => {
       <main className="auctions-main">
         <div className="auctions-header">
           <div className="auctions-header-content">
-            <h1 className="auctions-page-title">Live Auctions</h1>
+            <h1 className="guest-auctions-page-title">Live Auctions</h1>
             <span className="auctions-results-count">
               {isLoadingAllPages ? 'Loading...' : `${totalFilteredCount} Results`}
             </span>

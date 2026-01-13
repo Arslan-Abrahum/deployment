@@ -90,6 +90,7 @@ const SellerAuctionListings = () => {
     const statusConfig = {
       DRAFT: { text: 'DRAFT', color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.15)' },
       ACTIVE: { text: 'ACTIVE', color: '#63a808ff', bg: 'rgba(140, 198, 63, 0.15)' },
+      AWAITING_PAYMENT: { text: 'Awaiting Payment', color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.15)' },
       PENDING: { text: 'PENDING', color: '#3B82F6', bg: 'rgba(59, 130, 246, 0.15)' },
       APPROVED: { text: 'APPROVED', color: '#10B981', bg: 'rgba(16, 185, 129, 0.15)' },
       CLOSED: { text: 'CLOSED', color: '#6B7280', bg: 'rgba(107, 114, 128, 0.15)' }
@@ -150,7 +151,8 @@ const SellerAuctionListings = () => {
         APPROVED: 'APPROVED',
         PENDING: 'PENDING',
         CLOSED: 'CLOSED',
-        DRAFT: 'DRAFT'
+        DRAFT: 'DRAFT',
+        AWAITING_PAYMENT: 'AWAITING_PAYMENT'
       }
 
       const filterIcon = {
@@ -166,7 +168,8 @@ const SellerAuctionListings = () => {
         APPROVED: 'No Approved Listings',
         PENDING: 'No Pending Listings',
         CLOSED: 'No Closed Auctions',
-        DRAFT: 'No Drafts Found'
+        DRAFT: 'No Drafts Found',
+        AWAITING_PAYMENT: 'No Awaiting Payments Found'
       }
 
       const filterDescription = {
@@ -174,7 +177,8 @@ const SellerAuctionListings = () => {
         APPROVED: "You don't have any approved listings. Approved listings are ready to be activated.",
         PENDING: "You don't have any pending listings. Start creating a new product to save as draft.",
         CLOSED: "You don't have any ended auctions. All your ACTIVE listings are still running.",
-        DRAFT: "You don't have any draft listings. Start creating a new product to save as draft."
+        DRAFT: "You don't have any draft listings. Start creating a new product to save as draft.",
+        AWAITING_PAYMENT:  "You don't have any draft listings. Start creating a new product to save as draft.",
       }
 
       return (
@@ -253,7 +257,7 @@ const SellerAuctionListings = () => {
                 <div className="filter-group">
                   <label className="filter-label">Filter by:</label>
                   <div className="filter-buttons">
-                    {['all', 'ACTIVE', 'APPROVED', 'PENDING', 'DRAFT', 'CLOSED'].map(status => (
+                    {['all', 'ACTIVE', 'APPROVED', 'PENDING', 'DRAFT', 'CLOSED', 'AWAITING_PAYMENT'].map(status => (
                       <button
                         key={status}
                         className={`filter-button ${filter === status ? 'active' : ''}`}
