@@ -142,10 +142,46 @@ const SellerAuctionDetails = () => {
   const { myAuctions, isLoading } = useSelector((state) => state.seller);
   const { auctionBids } = useSelector((state) => state.buyer);
 
+  const [allAuctions, setAllAuctions] = useState([])
+  const [isLoadingAllPages, setIsLoadingAllPages] = useState(false)
+
+  console.log(myAuctions?.results);
+
   const selectedAuction = useMemo(() =>
-    myAuctions?.results?.find((auction) => auction?.id === parseInt(id)),
+    allAuctions?.find((auction) => auction?.id === parseInt(id)),
     [myAuctions, id]
   );
+
+  useEffect(() => {
+    const fetchAllPages = async () => {
+      setIsLoadingAllPages(true)
+      try {
+        let allResults = []
+        let nextPage = 1
+        let hasMore = true
+
+        while (hasMore) {
+          const response = await dispatch(fetchMyAuctions({ page: nextPage })).unwrap()
+          allResults = [...allResults, ...(response.results || [])]
+
+          if (response.next) {
+            nextPage += 1
+          } else {
+            hasMore = false
+          }
+        }
+
+        setAllAuctions(allResults)
+      } catch (err) {
+        console.error('Error fetching all auctions:', err)
+        toast.error('Failed to load complete auction list')
+      } finally {
+        setIsLoadingAllPages(false)
+      }
+    }
+
+    fetchAllPages()
+  }, [dispatch])
 
   const [activeTab, setActiveTab] = useState('bid-info');
   const [selectedImage, setSelectedImage] = useState(0);
@@ -163,9 +199,9 @@ const SellerAuctionDetails = () => {
   );
 
   const isLive = useMemo(() => selectedAuction?.status === 'ACTIVE', [selectedAuction?.status]);
-  const isUpcoming = useMemo(() => selectedAuction?.status === 'APPROVED', [selectedAuction?.status]);
-  const isClosed = useMemo(() => selectedAuction?.status === 'CLOSED', [selectedAuction?.status]);
-  const isAwaitingPayment = useMemo(() => selectedAuction?.status === 'AWAITING_PAYMENT', [selectedAuction?.status]);
+  // const isUpcoming = useMemo(() => selectedAuction?.status === 'APPROVED', [selectedAuction?.status]);
+  // const isClosed = useMemo(() => selectedAuction?.status === 'CLOSED', [selectedAuction?.status]);
+  // const isAwaitingPayment = useMemo(() => selectedAuction?.status === 'AWAITING_PAYMENT', [selectedAuction?.status]);
 
   // Dynamic spec highlights - show first 3 fields from specific_data
   const specHighlights = useMemo(() => {
@@ -234,8 +270,8 @@ const SellerAuctionDetails = () => {
       });
     }
 
-    if (selectedAuction.media && Array.isArray(selectedAuction.media)) {
-      const documentMedia = selectedAuction.media.filter(m => {
+    if (selectedAuction?.media && Array.isArray(selectedAuction?.media)) {
+      const documentMedia = selectedAuction?.media.filter(m => {
         const label = m.label?.toLowerCase() || '';
         return (
           label.includes('inspection') ||
@@ -276,6 +312,9 @@ const SellerAuctionDetails = () => {
       minute: '2-digit'
     });
   };
+
+  console.log("selectedAuction: ", selectedAuction);
+
 
   const calculateTimeRemaining = useCallback((endDate) => {
     const now = new Date().getTime();
@@ -319,8 +358,8 @@ const SellerAuctionDetails = () => {
     if (!selectedAuction) return;
 
     if (window.confirm('Are you sure you want to remove this listing? This action cannot be undone.')) {
-      console.log('Remove listing clicked for ID:', selectedAuction.id)
-      dispatch(deleteAuction(selectedAuction.id));
+      console.log('Remove listing clicked for ID:', selectedAuction?.id)
+      dispatch(deleteAuction(selectedAuction?.id));
       navigate('/seller/auction-listings');
     }
   }
@@ -332,7 +371,7 @@ const SellerAuctionDetails = () => {
 
     try {
       await dispatch(updateAuction({
-        auctionId: selectedAuction.id,
+        auctionId: selectedAuction?.id,
         auctionData: { status: 'PENDING' }
       })).unwrap();
 
@@ -380,7 +419,7 @@ const SellerAuctionDetails = () => {
   }, [auctionBids]);
 
   // Loading state
-  if (isLoading && !selectedAuction) {
+  if (isLoading || isLoadingAllPages) {
     return (
       <div className="seller-details-page">
         <div className="seller-details-container">
@@ -394,7 +433,8 @@ const SellerAuctionDetails = () => {
   }
 
   // Not found state
-  if (!selectedAuction) {
+  // Not found state - only show after loading is complete
+  if (!isLoadingAllPages && !selectedAuction) {
     return (
       <div className="seller-details-page">
         <div className="seller-details-container">
@@ -411,7 +451,7 @@ const SellerAuctionDetails = () => {
     );
   }
 
-  const statusColors = getStatusColor(selectedAuction.status);
+  const statusColors = getStatusColor(selectedAuction?.status);
 
   return (
     <div className="seller-details-page">
@@ -422,19 +462,19 @@ const SellerAuctionDetails = () => {
           <span>/</span>
           <Link to="/seller/auction-listings">My Auctions</Link>
           <span>/</span>
-          <span>{selectedAuction.category_name || 'Category'}</span>
+          <span>{selectedAuction?.category_name || 'Category'}</span>
         </nav>
 
         {/* Header */}
         <div className="seller-details-header">
           <div className="seller-details-header-content">
-            <h1 className="seller-details-title">{selectedAuction.title || 'Untitled Auction'}</h1>
+            <h1 className="seller-details-title">{selectedAuction?.title || 'Untitled Auction'}</h1>
             <p className="seller-details-subtitle">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ display: 'inline', marginRight: '6px' }}>
                 <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              {selectedAuction.pickup_address || 'N/A'}
+              {selectedAuction?.pickup_address || 'N/A'}
             </p>
           </div>
           <div
@@ -445,12 +485,12 @@ const SellerAuctionDetails = () => {
               color: statusColors.color
             }}
           >
-            {selectedAuction.status === 'ACTIVE' && 'ACTIVE'}
-            {selectedAuction.status === 'DRAFT' && 'DRAFT'}
-            {selectedAuction.status === 'PENDING' && 'PENDING'}
-            {selectedAuction.status === 'APPROVED' && 'UPCOMING'}
-            {selectedAuction.status === 'CLOSED' && 'CLOSED'}
-            {selectedAuction.status === 'AWAITING_PAYMENT' && 'AWAITING PAYMENT'}
+            {selectedAuction?.status === 'ACTIVE' && 'ACTIVE'}
+            {selectedAuction?.status === 'DRAFT' && 'DRAFT'}
+            {selectedAuction?.status === 'PENDING' && 'PENDING'}
+            {selectedAuction?.status === 'APPROVED' && 'UPCOMING'}
+            {selectedAuction?.status === 'CLOSED' && 'CLOSED'}
+            {selectedAuction?.status === 'AWAITING_PAYMENT' && 'AWAITING PAYMENT'}
           </div>
         </div>
 
@@ -460,7 +500,7 @@ const SellerAuctionDetails = () => {
           <div className="seller-details-gallery">
             <div className="seller-details-main-image">
               {images.length > 0 ? (
-                <img src={images[selectedImage]} alt={selectedAuction.title} />
+                <img src={images[selectedImage]} alt={selectedAuction?.title} />
               ) : (
                 <div className="seller-details-no-image">
                   <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
@@ -491,17 +531,17 @@ const SellerAuctionDetails = () => {
           <div className="seller-details-info-panel">
             {/* Category Badge */}
             <div className="seller-details-category-badge">
-              {selectedAuction.category_name || 'Category'}
+              {selectedAuction?.category_name || 'Category'}
             </div>
 
             {/* Title and Location */}
-            <h2 className="seller-details-panel-title">{selectedAuction.title || 'Untitled'}</h2>
+            <h2 className="seller-details-panel-title">{selectedAuction?.title || 'Untitled'}</h2>
             <div className="seller-details-location">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              <span>{selectedAuction.pickup_address || 'N/A'}</span>
+              <span>{selectedAuction?.pickup_address || 'N/A'}</span>
             </div>
 
             {/* Quick Info Cards - DYNAMIC */}
@@ -590,37 +630,37 @@ const SellerAuctionDetails = () => {
                       </svg>
                       Send for Approval
                     </button>
-                      <button
-                    onClick={handleRemoveListing}
-                    className="seller-details-button flex items-center justify-center gap-2 bg-red-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition-all hover:bg-red-700"
-                  >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="transition-transform group-hover:scale-110"
+                    <button
+                      onClick={handleRemoveListing}
+                      className="seller-details-button flex items-center justify-center gap-2 bg-red-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition-all hover:bg-red-700"
                     >
-                      <path
-                        d="M3 6h18"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    Remove Listing
-                  </button>
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className="transition-transform group-hover:scale-110"
+                      >
+                        <path
+                          d="M3 6h18"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      Remove Listing
+                    </button>
                   </>
                 )}
                 {/* Delete */}
@@ -725,38 +765,38 @@ const SellerAuctionDetails = () => {
                 <div className="seller-details-info-row">
                   <span className="seller-details-info-label">Status</span>
                   <span className="seller-details-info-value" style={{ color: statusColors.color }}>
-                    {selectedAuction.status}
+                    {selectedAuction?.status}
                   </span>
                 </div>
                 <div className="seller-details-info-row">
                   <span className="seller-details-info-label">Starting bid</span>
                   <span className="seller-details-info-value highlight">
-                    {formatCurrency(parseFloat(selectedAuction.initial_price || 0))}
+                    {formatCurrency(parseFloat(selectedAuction?.initial_price || 0))}
                   </span>
                 </div>
                 <div className="seller-details-info-row">
                   <span className="seller-details-info-label">Currency</span>
-                  <span className="seller-details-info-value">{selectedAuction.currency || 'USD'}</span>
+                  <span className="seller-details-info-value">{selectedAuction?.currency || 'USD'}</span>
                 </div>
                 <div className="seller-details-info-row">
                   <span className="seller-details-info-label">Expected Price</span>
                   <span className="seller-details-info-value highlight">
-                    {formatCurrency(parseFloat(selectedAuction.seller_expected_price || 0))}
+                    {formatCurrency(parseFloat(selectedAuction?.seller_expected_price || 0))}
                   </span>
                 </div>
                 <div className="seller-details-info-row">
                   <span className="seller-details-info-label">Handover Type</span>
-                  <span className="seller-details-info-value">{selectedAuction.handover_type || 'N/A'}</span>
+                  <span className="seller-details-info-value">{selectedAuction?.handover_type || 'N/A'}</span>
                 </div>
                 <div className="seller-details-info-row">
                   <span className="seller-details-info-label">Pickup Address</span>
-                  <span className="seller-details-info-value">{selectedAuction.pickup_address || 'N/A'}</span>
+                  <span className="seller-details-info-value">{selectedAuction?.pickup_address || 'N/A'}</span>
                 </div>
                 <div className="seller-details-info-row">
                   <span className="seller-details-info-label">Pickup Location</span>
                   <span className="seller-details-info-value">
-                    {selectedAuction.pickup_latitude && selectedAuction.pickup_longitude
-                      ? `${selectedAuction.pickup_latitude}, ${selectedAuction.pickup_longitude}`
+                    {selectedAuction?.pickup_latitude && selectedAuction?.pickup_longitude
+                      ? `${selectedAuction?.pickup_latitude}, ${selectedAuction?.pickup_longitude}`
                       : 'N/A'}
                   </span>
                 </div>
@@ -768,19 +808,19 @@ const SellerAuctionDetails = () => {
               <div className="seller-details-info-grid">
                 <div className="seller-details-info-row">
                   <span className="seller-details-info-label">Title</span>
-                  <span className="seller-details-info-value">{selectedAuction.title || 'N/A'}</span>
+                  <span className="seller-details-info-value">{selectedAuction?.title || 'N/A'}</span>
                 </div>
                 <div className="seller-details-info-row">
                   <span className="seller-details-info-label">Description</span>
-                  <span className="seller-details-info-value">{selectedAuction.description || 'N/A'}</span>
+                  <span className="seller-details-info-value">{selectedAuction?.description || 'N/A'}</span>
                 </div>
                 <div className="seller-details-info-row">
                   <span className="seller-details-info-label">Category</span>
-                  <span className="seller-details-info-value">{selectedAuction.category_name || 'N/A'}</span>
+                  <span className="seller-details-info-value">{selectedAuction?.category_name || 'N/A'}</span>
                 </div>
-                {selectedAuction.specific_data && typeof selectedAuction.specific_data === 'object' && (
+                {selectedAuction?.specific_data && typeof selectedAuction?.specific_data === 'object' && (
                   <>
-                    {Object.entries(selectedAuction.specific_data).map(([key, value]) => {
+                    {Object.entries(selectedAuction?.specific_data).map(([key, value]) => {
                       if (value === null || value === undefined || value === '') {
                         return null;
                       }
@@ -793,7 +833,7 @@ const SellerAuctionDetails = () => {
                     })}
                   </>
                 )}
-                {(!selectedAuction.specific_data || Object.keys(selectedAuction.specific_data).length === 0) && (
+                {(!selectedAuction?.specific_data || Object.keys(selectedAuction?.specific_data).length === 0) && (
                   <div className="seller-details-info-row">
                     <span className="seller-details-info-label">No additional information available</span>
                   </div>

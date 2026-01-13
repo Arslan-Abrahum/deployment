@@ -309,11 +309,12 @@ const SellerAuctionListings = () => {
                         </div>
                         {listing.status === 'ACTIVE' && listing.end_date && (
                           <div className="listing-time">
+                            <span>Ends in   </span>
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
                               <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                             </svg>
-                            <span>{new Date(listing.end_date).toLocaleDateString()} left</span>
+                            <span> {new Date(listing.end_date).toLocaleDateString()} </span>
                           </div>
                         )}
                       </div>
