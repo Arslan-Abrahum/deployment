@@ -55,8 +55,11 @@ export const updateAuction = createAsyncThunk(
         auctionData
       );
       toast.success('Auction updated successfully!');
+      console.log(response);
       return response;
     } catch (error) {
+      console.log(error);
+      
       const message =
         error.response?.data?.message ||
         error.response?.data?.error ||

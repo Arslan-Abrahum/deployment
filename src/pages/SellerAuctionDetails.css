@@ -295,6 +295,10 @@
   margin: 0;
 }
 
+.seller-details-button  {
+  border-radius: 10px;
+}
+
 /* ==================== QUICK INFO CARDS ==================== */
 .seller-details-quick-info {
   display: grid;

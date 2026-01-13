@@ -394,6 +394,9 @@ const SellerProfile = () => {
     return Math.round((completed / total) * 100);
   }, [formData, profileData]);
 
+  console.log(profileData);
+  
+
   // Get display name
   const getDisplayName = useCallback(() => {
     if (formData.display_name) return formData.display_name;

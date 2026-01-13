@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import "./ManagerLiveAuctions.css";
 import { useNavigate } from "react-router-dom";
 import { managerService } from '../services/interceptors/manager.service';
+import { toast } from "react-toastify";
 
 const ROWS_PER_PAGE = 5;
 
@@ -64,6 +65,9 @@ export default function ManagerLiveAuctions() {
     const startIndex = (page - 1) * ROWS_PER_PAGE;
     return filteredData.slice(startIndex, startIndex + ROWS_PER_PAGE);
   }, [filteredData, page]);
+
+  console.log("paginatedData: ", paginatedData);
+
 
   function generatePageNumbers() {
     const pages = [];
@@ -208,7 +212,19 @@ export default function ManagerLiveAuctions() {
                     <tr
                       key={item.id}
                       className="live-auction-table-row"
-                      onClick={() => navigate("/manager/auction-results", { state: { auctionData: item.rawData } })}
+                      // onClick={() =>
+                      // {
+
+                      //   item?.status === 'CLOSED' ?  '' : navigate('/manager/auction-results', { state: { auctionData: item.rawData } }) }
+                      // }
+                      onClick={(e) => {
+                        if (item?.status === 'CLOSED') {
+                          e.stopPropagation();
+                          toast.info('Auction is closed!')
+                          return;
+                        }
+                        navigate('/manager/auction-results', { state: { auctionData: item.rawData } });
+                      }}
                     >
                       <td>
                         <span className="live-auction-bid-id">{item.id}</span>
@@ -225,9 +241,9 @@ export default function ManagerLiveAuctions() {
                       <td>
                         <div className="live-auction-status-cell">
                           <span className={`live-auction-status-badge ${item.status === "CLOSED" ? "badge-winning" :
-                              item.status === "COMPLETED" ? "badge-winning" :
-                                item.status === "APPROVED" ? "badge-winning" :
-                                  "badge-ended"
+                            item.status === "COMPLETED" ? "badge-winning" :
+                              item.status === "APPROVED" ? "badge-winning" :
+                                "badge-ended"
                             }`}>
                             {item.status}
                           </span>

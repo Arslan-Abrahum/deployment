@@ -137,7 +137,8 @@ const buyerSlice = createSlice({
       })
       .addCase(fetchCategories.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.categories = action.payload;
+        // state.categories = action.payload;
+        state.categories = action.payload?.filter(g => g?.is_active);
       })
       .addCase(fetchCategories.rejected, (state, action) => {
         state.isLoading = false;

@@ -68,6 +68,12 @@ const ManagerInspection = () => {
     return []; // Return empty array if no images
   }, [auctionData?.media]);
 
+  console.log("image: ", images);
+  
+  useEffect(() => {
+  setMainImage(0);
+}, [images]);
+
   // Get seller name
   const sellerName = auctionData?.seller_details?.name || 'Unknown Seller';
 
@@ -338,19 +344,19 @@ const ManagerInspection = () => {
             <div className="inspection-layout">
               <div className="inspection-left">
                 <div className="vehicle-image-section">
-                  {images.length > 0 ? (
+                  {images?.length > 0 ? (
                     <>
                       <div className="vehicle-main-image">
                         <img
-                          src={images[mainImage] || images[0]}
+                          src={images?.[mainImage] || images?.[0]}
                           alt={itemTitle}
                           className="main-image"
-                          onClick={() => setImagePreview(images[mainImage] || images[0])}
+                          onClick={() => setImagePreview(images?.[mainImage] || images?.[0])}
                         />
                       </div>
-                      {images.length > 1 && (
+                      {images?.length > 1 && (
                         <div className="vehicle-thumbnails">
-                          {images.map((img, index) => (
+                          {images?.map((img, index) => (
                             <div
                               key={index}
                               className={`thumbnail-container ${mainImage === index ? 'active' : ''}`}

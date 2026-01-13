@@ -7,6 +7,9 @@ const BrowseByCategory = ({ selectedCategory, setSelectedCategory }) => {
   const dispatch = useDispatch()
   const { categories } = useSelector(state => state.buyer)
 
+  console.log(categories);
+
+
   useEffect(() => {
     dispatch(fetchCategories())
   }, [dispatch])
@@ -20,25 +23,26 @@ const BrowseByCategory = ({ selectedCategory, setSelectedCategory }) => {
           <div className="category-tabs">
 
             <button
-              className={`category-tab ${
-                selectedCategory === null ? 'active' : ''
-              }`}
+              className={`category-tab ${selectedCategory === null ? 'active' : ''
+                }`}
               onClick={() => setSelectedCategory(null)}
             >
               All Categories
             </button>
 
-            {categories?.map(category => (
-              <button
-                key={category.id}
-                className={`category-tab ${
-                  selectedCategory === category.name ? 'active' : ''
-                }`}
-                onClick={() => setSelectedCategory(category.name)}
-              >
-                {category.name}
-              </button>
-            ))}
+            {
+              categories?.map(category => (
+                <button
+                  key={category?.id}
+                  className={`category-tab ${selectedCategory === category.name ? 'active' : ''
+                    }`}
+                  onClick={() => setSelectedCategory(category.name)}
+                >
+                  {category.name}
+                </button>
+              ))
+
+            }
 
           </div>
 

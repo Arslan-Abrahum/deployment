@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAuctionBids } from '../store/actions/buyerActions';
-import { fetchMyAuctions } from '../store/actions/sellerActions';
+import { deleteAuction, fetchMyAuctions, updateAuction } from '../store/actions/sellerActions';
 import './SellerAuctionDetails.css'
 
 const SellerAuctionDetails = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const dispatch = useDispatch();
   const { myAuctions, isLoading } = useSelector((state) => state.seller);
-  const { auctionBids  } = useSelector((state) => state.buyer);
-  
+  const { auctionBids } = useSelector((state) => state.buyer);
 
 
-  const selectedAuction = useMemo(() => 
+
+  const selectedAuction = useMemo(() =>
     myAuctions?.results?.find((auction) => auction?.id === parseInt(id)),
     [myAuctions, id]
   );
@@ -28,7 +29,7 @@ const SellerAuctionDetails = () => {
   }, [dispatch, id]);
 
   // Memoized values
-  const images = useMemo(() => 
+  const images = useMemo(() =>
     selectedAuction?.media?.filter(m => m.media_type === 'image').map(m => m.file) || [],
     [selectedAuction?.media]
   );
@@ -85,6 +86,48 @@ const SellerAuctionDetails = () => {
     }
   }, [isLive, selectedAuction?.end_date, calculateTimeRemaining]);
 
+
+  const handleEditListing = () => {
+    if (!selectedAuction) return;
+
+    navigate(`/seller/product`, {
+      state: {
+        isEditing: true,
+        listingData: selectedAuction
+      }
+    })
+  }
+
+  const handleRemoveListing = () => {
+    if (!selectedAuction) return;
+
+    if (window.confirm('Are you sure you want to remove this listing? This action cannot be undone.')) {
+      console.log('Remove listing clicked for ID:', selectedAuction.id)
+      dispatch(deleteAuction(selectedAuction.id));
+      navigate('/seller/auction-listings');
+    }
+  }
+
+  const handleSendForApproval = async () => {
+    if (!selectedAuction) return;
+
+    if (window.confirm('Send this listing for admin approval?')) {
+      try {
+        // Call the edit API with PENDING status
+        await dispatch(updateAuction({
+          auctionId: selectedAuction.id,
+          auctionData: { status: 'PENDING' }
+        })).unwrap();
+
+        // Navigate back to listings page after successful submission
+        navigate('/seller/auction-listings');
+      } catch (error) {
+        console.error('Error sending for approval:', error);
+      }
+    }
+  }
+
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'ACTIVE':
@@ -94,6 +137,8 @@ const SellerAuctionDetails = () => {
       case 'CLOSED':
         return { bg: 'rgba(107, 114, 128, 0.2)', border: 'rgba(107, 114, 128, 0.5)', color: '#9ca3af' };
       case 'AWAITING_PAYMENT':
+        return { bg: 'rgba(251, 146, 60, 0.2)', border: 'rgba(251, 146, 60, 0.5)', color: '#fb923c' };
+      case 'DRAFT':
         return { bg: 'rgba(251, 146, 60, 0.2)', border: 'rgba(251, 146, 60, 0.5)', color: '#fb923c' };
       default:
         return { bg: 'rgba(107, 114, 128, 0.2)', border: 'rgba(107, 114, 128, 0.5)', color: '#9ca3af' };
@@ -159,7 +204,7 @@ const SellerAuctionDetails = () => {
         <nav className="seller-details-breadcrumbs">
           <Link to="/seller/dashboard">Home</Link>
           <span>/</span>
-          <Link to="/seller/auctions">My Auctions</Link>
+          <Link to="/seller/auction-listings">My Auctions</Link>
           <span>/</span>
           <span>{selectedAuction.category_name || 'Category'}</span>
           {/* <span>/</span> */}
@@ -171,15 +216,15 @@ const SellerAuctionDetails = () => {
           <div className="seller-details-header-content">
             <h1 className="seller-details-title">{selectedAuction.title || 'Untitled Auction'}</h1>
             <p className="seller-details-subtitle">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{display: 'inline', marginRight: '6px'}}>
-                <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ display: 'inline', marginRight: '6px' }}>
+                <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               {selectedAuction.pickup_address || 'N/A'}
             </p>
             {/* <p className="seller-details-subtitle">ID: {selectedAuction.id}</p> */}
           </div>
-          <div 
+          <div
             className="seller-details-status-badge"
             style={{
               backgroundColor: statusColors.bg,
@@ -188,6 +233,7 @@ const SellerAuctionDetails = () => {
             }}
           >
             {selectedAuction.status === 'ACTIVE' && 'ACTIVE'}
+            {selectedAuction.status === 'DRAFT' && 'DRAFT'}
             {selectedAuction.status === 'APPROVED' && 'UPCOMING'}
             {selectedAuction.status === 'CLOSED' && 'CLOSED'}
             {selectedAuction.status === 'AWAITING_PAYMENT' && 'AWAITING PAYMENT'}
@@ -238,8 +284,8 @@ const SellerAuctionDetails = () => {
             <h2 className="seller-details-panel-title">{selectedAuction.title || 'Untitled'}</h2>
             <div className="seller-details-location">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               <span>{selectedAuction.pickup_address || 'N/A'}</span>
             </div>
@@ -250,8 +296,8 @@ const SellerAuctionDetails = () => {
               <div className="seller-details-quick-card">
                 <div className="seller-details-quick-icon">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-                    <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                    <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
                 </div>
                 <div className="seller-details-quick-label">Vin</div>
@@ -260,8 +306,8 @@ const SellerAuctionDetails = () => {
               <div className="seller-details-quick-card">
                 <div className="seller-details-quick-icon">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M8 17a5 5 0 100-10 5 5 0 000 10zm8 0a5 5 0 100-10 5 5 0 000 10z" stroke="currentColor" strokeWidth="2"/>
-                    <path d="M8 12h8M5 8h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M8 17a5 5 0 100-10 5 5 0 000 10zm8 0a5 5 0 100-10 5 5 0 000 10z" stroke="currentColor" strokeWidth="2" />
+                    <path d="M8 12h8M5 8h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
                 </div>
                 <div className="seller-details-quick-label">Make</div>
@@ -270,14 +316,136 @@ const SellerAuctionDetails = () => {
               <div className="seller-details-quick-card">
                 <div className="seller-details-quick-icon">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2"/>
-                    <path d="M3 10h18M8 2v4M16 2v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
+                    <path d="M3 10h18M8 2v4M16 2v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
                 </div>
                 <div className="seller-details-quick-label">Year</div>
                 <div className="seller-details-quick-value">{selectedAuction.specific_data?.year || 'N/A'}</div>
               </div>
+              {/* Listing Actions - Only show when status is DRAFT */}
             </div>
+              {selectedAuction.status?.toUpperCase() === 'DRAFT' && (
+                <div className="w-full flex flex-col gap-6 rounded-2xl p-6 shadow-md ">
+                  {/* Header */}
+                  <div className="flex items-center gap-3">
+                    {/* <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path
+                          d="M12 15v3M15 21H9a2 2 0 01-2-2V5a2 2 0 012-2h6a2 2 0 012 2v7"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M17 21l5-5-5-5M17 16h6"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div> */}
+
+                  </div>
+
+                  {/* Buttons */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {/* Edit */}
+                    <button
+                      onClick={handleEditListing}
+                      className="seller-details-button flex items-center justify-center gap-2 bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-indigo-700 hover:shadow-md"
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className="transition-transform group-hover:rotate-6"
+                      >
+                        <path
+                          d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      Edit Listing
+                    </button>
+
+                    {/* Approval */}
+                    <button
+                      onClick={handleSendForApproval}
+                      className="seller-details-button flex items-center justify-center gap-2 bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow-md"
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className="transition-transform group-hover:scale-110"
+                      >
+                        <path
+                          d="M22 11.08V12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M22 4L12 14l-3-3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      Send for Approval
+                    </button>
+
+                    {/* Delete */}
+                    <button
+                      onClick={handleRemoveListing}
+                      className="seller-details-button flex items-center justify-center gap-2 bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-red-700"
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className="transition-transform group-hover:scale-110"
+                      >
+                        <path
+                          d="M3 6h18"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      Remove Listing
+                    </button>
+                  </div>
+                </div>
+              )}
 
             {/* Timer Section for Live Auctions */}
             {isLive && timeRemaining.hours + timeRemaining.minutes + timeRemaining.seconds > 0 && (
@@ -341,7 +509,7 @@ const SellerAuctionDetails = () => {
               <div className="seller-details-info-grid">
                 <div className="seller-details-info-row">
                   <span className="seller-details-info-label">Status</span>
-                  <span className="seller-details-info-value" style={{color: statusColors.color}}>
+                  <span className="seller-details-info-value" style={{ color: statusColors.color }}>
                     {selectedAuction.status}
                   </span>
                 </div>
