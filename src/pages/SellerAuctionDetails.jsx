@@ -5,6 +5,136 @@ import { fetchAuctionBids } from '../store/actions/buyerActions';
 import { deleteAuction, fetchMyAuctions, updateAuction } from '../store/actions/sellerActions';
 import './SellerAuctionDetails.css'
 
+// Helper function to format field names
+const formatFieldName = (key) => {
+  if (!key) return '';
+  return key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+};
+
+// Map field names to SVG icons
+const getFieldIcon = (fieldName) => {
+  const lowerField = fieldName?.toLowerCase() || '';
+
+  const iconMap = {
+    year: 'calendar',
+    mileage: 'gauge',
+    fuel: 'fuel',
+    fuel_type: 'fuel',
+    make: 'car',
+    model: 'car',
+    brand: 'package',
+    processor: 'cpu',
+    cpu: 'cpu',
+    ram: 'monitor',
+    storage: 'harddrive',
+    storage_size: 'harddrive',
+    storage_type: 'harddrive',
+    gpu: 'monitor',
+    graphic_card: 'monitor',
+    operating_system: 'settings',
+    condition: 'info',
+    warranty: 'shield',
+    accessories: 'package',
+    vin: 'clock',
+    pen: 'package',
+    notebook: 'package',
+  };
+
+  // Try exact match first
+  if (iconMap[lowerField]) {
+    return iconMap[lowerField];
+  }
+
+  // Try partial match
+  for (const [key, icon] of Object.entries(iconMap)) {
+    if (lowerField.includes(key) || key.includes(lowerField)) {
+      return icon;
+    }
+  }
+
+  // Default icon
+  return 'info';
+};
+
+// SVG Icon Component
+const IconSVG = ({ type, size = 20 }) => {
+  const icons = {
+    clock: (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+        <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ),
+    gauge: (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ),
+    fuel: (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <path d="M3 22V8a2 2 0 012-2h6a2 2 0 012 2v14M3 22h8M3 10h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <path d="M14 10h2a2 2 0 012 2v2a1 1 0 001 1 1 1 0 001-1V9a2 2 0 00-2-2h-1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ),
+    car: (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <path d="M5 17a2 2 0 100-4 2 2 0 000 4zM19 17a2 2 0 100-4 2 2 0 000 4z" stroke="currentColor" strokeWidth="2" />
+        <path d="M5 17H3v-6l2-5h9l4 5h3l2 2v4h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ),
+    calendar: (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
+        <path d="M3 10h18M8 2v4M16 2v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ),
+    package: (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <path d="M12.89 1.45l8 4A2 2 0 0122 7.24v9.53a2 2 0 01-1.11 1.79l-8 4a2 2 0 01-1.79 0l-8-4a2 2 0 01-1.1-1.8V7.24a2 2 0 011.11-1.79l8-4a2 2 0 011.78 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <path d="M2.32 6.16L12 11l9.68-4.84M12 22.76V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ),
+    cpu: (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" />
+        <rect x="9" y="9" width="6" height="6" stroke="currentColor" strokeWidth="2" />
+        <path d="M9 2v2M15 2v2M9 20v2M15 20v2M20 9h2M20 15h2M2 9h2M2 15h2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ),
+    monitor: (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2" />
+        <path d="M8 21h8M12 17v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ),
+    harddrive: (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <path d="M22 12H2M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <circle cx="6" cy="15" r="1" fill="currentColor" />
+      </svg>
+    ),
+    settings: (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
+        <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ),
+    shield: (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+    info: (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+        <path d="M12 16v-4M12 8h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ),
+  };
+
+  return icons[type] || icons.info;
+};
+
 const SellerAuctionDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -36,6 +166,96 @@ const SellerAuctionDetails = () => {
   const isUpcoming = useMemo(() => selectedAuction?.status === 'APPROVED', [selectedAuction?.status]);
   const isClosed = useMemo(() => selectedAuction?.status === 'CLOSED', [selectedAuction?.status]);
   const isAwaitingPayment = useMemo(() => selectedAuction?.status === 'AWAITING_PAYMENT', [selectedAuction?.status]);
+
+  // Dynamic spec highlights - show first 3 fields from specific_data
+  const specHighlights = useMemo(() => {
+    if (!selectedAuction?.specific_data || typeof selectedAuction?.specific_data !== 'object') {
+      return [];
+    }
+
+    const fields = Object.entries(selectedAuction?.specific_data)
+      .filter(([key, value]) => {
+        return value !== null && value !== undefined && value !== '';
+      })
+      .slice(0, 3)
+      .map(([key, value]) => ({
+        label: formatFieldName(key),
+        value: String(value) || 'N/A',
+        icon: getFieldIcon(key),
+      }));
+
+    // Fill with placeholders if less than 3 fields
+    while (fields.length < 3) {
+      fields.push({
+        label: '—',
+        value: '—',
+        icon: 'info',
+      });
+    }
+
+    return fields;
+  }, [selectedAuction?.specific_data]);
+
+  // Get paper-related fields from specific_data and media
+  const paperDetails = useMemo(() => {
+    if (!selectedAuction) return [];
+
+    const paperFields = [];
+
+    const paperFieldNames = [
+      'registration',
+      'registration_number',
+      'insurance',
+      'custom_papers',
+      'inspection_report',
+      'ownership_history',
+      'papers',
+      'documents',
+      'documentation',
+      'certificate',
+      'certificates',
+      'warranty',
+      'warranty_info',
+    ];
+
+    if (selectedAuction?.specific_data && typeof selectedAuction?.specific_data === 'object') {
+      Object.entries(selectedAuction?.specific_data).forEach(([key, value]) => {
+        const lowerKey = key.toLowerCase();
+        const isPaperField = paperFieldNames.some(
+          paperField => lowerKey.includes(paperField) || paperField.includes(lowerKey),
+        );
+
+        if (isPaperField && value !== null && value !== undefined && value !== '') {
+          paperFields.push({
+            label: formatFieldName(key),
+            value: String(value),
+          });
+        }
+      });
+    }
+
+    if (selectedAuction.media && Array.isArray(selectedAuction.media)) {
+      const documentMedia = selectedAuction.media.filter(m => {
+        const label = m.label?.toLowerCase() || '';
+        return (
+          label.includes('inspection') ||
+          label.includes('report') ||
+          label.includes('document') ||
+          label.includes('paper') ||
+          m.media_type === 'document'
+        );
+      });
+
+      if (documentMedia.length > 0) {
+        paperFields.push({
+          label: 'Inspection Report',
+          value: 'Available',
+        });
+      }
+    }
+
+    return paperFields;
+  }, [selectedAuction?.specific_data, selectedAuction?.media]);
 
   const formatCurrency = useCallback((amount) => {
     return new Intl.NumberFormat('en-US', {
@@ -84,7 +304,6 @@ const SellerAuctionDetails = () => {
     }
   }, [isLive, selectedAuction?.end_date, calculateTimeRemaining]);
 
-
   const handleEditListing = () => {
     if (!selectedAuction) return;
 
@@ -106,55 +325,30 @@ const SellerAuctionDetails = () => {
     }
   }
 
-  // const handleSendForApproval = async () => {
-  //   if (!selectedAuction) return;
-
-  //   if (window.confirm('Send this listing for admin approval?')) {
-  //     try {
-  //       // Call the edit API with PENDING status
-  //       await dispatch(updateAuction({
-  //         auctionId: selectedAuction.id,
-  //         auctionData: { status: 'PENDING' }
-  //       })).unwrap();
-
-  //       // Navigate back to listings page after successful submission
-  //       navigate('/seller/auction-listings');
-  //     } catch (error) {
-  //       console.error('Error sending for approval:', error);
-  //     }
-  //   }
-  // }
-
   const handleSendForApproval = async () => {
     if (!selectedAuction) return;
 
     if (!window.confirm('Send this listing for admin approval?')) return;
 
     try {
-    await dispatch(updateAuction({
-      auctionId: selectedAuction.id,
-      auctionData: { status: 'PENDING' }
-    })).unwrap();
+      await dispatch(updateAuction({
+        auctionId: selectedAuction.id,
+        auctionData: { status: 'PENDING' }
+      })).unwrap();
 
-    // // Refresh the auctions list to get updated data
-    // await dispatch(fetchMyAuctions());
-    
-    // Now navigation will work!
-    navigate('/seller/auction-listings', { replace: true });
-
-
+      navigate('/seller/auction-listings', { replace: true });
     } catch (error) {
       console.error('Error sending for approval:', error);
     }
   };
-
-
 
   const getStatusColor = (status) => {
     switch (status) {
       case 'ACTIVE':
         return { bg: 'rgba(34, 197, 94, 0.2)', border: 'rgba(34, 197, 94, 0.5)', color: '#22c55e' };
       case 'APPROVED':
+        return { bg: 'rgba(59, 130, 246, 0.2)', border: 'rgba(59, 130, 246, 0.5)', color: '#3b82f6' };
+      case 'PENDING':
         return { bg: 'rgba(59, 130, 246, 0.2)', border: 'rgba(59, 130, 246, 0.5)', color: '#3b82f6' };
       case 'CLOSED':
         return { bg: 'rgba(107, 114, 128, 0.2)', border: 'rgba(107, 114, 128, 0.5)', color: '#9ca3af' };
@@ -229,8 +423,6 @@ const SellerAuctionDetails = () => {
           <Link to="/seller/auction-listings">My Auctions</Link>
           <span>/</span>
           <span>{selectedAuction.category_name || 'Category'}</span>
-          {/* <span>/</span> */}
-          {/* <span>Lot #{selectedAuction.id}</span> */}
         </nav>
 
         {/* Header */}
@@ -244,7 +436,6 @@ const SellerAuctionDetails = () => {
               </svg>
               {selectedAuction.pickup_address || 'N/A'}
             </p>
-            {/* <p className="seller-details-subtitle">ID: {selectedAuction.id}</p> */}
           </div>
           <div
             className="seller-details-status-badge"
@@ -256,6 +447,7 @@ const SellerAuctionDetails = () => {
           >
             {selectedAuction.status === 'ACTIVE' && 'ACTIVE'}
             {selectedAuction.status === 'DRAFT' && 'DRAFT'}
+            {selectedAuction.status === 'PENDING' && 'PENDING'}
             {selectedAuction.status === 'APPROVED' && 'UPCOMING'}
             {selectedAuction.status === 'CLOSED' && 'CLOSED'}
             {selectedAuction.status === 'AWAITING_PAYMENT' && 'AWAITING PAYMENT'}
@@ -311,132 +503,96 @@ const SellerAuctionDetails = () => {
               </svg>
               <span>{selectedAuction.pickup_address || 'N/A'}</span>
             </div>
-            {/* <p className="seller-details-panel-id">ID: {selectedAuction.id}</p> */}
 
-            {/* Quick Info Cards */}
+            {/* Quick Info Cards - DYNAMIC */}
             <div className="seller-details-quick-info">
-              <div className="seller-details-quick-card">
-                <div className="seller-details-quick-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-                    <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
+              {specHighlights.map((spec, index) => (
+                <div key={`spec-${index}`} className="seller-details-quick-card">
+                  <div className="seller-details-quick-icon">
+                    <IconSVG type={spec.icon} size={20} />
+                  </div>
+                  <div className="seller-details-quick-label">{spec.label}</div>
+                  <div className="seller-details-quick-value">{spec.value}</div>
                 </div>
-                <div className="seller-details-quick-label">Vin</div>
-                <div className="seller-details-quick-value">{selectedAuction.specific_data?.vin || 'N/A'}</div>
-              </div>
-              <div className="seller-details-quick-card">
-                <div className="seller-details-quick-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M8 17a5 5 0 100-10 5 5 0 000 10zm8 0a5 5 0 100-10 5 5 0 000 10z" stroke="currentColor" strokeWidth="2" />
-                    <path d="M8 12h8M5 8h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </div>
-                <div className="seller-details-quick-label">Make</div>
-                <div className="seller-details-quick-value">{selectedAuction.specific_data?.make || 'N/A'}</div>
-              </div>
-              <div className="seller-details-quick-card">
-                <div className="seller-details-quick-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
-                    <path d="M3 10h18M8 2v4M16 2v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </div>
-                <div className="seller-details-quick-label">Year</div>
-                <div className="seller-details-quick-value">{selectedAuction.specific_data?.year || 'N/A'}</div>
-              </div>
-              {/* Listing Actions - Only show when status is DRAFT */}
+              ))}
             </div>
-            {selectedAuction.status?.toUpperCase() === 'DRAFT' && (
-              <div className="w-full flex flex-col gap-6 rounded-2xl p-6 shadow-md ">
-                {/* Header */}
-                <div className="flex items-center gap-3">
-                  {/* <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+
+            {/* Listing Actions - Only show when status is DRAFT */}
+            <div className="w-full flex flex-col gap-6 rounded-2xl p-6 shadow-md ">
+
+              {/* Buttons */}
+
+              <div
+                className={`grid grid-cols-1 gap-4
+    ${selectedAuction?.status?.toUpperCase() === 'CLOSED' || selectedAuction?.status?.toUpperCase() === 'AWAITING_PAYMENT'
+                    ? 'sm:grid-cols-2 lg:grid-cols-2'
+                    : selectedAuction?.status?.toUpperCase() === 'DRAFT'
+                      ? 'sm:grid-cols-2 lg:grid-cols-3'
+                      : 'sm:grid-cols-2 lg:grid-cols-3'
+                  }
+  `}
+
+              >
+                {/* Edit */}
+
+                {selectedAuction?.status?.toUpperCase() === 'DRAFT' && (
+                  <>
+                    <button
+                      onClick={handleEditListing}
+                      className="seller-details-button flex items-center justify-center gap-2 bg-indigo-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition-all hover:bg-indigo-700 hover:shadow-md"
+                    >
                       <svg
-                        width="20"
-                        height="20"
+                        width="18"
+                        height="18"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2"
+                        className="transition-transform group-hover:rotate-6"
                       >
                         <path
-                          d="M12 15v3M15 21H9a2 2 0 01-2-2V5a2 2 0 012-2h6a2 2 0 012 2v7"
+                          d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                         />
                         <path
-                          d="M17 21l5-5-5-5M17 16h6"
+                          d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                         />
                       </svg>
-                    </div> */}
+                      Edit Listing
+                    </button>
 
-                </div>
-
-                {/* Buttons */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {/* Edit */}
-                  <button
-                    onClick={handleEditListing}
-                    className="seller-details-button flex items-center justify-center gap-2 bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-indigo-700 hover:shadow-md"
-                  >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="transition-transform group-hover:rotate-6"
+                    <button
+                      onClick={handleSendForApproval}
+                      className="seller-details-button flex items-center justify-center gap-2 bg-emerald-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow-md"
                     >
-                      <path
-                        d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    Edit Listing
-                  </button>
-
-                  {/* Approval */}
-                  <button
-                    onClick={handleSendForApproval}
-                    className="seller-details-button flex items-center justify-center gap-2 bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow-md"
-                  >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="transition-transform group-hover:scale-110"
-                    >
-                      <path
-                        d="M22 11.08V12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M22 4L12 14l-3-3"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    Send for Approval
-                  </button>
-
-                  {/* Delete */}
-                  <button
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className="transition-transform group-hover:scale-110"
+                      >
+                        <path
+                          d="M22 11.08V12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M22 4L12 14l-3-3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      Send for Approval
+                    </button>
+                      <button
                     onClick={handleRemoveListing}
-                    className="seller-details-button flex items-center justify-center gap-2 bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-red-700"
+                    className="seller-details-button flex items-center justify-center gap-2 bg-red-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition-all hover:bg-red-700"
                   >
                     <svg
                       width="18"
@@ -465,9 +621,44 @@ const SellerAuctionDetails = () => {
                     </svg>
                     Remove Listing
                   </button>
-                </div>
+                  </>
+                )}
+                {/* Delete */}
+                {selectedAuction?.status?.toUpperCase() === 'CLOSED' || selectedAuction?.status?.toUpperCase() === 'AWAITING_PAYMENT' && (
+                  <button
+                    onClick={handleRemoveListing}
+                    className="seller-details-button flex items-center justify-center gap-2 bg-red-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition-all hover:bg-red-700"
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="transition-transform group-hover:scale-110"
+                    >
+                      <path
+                        d="M3 6h18"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    Remove Listing
+                  </button>
+                )}
               </div>
-            )}
+            </div>
 
             {/* Timer Section for Live Auctions */}
             {isLive && timeRemaining.hours + timeRemaining.minutes + timeRemaining.seconds > 0 && (
@@ -509,14 +700,16 @@ const SellerAuctionDetails = () => {
               className={`seller-details-tab ${activeTab === 'vehicle-info' ? 'active' : ''}`}
               onClick={() => setActiveTab('vehicle-info')}
             >
-              Vehicle Information
+              Product Information
             </button>
-            <button
-              className={`seller-details-tab ${activeTab === 'paper-details' ? 'active' : ''}`}
-              onClick={() => setActiveTab('paper-details')}
-            >
-              Paper Details
-            </button>
+            {paperDetails.length > 0 && (
+              <button
+                className={`seller-details-tab ${activeTab === 'paper-details' ? 'active' : ''}`}
+                onClick={() => setActiveTab('paper-details')}
+              >
+                Paper Details
+              </button>
+            )}
             <button
               className={`seller-details-tab ${activeTab === 'bid-history' ? 'active' : ''}`}
               onClick={() => setActiveTab('bid-history')}
@@ -570,7 +763,7 @@ const SellerAuctionDetails = () => {
               </div>
             )}
 
-            {/* Vehicle Information Tab */}
+            {/* Product Information Tab - FULLY DYNAMIC */}
             {activeTab === 'vehicle-info' && (
               <div className="seller-details-info-grid">
                 <div className="seller-details-info-row">
@@ -585,36 +778,38 @@ const SellerAuctionDetails = () => {
                   <span className="seller-details-info-label">Category</span>
                   <span className="seller-details-info-value">{selectedAuction.category_name || 'N/A'}</span>
                 </div>
-                {selectedAuction.specific_data && Object.entries(selectedAuction.specific_data).map(([key, value]) => (
-                  <div key={key} className="seller-details-info-row">
-                    <span className="seller-details-info-label">{key.replace(/_/g, ' ')}</span>
-                    <span className="seller-details-info-value">{value || 'N/A'}</span>
+                {selectedAuction.specific_data && typeof selectedAuction.specific_data === 'object' && (
+                  <>
+                    {Object.entries(selectedAuction.specific_data).map(([key, value]) => {
+                      if (value === null || value === undefined || value === '') {
+                        return null;
+                      }
+                      return (
+                        <div key={key} className="seller-details-info-row">
+                          <span className="seller-details-info-label">{formatFieldName(key)}</span>
+                          <span className="seller-details-info-value">{String(value)}</span>
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
+                {(!selectedAuction.specific_data || Object.keys(selectedAuction.specific_data).length === 0) && (
+                  <div className="seller-details-info-row">
+                    <span className="seller-details-info-label">No additional information available</span>
                   </div>
-                ))}
+                )}
               </div>
             )}
 
-            {/* Paper Details Tab */}
-            {activeTab === 'paper-details' && (
+            {/* Paper Details Tab - DYNAMIC */}
+            {activeTab === 'paper-details' && paperDetails.length > 0 && (
               <div className="seller-details-info-grid">
-                <div className="seller-details-info-row">
-                  <span className="seller-details-info-label">Inspection Report</span>
-                  <span className="seller-details-info-value">
-                    {selectedAuction.specific_data?.inspection_report || 'N/A'}
-                  </span>
-                </div>
-                <div className="seller-details-info-row">
-                  <span className="seller-details-info-label">Ownership History</span>
-                  <span className="seller-details-info-value">
-                    {selectedAuction.specific_data?.ownership_history || 'N/A'}
-                  </span>
-                </div>
-                <div className="seller-details-info-row">
-                  <span className="seller-details-info-label">Registration Number</span>
-                  <span className="seller-details-info-value">
-                    {selectedAuction.specific_data?.registration_number || 'N/A'}
-                  </span>
-                </div>
+                {paperDetails.map((paper, index) => (
+                  <div key={`paper-${index}`} className="seller-details-info-row">
+                    <span className="seller-details-info-label">{paper.label}</span>
+                    <span className="seller-details-info-value">{paper.value}</span>
+                  </div>
+                ))}
               </div>
             )}
 

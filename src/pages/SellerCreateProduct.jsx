@@ -73,41 +73,83 @@ const SellerCreateProduct = () => {
   }, [profileData]);
 
 
+  // useEffect(() => {
+  //   if (isUpdating && selectedAuction) {
+  //     setSelectedCategory(selectedAuction.category?.toString() || '');
+  //     setFormData(prev => ({
+  //       ...prev,
+  //       title: selectedAuction.title || '',
+  //       description: selectedAuction.description || '',
+  //       handover_type: selectedAuction.handover_type || 'PICKUP',
+  //       pickup_address: selectedAuction.pickup_address || '',
+  //       pickup_latitude: selectedAuction.pickup_latitude || '',
+  //       pickup_longitude: selectedAuction.pickup_longitude || '',
+
+  //       seller_expected_price: selectedAuction.seller_expected_price || '',
+  //       delivery_datetime: selectedAuction.delivery_datetime || 7,
+  //       mediaFiles: selectedAuction.media || [],
+  //     }));
+
+
+  //     const existingMedia = (selectedAuction.media || []).map(item => ({
+  //       id: item.id,
+  //       url: item.file,          // ✅ backend image URL
+  //       label: item.label,
+  //       media_type: item.media_type,
+  //       isExisting: true,
+  //     }));
+
+  //     setMediaFiles(existingMedia);
+  //     setMediaLabels(existingMedia.map(m => m.label));
+  //     setSpecificData(selectedAuction.specific_data || {});
+
+  //     setSpecificData(selectedAuction.specific_data || {});
+
+
+  //     console.log("selectedAuction: ", selectedAuction);
+
+  //   }
+  // }, [isUpdating, selectedAuction]);
+
+
+
   useEffect(() => {
     if (isUpdating && selectedAuction) {
+      // Set category
       setSelectedCategory(selectedAuction.category?.toString() || '');
-      setFormData(prev => ({
-        ...prev,
-        title: selectedAuction.title || '',
-        description: selectedAuction.description || '',
-        handover_type: selectedAuction.handover_type || 'PICKUP',
-        pickup_address: selectedAuction.pickup_address || '',
-        pickup_latitude: selectedAuction.pickup_latitude || '',
-        pickup_longitude: selectedAuction.pickup_longitude || '',
 
-        seller_expected_price: selectedAuction.seller_expected_price || '',
-        delivery_datetime: selectedAuction.delivery_datetime || 7,
-        mediaFiles: selectedAuction.media || [],
-      }));
+      // Set form data
+      setFormData({
+        title: selectedAuction?.title || '',
+        description: selectedAuction?.description || '',
+        handover_type: selectedAuction?.handover_type || 'PICKUP',
+        pickup_address: selectedAuction?.pickup_address || '',
+        pickup_latitude: selectedAuction?.pickup_latitude?.toString() || '',
+        pickup_longitude: selectedAuction?.pickup_longitude?.toString() || '',
+        seller_expected_price: selectedAuction?.seller_expected_price?.toString() || '',
+        delivery_datetime: selectedAuction?.delivery_datetime
+          ? new Date(selectedAuction?.delivery_datetime).toISOString().slice(0, 16)
+          : new Date(Date.now() + 10 * 60000).toISOString().slice(0, 16),
+      });
 
+      // Set specific data
+      setSpecificData(selectedAuction?.specific_data || {});
 
-      const existingMedia = (selectedAuction.media || []).map(item => ({
-        id: item.id,
-        url: item.file,          // ✅ backend image URL
-        label: item.label,
-        media_type: item.media_type,
-        isExisting: true,
-      }));
+      // Set media files
+      if (selectedAuction.media && selectedAuction.media.length > 0) {
+        const existingMedia = selectedAuction.media.map(item => ({
+          id: item.id,
+          url: item.file,
+          label: item.label || `gallery_${item.id}`,
+          media_type: item.media_type,
+          isExisting: true,
+        }));
 
-      setMediaFiles(existingMedia);
-      setMediaLabels(existingMedia.map(m => m.label));
-      setSpecificData(selectedAuction.specific_data || {});
+        setMediaFiles(existingMedia);
+        setMediaLabels(existingMedia.map(m => m.label));
+      }
 
-      setSpecificData(selectedAuction.specific_data || {});
-
-
-      console.log("selectedAuction: ", selectedAuction);
-
+      console.log('Loaded auction for editing:', selectedAuction);
     }
   }, [isUpdating, selectedAuction]);
 
@@ -199,18 +241,18 @@ const SellerCreateProduct = () => {
   };
 
 
-  useEffect(() => {
-    if (!formData.delivery_datetime) {
-      const defaultTime = new Date(Date.now() + 10 * 60000)
-        .toISOString()
-        .slice(0, 16);
+  // useEffect(() => {
+  //   if (!formData.delivery_datetime) {
+  //     const defaultTime = new Date(Date.now() + 10 * 60000)
+  //       .toISOString()
+  //       .slice(0, 16);
 
-      setFormData(prev => ({
-        ...prev,
-        delivery_datetime: defaultTime,
-      }));
-    }
-  }, []);
+  //     setFormData(prev => ({
+  //       ...prev,
+  //       delivery_datetime: defaultTime,
+  //     }));
+  //   }
+  // }, []);
 
   // Handle specific data field change
   const handleSpecificDataChange = (fieldName, value) => {
@@ -421,6 +463,28 @@ const SellerCreateProduct = () => {
   };
 
   // Handle file upload
+  // const handleFileUpload = (e) => {
+  //   const files = Array.from(e.target.files);
+  //   const newMediaFiles = [...mediaFiles];
+  //   const newMediaLabels = [...mediaLabels];
+
+  //   files.forEach((file, index) => {
+  //     if (file.type.startsWith('image/')) {
+  //       newMediaFiles.push(file);
+  //       newMediaLabels.push(`gallery_${mediaFiles.length + index + 1}`);
+  //     }
+  //   });
+
+  //   setMediaFiles(newMediaFiles);
+  //   setMediaLabels(newMediaLabels);
+
+  //   // Clear file input
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.value = '';
+  //   }
+  // };
+
+
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files);
     const newMediaFiles = [...mediaFiles];
@@ -428,13 +492,26 @@ const SellerCreateProduct = () => {
 
     files.forEach((file, index) => {
       if (file.type.startsWith('image/')) {
+        // Calculate the next gallery number
+        const existingCount = newMediaFiles.filter(f => !f.isExisting).length;
+        const totalCount = newMediaFiles.length;
+
         newMediaFiles.push(file);
-        newMediaLabels.push(`gallery_${mediaFiles.length + index + 1}`);
+        newMediaLabels.push(`gallery_${totalCount + index + 1}`);
       }
     });
 
     setMediaFiles(newMediaFiles);
     setMediaLabels(newMediaLabels);
+
+    // Clear media error if it exists
+    if (errors.media) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.media;
+        return newErrors;
+      });
+    }
 
     // Clear file input
     if (fileInputRef.current) {
@@ -570,40 +647,168 @@ const SellerCreateProduct = () => {
   };
 
   // Handle save as draft
+  // const handleSaveAsDraft = async (e) => {
+  //   e.preventDefault();
+
+  //   // Check KYC verification
+  //   if (!isKycVerified && !isUpdating) {
+  //     toast.error('Please verify your KYC to create auctions');
+  //     navigate('/seller/profile');
+  //     return;
+  //   }
+
+  //   if (mediaFiles.length === 0) {
+  //     toast.error('Please upload at least one image before saving');
+  //     setErrors(prev => ({
+  //       ...prev,
+  //       media: 'At least one image is required'
+  //     }));
+
+  //     // Scroll to media upload section
+  //     const mediaSection = document.querySelector('.create-auction-media-upload');
+  //     if (mediaSection) {
+  //       mediaSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  //     }
+  //     return;
+  //   }
+
+  //   if (!selectedCategory) {
+  //     toast.error('Please select a category');
+  //     return;
+  //   }
+
+  //   try {
+  //     const auctionData = {
+  //       category: parseInt(selectedCategory),
+  //       title: formData.title || 'Draft Listing',
+  //       description: formData.description || '',
+  //       handover_type: formData.handover_type,
+  //       specific_data: specificData,
+  //       media: mediaFiles,
+  //       media_labels: mediaLabels,
+  //       status: 'DRAFT',
+
+  //       ...(formData.
+  //         seller_expected_price
+  //         && {
+
+  //         seller_expected_price
+  //           : parseFloat(formData.
+  //             seller_expected_price
+  //           ),
+  //       }),
+
+  //       ...(formData.delivery_datetime && {
+  //         delivery_datetime: new Date(formData.delivery_datetime).toISOString(),
+  //       }),
+
+  //       ...(formData.pickup_latitude &&
+  //         isValidLatitude(formData.pickup_latitude) && {
+  //         pickup_latitude: parseFloat(formData.pickup_latitude),
+  //       }),
+
+  //       ...(formData.pickup_longitude &&
+  //         isValidLongitude(formData.pickup_longitude) && {
+  //         pickup_longitude: parseFloat(formData.pickup_longitude),
+  //       }),
+  //     };
+
+  //     // Add conditional fields for draft
+  //     if (formData.handover_type === 'PICKUP' || formData.handover_type === 'BOTH') {
+  //       auctionData.pickup_address = formData.pickup_address || '';
+  //     }
+
+  //     await dispatch(createAuction(auctionData));
+  //     // log('Draft saved:', result);
+  //     toast.success('Draft saved successfully!');
+
+  //     setFormData({
+  //       title: '',
+  //       description: '',
+  //       handover_type: 'PICKUP',
+  //       pickup_address: '',
+  //       pickup_latitude: '',
+  //       pickup_longitude: '',
+  //       seller_expected_price: '',
+  //       delivery_datetime: "2026-01-10T14:30:00.000Z"
+  //     })
+
+  //     navigate('/seller/auction-listings');
+  //   } catch (error) {
+  //     console.error('Draft save error:', error);
+  //     toast.error(error.message || 'Failed to save draft');
+  //   }
+  // };
+
+
   const handleSaveAsDraft = async (e) => {
     e.preventDefault();
-    
+
     // Check KYC verification
-    if (!isKycVerified && !isUpdating) {
-      toast.error('Please verify your KYC to create auctions');
-      navigate('/seller/profile');
+    // if (!isKycVerified && !isUpdating) {
+    //   toast.error('Please verify your KYC to create auctions');
+    //   navigate('/seller/profile');
+    //   return;
+    // }
+
+    // Validate image upload
+    if (mediaFiles.length === 0) {
+      toast.error('Please upload at least one image before saving');
+      setErrors(prev => ({
+        ...prev,
+        media: 'At least one image is required'
+      }));
+
+      const mediaSection = document.querySelector('.create-auction-media-upload');
+      if (mediaSection) {
+        mediaSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
       return;
     }
-    
+
     if (!selectedCategory) {
       toast.error('Please select a category');
       return;
     }
 
     try {
+      // Prepare media data
+      const newMediaFiles = [];
+      const newMediaLabels = [];
+      const existingMediaIds = [];
+
+      mediaFiles.forEach((file, index) => {
+        if (file.isExisting) {
+          // Keep existing media
+          existingMediaIds.push(file.id);
+        } else {
+          // New media to upload
+          newMediaFiles.push(file);
+          newMediaLabels.push(mediaLabels[index] || `gallery_${index + 1}`);
+        }
+      });
+
       const auctionData = {
         category: parseInt(selectedCategory),
         title: formData.title || 'Draft Listing',
         description: formData.description || '',
         handover_type: formData.handover_type,
         specific_data: specificData,
-        media: mediaFiles,
-        media_labels: mediaLabels,
         status: 'DRAFT',
 
-        ...(formData.
-          seller_expected_price
-          && {
+        // Handle media correctly for update
+        ...(isUpdating && {
+          existing_media_ids: existingMediaIds,
+        }),
 
-          seller_expected_price
-            : parseFloat(formData.
-              seller_expected_price
-            ),
+        // Only add new media if there are new files
+        ...(newMediaFiles.length > 0 && {
+          media: newMediaFiles,
+          media_labels: newMediaLabels,
+        }),
+
+        ...(formData.seller_expected_price && {
+          seller_expected_price: parseFloat(formData.seller_expected_price),
         }),
 
         ...(formData.delivery_datetime && {
@@ -621,15 +826,25 @@ const SellerCreateProduct = () => {
         }),
       };
 
-      // Add conditional fields for draft
+      // Add conditional fields
       if (formData.handover_type === 'PICKUP' || formData.handover_type === 'BOTH') {
         auctionData.pickup_address = formData.pickup_address || '';
       }
 
-      await dispatch(createAuction(auctionData));
-      // log('Draft saved:', result);
-      toast.success('Draft saved successfully!');
+      // Dispatch create or update action
+      if (isUpdating && selectedAuction?.id) {
+        await dispatch(updateAuction({
+          auctionId: selectedAuction.id,
+          auctionData: auctionData
+        })).unwrap();
 
+        toast.success('Auction updated successfully!');
+      } else {
+        await dispatch(createAuction(auctionData)).unwrap();
+        toast.success('Draft saved successfully!');
+      }
+
+      // Reset form
       setFormData({
         title: '',
         description: '',
@@ -639,12 +854,22 @@ const SellerCreateProduct = () => {
         pickup_longitude: '',
         seller_expected_price: '',
         delivery_datetime: "2026-01-10T14:30:00.000Z"
-      })
+      });
 
-      navigate('/seller/auction-listings');
+      setMediaFiles([]);
+      setMediaLabels([]);
+      setSpecificData({});
+      setSelectedCategory('');
+
+      // Refresh auctions list
+      await dispatch(fetchMyAuctions());
+
+      // Navigate back to listings
+      navigate('/seller/auction-listings', { replace: true });
+
     } catch (error) {
-      console.error('Draft save error:', error);
-      toast.error(error.message || 'Failed to save draft');
+      console.error('Save error:', error);
+      toast.error(error.message || `Failed to ${isUpdating ? 'update' : 'save'} auction`);
     }
   };
 
@@ -1087,7 +1312,7 @@ const SellerCreateProduct = () => {
                               </button>
 
                             </div>
-                             <div className="create-auction-media-info">
+                            <div className="create-auction-media-info">
                               <p className="create-auction-media-name">{file.label}</p>
                               <p className="create-auction-media-size">
                                 {file.isExisting ? 'Existing File' : `${(file.size / 1024 / 1024).toFixed(2)} MB`}
@@ -1126,13 +1351,26 @@ const SellerCreateProduct = () => {
               {selectedCategory && (
                 <div className="create-auction-form-actions">
                   {/* {!isUpdating && ( */}
-                  <button
+                  {/* <button
                     type="submit"
                     className="create-auction-secondary-button-action"
 
                     disabled={isCreating}
                   >
                     {isCreating ? 'Saving...' : isUpdating ? 'Update Auction' : ' Save as Draft'}
+                  </button> */}
+                  <button
+                    type="submit"
+                    className="create-auction-secondary-button-action"
+                    // disabled={isCreating || isUpdating}
+                  >
+                    { isCreating && 'Save as Draft' }
+                    { isUpdating && 'Update Auction' }
+                    {/* { isUpdating ? 'Updating...' : 'Save as Draft' } */}
+                    {/* {isCreating || isUpdating
+                      ? (isUpdating ? 'Updating...' : 'Saving...')
+                      : (isUpdating ? 'Update Auction' : )
+                    } */}
                   </button>
                   {/* )} */}
                 </div>
