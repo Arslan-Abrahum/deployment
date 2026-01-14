@@ -5,6 +5,7 @@ import { logout } from "../store/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProfile, updateProfile } from "../store/actions/profileActions";
 import { toast } from "react-toastify";
+import { getMediaUrl } from "../config/api.config";
 
 const BuyerProfile = () => {
   const navigate = useNavigate();
@@ -72,7 +73,7 @@ const BuyerProfile = () => {
     if (imagePreviews.image) {
       return imagePreviews.image;
     }
-    return profileData?.image || null;
+    return profileData?.image ? getMediaUrl(profileData.image) : null;
   }, [imagePreviews, profileData]);
 
   const handleChange = (e) => {
@@ -195,9 +196,8 @@ const BuyerProfile = () => {
         </div>
         <div className="header-actions">
           <button
-            className={`b-action-btn ${
-              isEditing ? "b-secondary" : "b-primary"
-            }`}
+            className={`b-action-btn ${isEditing ? "b-secondary" : "b-primary"
+              }`}
             onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
             disabled={loading}
           >

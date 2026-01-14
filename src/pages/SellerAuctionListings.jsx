@@ -4,6 +4,7 @@ import './SellerAuctionListings.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchMyAuctions } from '../store/actions/sellerActions'
 import { toast } from 'react-toastify'
+import { getMediaUrl } from '../config/api.config'
 
 const SellerAuctionListings = () => {
   const dispatch = useDispatch()
@@ -115,7 +116,7 @@ const SellerAuctionListings = () => {
     if (!media || !Array.isArray(media) || media.length === 0) {
       return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"%3E%3Crect fill="%23e5e7eb" width="400" height="300"/%3E%3Ctext x="50%25" y="50%25" font-size="16" fill="%239ca3af" text-anchor="middle" dominant-baseline="middle"%3ENo Image Available%3C/text%3E%3C/svg%3E'
     }
-    return media[0]?.file || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"%3E%3Crect fill="%23e5e7eb" width="400" height="300"/%3E%3Ctext x="50%25" y="50%25" font-size="16" fill="%239ca3af" text-anchor="middle" dominant-baseline="middle"%3ENo Image Available%3C/text%3E%3C/svg%3E'
+    return getMediaUrl(media[0]?.file) || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"%3E%3Crect fill="%23e5e7eb" width="400" height="300"/%3E%3Ctext x="50%25" y="50%25" font-size="16" fill="%239ca3af" text-anchor="middle" dominant-baseline="middle"%3ENo Image Available%3C/text%3E%3C/svg%3E'
   }, [])
 
   // Render empty state
@@ -178,7 +179,7 @@ const SellerAuctionListings = () => {
         PENDING: "You don't have any pending listings. Start creating a new product to save as draft.",
         CLOSED: "You don't have any ended auctions. All your ACTIVE listings are still running.",
         DRAFT: "You don't have any draft listings. Start creating a new product to save as draft.",
-        AWAITING_PAYMENT:  "You don't have any draft listings. Start creating a new product to save as draft.",
+        AWAITING_PAYMENT: "You don't have any draft listings. Start creating a new product to save as draft.",
       }
 
       return (
@@ -280,8 +281,8 @@ const SellerAuctionListings = () => {
                   <div key={listing.id} className="s-listing-card">
                     <div className="listing-card-header">
                       <div className="listing-image">
-                        <img 
-                          src={getAuctionImage(listing?.media)} 
+                        <img
+                          src={getAuctionImage(listing?.media)}
                           alt={listing?.title}
                           onError={(e) => {
                             e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"%3E%3Crect fill="%23e5e7eb" width="400" height="300"/%3E%3Ctext x="50%25" y="50%25" font-size="16" fill="%239ca3af" text-anchor="middle" dominant-baseline="middle"%3EImage Failed to Load%3C/text%3E%3C/svg%3E'
@@ -319,13 +320,13 @@ const SellerAuctionListings = () => {
                         )}
                       </div>
                       <div className="listing-card-footer">
-                        <button 
-                        onClick={
-                          ()=> navigate(`/seller/listing/${listing.id}`, {
-                            state: { from: 'auction-listings', listing: listing}
-                          })
-                        }
-                        className="s-primary-button small">
+                        <button
+                          onClick={
+                            () => navigate(`/seller/listing/${listing.id}`, {
+                              state: { from: 'auction-listings', listing: listing }
+                            })
+                          }
+                          className="s-primary-button small">
                           View Details
                         </button>
                       </div>
