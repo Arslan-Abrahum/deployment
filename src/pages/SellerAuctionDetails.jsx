@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAuctionBids } from '../store/actions/buyerActions';
 import { deleteAuction, fetchMyAuctions, updateAuction } from '../store/actions/sellerActions';
+import { getMediaUrl } from '../config/api.config';
 import './SellerAuctionDetails.css'
 
 // Helper function to format field names
@@ -194,7 +195,7 @@ const SellerAuctionDetails = () => {
 
   // Memoized values
   const images = useMemo(() =>
-    selectedAuction?.media?.filter(m => m.media_type === 'image').map(m => m.file) || [],
+    selectedAuction?.media?.filter(m => m.media_type === 'image').map(m => getMediaUrl(m.file)) || [],
     [selectedAuction?.media]
   );
 

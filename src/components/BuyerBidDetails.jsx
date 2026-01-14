@@ -3,20 +3,21 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import './BuyerBidDetails.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchAuctionBids } from '../store/actions/buyerActions';
+import { getMediaUrl } from '../config/api.config';
 
 const BuyerBidDetails = () => {
-      const { id } = useParams()
+  const { id } = useParams()
   const location = useLocation();
   const dispatch = useDispatch()
   const bidDetails = location.state?.listing;
-//   const bidHistory = location.state?.bidHistory || [];
-    const { auctionBids: bidHistory } = useSelector( state => state.buyer )
+  //   const bidHistory = location.state?.bidHistory || [];
+  const { auctionBids: bidHistory } = useSelector(state => state.buyer)
   const [activeTab, setActiveTab] = useState('information');
   const [selectedImage, setSelectedImage] = useState(0);
 
   // Memoized values
-  const images = useMemo(() => 
-    bidDetails?.auction_media?.filter(m => m.media_type === 'image').map(m => m.file) || [],
+  const images = useMemo(() =>
+    bidDetails?.auction_media?.filter(m => m.media_type === 'image').map(m => getMediaUrl(m.file)) || [],
     [bidDetails?.auction_media]
   );
 
@@ -40,13 +41,13 @@ const BuyerBidDetails = () => {
     });
   };
 
-   useEffect( ()=> {
-    dispatch( fetchAuctionBids( id ) )
+  useEffect(() => {
+    dispatch(fetchAuctionBids(id))
   }, [id, dispatch])
 
   const formatRelativeTime = (dateString) => {
     if (!dateString) return 'N/A';
-    
+
     const now = new Date().getTime();
     const past = new Date(dateString).getTime();
     const difference = now - past;
@@ -115,7 +116,7 @@ const BuyerBidDetails = () => {
             {/* <p className="bid-details-subtitle">Bid ID: #{bidDetails.id}</p> */}
           </div>
           {bidDetails.status && (
-            <div 
+            <div
               className="bid-details-status-badge"
               style={{
                 backgroundColor: statusColors.bg,
@@ -174,7 +175,7 @@ const BuyerBidDetails = () => {
                 </span>
               </div>
               <div className="bid-summary-divider"></div>
-               <div className="bid-summary-item">
+              <div className="bid-summary-item">
                 <span className="bid-summary-label">Auction Title</span>
                 <span className="bid-summary-value-small">{bidDetails.auction_title || 'N/A'}</span>
               </div>
@@ -243,7 +244,7 @@ const BuyerBidDetails = () => {
                 <div className="bid-info-section">
                   <h3 className="bid-info-section-title">Bid Details</h3>
                   <div className="bid-info-grid">
-                       <div className="bid-info-item">
+                    <div className="bid-info-item">
                       <span className="bid-info-label">Status</span>
                       <span className="bid-info-value">
                         {bidDetails.status ? bidDetails.status.replace(/_/g, ' ') : 'N/A'}
@@ -259,17 +260,17 @@ const BuyerBidDetails = () => {
                       <span className="bid-info-label">Bid ID</span>
                       <span className="bid-info-value">#{bidDetails.id}</span>
                     </div> */}
-                   
+
                     {/* <div className="bid-info-item">
                       <span className="bid-info-label">Auction Title</span>
                       <span className="bid-info-value">{bidDetails.auction_title || 'N/A'}</span>
-                    </div> */} 
-                 
+                    </div> */}
+
                     <div className="bid-info-item">
                       <span className="bid-info-label">Bid Created</span>
                       <span className="bid-info-value">{formatDate(bidDetails.created_at)}</span>
                     </div>
-                     {/* <div className="bid-info-item">
+                    {/* <div className="bid-info-item">
                       <span className="bid-info-label">Auction ID</span>
                       <span className="bid-info-value">#{bidDetails.auction_id || 'N/A'}</span>
                     </div> */}
@@ -319,7 +320,7 @@ const BuyerBidDetails = () => {
                             <span className="bid-history-bidder">{bid.bidder_name || 'Anonymous'}</span>
                           </div>
                           {/* <span className="bid-history-relative">{formatRelativeTime(bid.created_at)}</span> */}
-                            <span className="bid-history-time">{formatDate(bid.created_at)}</span>
+                          <span className="bid-history-time">{formatDate(bid.created_at)}</span>
                         </div>
                         <div className="bid-history-amount">
                           {formatCurrency(parseFloat(bid.amount))}
