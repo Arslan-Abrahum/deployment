@@ -63,4 +63,45 @@ export const buyerService = {
       throw error;
     }
   },
+  getMyFavoriteAuctions: async () => {
+    try {
+      // Assuming there's an endpoint for this, adjust if needed
+      const { data } = await apiClient.get(API_ROUTES.WATCH_LIST);
+      return data;
+    } catch (error) {
+      if (error.isNetworkError) {
+        throw new Error('Unable to connect to server. Please try again later.');
+      }
+      throw error;
+    }
+  },
+  addToFavorite: async (auctionId) => {
+    try {
+      // Assuming there's an endpoint for this, adjust if needed
+      const { data } = await apiClient.post(API_ROUTES.FAVORITE_AUCTIONS + `${auctionId}/watchlist/`);
+      console.log(data, 'data');
+      
+      return data;
+    } catch (error) {
+      console.log(error);
+      
+      if (error.isNetworkError) {
+        throw new Error('Unable to connect to server. Please try again later.');
+      }
+      throw error;
+    }
+  },
+  deleteFromFavorite: async (auctionId) => {
+    try {
+      // Assuming there's an endpoint for this, adjust if needed
+      const { data } = await apiClient.delete(API_ROUTES.FAVORITE_AUCTIONS + `${auctionId}/watchlist/`);
+      return data;
+    } catch (error) {
+      if (error.isNetworkError) {
+        throw new Error('Unable to connect to server. Please try again later.');
+      }
+      throw error;
+    }
+  },
+
 };

@@ -81,3 +81,57 @@ export const fetchMyBids = createAsyncThunk(
     }
   }
 );
+
+export const getMyFavoriteAuctions = createAsyncThunk(
+  'buyer/getMyFavoriteAuctions',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await buyerService.getMyFavoriteAuctions();
+      return response;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        'Failed to fetch your bids';
+      toast.error(message);
+      return rejectWithValue(error.response?.data || { message });
+    }
+  }
+);
+
+export const addToFavorite = createAsyncThunk(
+  'buyer/addToFavorite',
+  async (auctionId, { rejectWithValue }) => {
+    try {
+      const response = await buyerService.addToFavorite(auctionId);
+      return response;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        'Failed to fetch your bids';
+      toast.error(message);
+      return rejectWithValue(error.response?.data || { message });
+    }
+  }
+);
+
+export const deleteFavorite = createAsyncThunk(
+  'buyer/deleteFavorite',
+  async (auctionId, { rejectWithValue }) => {
+    try {
+      const response = await buyerService.deleteFromFavorite(auctionId);
+      console.log(response);
+      return response;
+    } catch (error) {
+      console.log(error);
+      
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        'Failed to fetch your bids';
+      toast.error(message);
+      return rejectWithValue(error.response?.data || { message });
+    }
+  }
+);

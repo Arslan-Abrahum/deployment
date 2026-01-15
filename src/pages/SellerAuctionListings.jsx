@@ -94,7 +94,8 @@ const SellerAuctionListings = () => {
       AWAITING_PAYMENT: { text: 'Awaiting Payment', color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.15)' },
       PENDING: { text: 'PENDING', color: '#3B82F6', bg: 'rgba(59, 130, 246, 0.15)' },
       APPROVED: { text: 'APPROVED', color: '#10B981', bg: 'rgba(16, 185, 129, 0.15)' },
-      CLOSED: { text: 'CLOSED', color: '#6B7280', bg: 'rgba(107, 114, 128, 0.15)' }
+      CLOSED: { text: 'CLOSED', color: '#6B7280', bg: 'rgba(107, 114, 128, 0.15)' },
+      REJECTED: { text: 'REJECTED', color: '#EF4444', bg: 'rgba(239, 68, 68, 0.15)' },
     }
     const config = statusConfig[status] || statusConfig.ACTIVE
     return (
@@ -153,7 +154,8 @@ const SellerAuctionListings = () => {
         PENDING: 'PENDING',
         CLOSED: 'CLOSED',
         DRAFT: 'DRAFT',
-        AWAITING_PAYMENT: 'AWAITING_PAYMENT'
+        AWAITING_PAYMENT: 'AWAITING_PAYMENT',
+        REJECTED: 'REJECTED',
       }
 
       const filterIcon = {
@@ -161,7 +163,11 @@ const SellerAuctionListings = () => {
         APPROVED: <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M22 4L12 14.01l-3-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>,
         CLOSED: <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>,
         DRAFT: <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M11 5H6C5.46957 5 4.96086 5.21071 4.58579 5.58579C4.21071 5.96086 4 6.46957 4 7V19C4 19.5304 4.21071 20.0391 4.58579 20.4142C4.96086 20.7893 5.46957 21 6 21H17C17.5304 21 18.0391 20.7893 18.4142 20.4142C18.7893 20.0391 19 19.5304 19 19V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M18.5 2.5C18.8978 2.10217 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10217 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10217 21.5 5.5L12 15L9 16L10 13L18.5 2.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>,
-        PENDING: <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+        PENDING: <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>,
+        REJECTED: <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+          <path d="M8 8l8 8M16 8l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>,
       }
 
       const filterTitle = {
@@ -170,7 +176,8 @@ const SellerAuctionListings = () => {
         PENDING: 'No Pending Listings',
         CLOSED: 'No Closed Auctions',
         DRAFT: 'No Drafts Found',
-        AWAITING_PAYMENT: 'No Awaiting Payments Found'
+        AWAITING_PAYMENT: 'No Awaiting Payments Found',
+        REJECTED: 'No Rejected Auctions',
       }
 
       const filterDescription = {
@@ -180,6 +187,7 @@ const SellerAuctionListings = () => {
         CLOSED: "You don't have any ended auctions. All your ACTIVE listings are still running.",
         DRAFT: "You don't have any draft listings. Start creating a new product to save as draft.",
         AWAITING_PAYMENT: "You don't have any draft listings. Start creating a new product to save as draft.",
+        REJECTED: "You don't have any rejected listings. Start creating a new product to save as draft.",
       }
 
       return (
@@ -258,7 +266,7 @@ const SellerAuctionListings = () => {
                 <div className="filter-group">
                   <label className="filter-label">Filter by:</label>
                   <div className="filter-buttons">
-                    {['all', 'ACTIVE', 'APPROVED', 'PENDING', 'DRAFT', 'CLOSED', 'AWAITING_PAYMENT'].map(status => (
+                    {['all', 'ACTIVE', 'APPROVED', 'PENDING', 'DRAFT', 'CLOSED', 'AWAITING_PAYMENT', 'REJECTED'].map(status => (
                       <button
                         key={status}
                         className={`filter-button ${filter === status ? 'active' : ''}`}

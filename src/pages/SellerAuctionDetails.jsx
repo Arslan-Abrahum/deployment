@@ -396,6 +396,8 @@ const SellerAuctionDetails = () => {
         return { bg: 'rgba(251, 146, 60, 0.2)', border: 'rgba(251, 146, 60, 0.5)', color: '#fb923c' };
       case 'DRAFT':
         return { bg: 'rgba(251, 146, 60, 0.2)', border: 'rgba(251, 146, 60, 0.5)', color: '#fb923c' };
+      case 'REJECTED':
+        return { bg: 'rgba(239, 68, 68, 0.2)', color: '#EF4444', border: 'rgba(239, 68, 68, 0.5)' };
       default:
         return { bg: 'rgba(107, 114, 128, 0.2)', border: 'rgba(107, 114, 128, 0.5)', color: '#9ca3af' };
     }
@@ -492,6 +494,7 @@ const SellerAuctionDetails = () => {
             {selectedAuction?.status === 'APPROVED' && 'UPCOMING'}
             {selectedAuction?.status === 'CLOSED' && 'CLOSED'}
             {selectedAuction?.status === 'AWAITING_PAYMENT' && 'AWAITING PAYMENT'}
+            {selectedAuction?.status === 'REJECTED' && 'REJECTED'}
           </div>
         </div>
 
@@ -769,6 +772,14 @@ const SellerAuctionDetails = () => {
                     {selectedAuction?.status}
                   </span>
                 </div>
+                {
+                  selectedAuction?.rejection_reason && (
+                    <div className="seller-details-info-row">
+                      <span className="seller-details-info-label">Rejection Reason </span>
+                      <span className="seller-details-info-value">{selectedAuction?.rejection_reason || 'USD'}</span>
+                    </div>
+                  )
+                }
                 <div className="seller-details-info-row">
                   <span className="seller-details-info-label">Starting bid</span>
                   <span className="seller-details-info-value highlight">

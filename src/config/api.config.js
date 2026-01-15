@@ -150,6 +150,8 @@ export const API_ROUTES = {
   AUCTION_BID_HISTORY: '/auctions/listings/', // + auction_id + /bid-history/
   BIDS_LIST: '/auctions/bids/my/',
   // BIDS_NO: '/auctions/bids//my/',
-  WATCH_LIST: '/auctions/watchlist/',
+
+  WATCH_LIST: '/auctions/watchlist/',  // get all favorite auctions
+  FAVORITE_AUCTIONS: '/auctions/listings/',  // get all favorite auctions
 
 };

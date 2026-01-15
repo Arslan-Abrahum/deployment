@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAuctionsList } from '../store/actions/AuctionsActions';
+// import { fetchAuctionsList } from '../store/actions/AuctionsActions';
+// import { buyerService } from '../services/interceptors/buyer.service';
 import { clearBuyerError } from '../store/slices/buyerSlice';
-import './BuyerDashboard.css';
+import './FavoriteAuctions.css';
 import { toast } from 'react-toastify';
+import { getMyFavoriteAuctions } from '../store/actions/buyerActions';
 
-const AuctionCard = lazy(() => import('../components/AuctionCard'));
+const FavoriteAuctionCard = lazy(() => import('../components/FavoriteAuctionCard'));
 
-const BuyerDashboard = () => {
+const FavoriteAuctions = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
@@ -38,7 +40,7 @@ const BuyerDashboard = () => {
         let hasMore = true;
 
         while (hasMore) {
-          const response = await dispatch(fetchAuctionsList({ page: nextPage })).unwrap();
+          const response = await dispatch(getMyFavoriteAuctions({ page: nextPage })).unwrap();
           allResults = [...allResults, ...(response.results || [])];
 
           if (response.next) {
@@ -50,6 +52,8 @@ const BuyerDashboard = () => {
 
         setAllAuctions(allResults);
       } catch (err) {
+        console.log(err, 'errorssss');
+        
         console.error('Error fetching all auctions:', err);
         toast.error('Failed to load complete auction list');
       } finally {
@@ -59,17 +63,6 @@ const BuyerDashboard = () => {
 
     fetchAllPages();
   }, [dispatch]);
-
-  // Handle favorite update from AuctionCard
-  const handleFavoriteUpdate = useCallback((auctionId, isFavorite) => {
-    setAllAuctions(prevAuctions =>
-      prevAuctions.map(auction =>
-        auction.id === auctionId
-          ? { ...auction, is_favourite: isFavorite }
-          : auction
-      )
-    );
-  }, []);
 
   // Apply filters to show only ACTIVE and APPROVED auctions
   const filteredAuctions = useMemo(() => {
@@ -116,7 +109,7 @@ const BuyerDashboard = () => {
         <div className="dashboard-container">
           <div className="dashboard-welcome">
             <div className="welcome-content">
-              <h1 className="welcome-title">Welcome</h1>
+              <h1 className="welcome-title">Favorite Auctions</h1>
             </div>
           </div>
 
@@ -169,7 +162,7 @@ const BuyerDashboard = () => {
                   </div>
                 }>
                   {paginatedAuctions.map(auction => (
-                    <AuctionCard
+                    <FavoriteAuctionCard
                       key={auction.id}
                       auction={{
                         ...auction,
@@ -182,17 +175,16 @@ const BuyerDashboard = () => {
                       }}
                       onClick={() => {
                         if (token) {
-                          navigate(`/buyer/auction/${auction.id}`, {
-                            state: {
-                              from: 'buyer-dashboard',
-                              listing: auction
-                            }
+                          navigate(`/buyer/auction/${auction.id}`, { 
+                            state: { 
+                              from: 'buyer-dashboard', 
+                              listing: auction 
+                            } 
                           });
                         } else {
                           handleCheckAuth();
                         }
                       }}
-                      onFavoriteUpdate={handleFavoriteUpdate}
                     />
                   ))}
                 </Suspense>
@@ -234,4 +226,4 @@ const BuyerDashboard = () => {
   );
 };
 
-export default BuyerDashboard;
+export default FavoriteAuctions;

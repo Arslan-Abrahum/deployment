@@ -1,29 +1,19 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useCountdownTimer } from '../hooks/useCountdownTimer';
 import { formatPrice } from '../utils/auctionUtils';
 import { getMediaUrl } from '../config/api.config';
-import './BuyerAuctionCard.css';
-import { addToFavorite, deleteFavorite } from '../store/actions/buyerActions';
-import { useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
 
+import './FavoriteAuctionCard.css';
 
-const BuyerAuctionCard = ({ auction, onClick, onFavoriteUpdate }) => {
-    const dispatch = useDispatch()
+const FavoriteAuctionCard = ({ auction, onClick }) => {
+
     const [imageError, setImageError] = useState(false);
     const now = new Date();
-    const apiStatus = auction.status?.toUpperCase();
+    const apiStatus = auction?.status?.toUpperCase();
     const startDate = new Date(auction.startdate || auction.start_date);
     const endDate = new Date(auction.enddate || auction.end_date);
-    const [isFavorite, setIsFavorite] = useState(auction?.is_favourite || false);
-    const [isUpdating, setIsUpdating] = useState(false);
 
     let currentStatus, timerLabel, targetDate, isClickable;
-
-    // Sync local state with prop changes
-    useEffect(() => {
-        setIsFavorite(auction?.is_favourite || false);
-    }, [auction?.is_favourite]);
 
     if (apiStatus === 'COMPLETED') {
         currentStatus = 'ended';
@@ -132,6 +122,10 @@ const BuyerAuctionCard = ({ auction, onClick, onFavoriteUpdate }) => {
             label: 'LIVE',
             className: 'status-live'
         },
+        approved: {
+            label: 'APPROVED',
+            className: 'status-approved'
+        },
     };
 
     const displayStatus = statusConfig[currentStatus];
@@ -141,44 +135,6 @@ const BuyerAuctionCard = ({ auction, onClick, onFavoriteUpdate }) => {
         auction.initialprice || auction.initial_price,
         auction.currency || 'USD'
     );
-
-    
-        const favoriteAuctionToggle = async (e, auctionId) => {
-            // Prevent event bubbling to card click
-            e.preventDefault();
-            e.stopPropagation();
-    
-            if (!auctionId || isUpdating) return;
-    
-            // Optimistic UI update
-            const previousState = isFavorite;
-            setIsFavorite(!isFavorite);
-            setIsUpdating(true);
-    
-            try {
-                if (isFavorite) {
-                    await dispatch(deleteFavorite(auctionId)).unwrap();
-                    toast.success('Removed from favorites successfully!');
-    
-                    // Notify parent component about the change
-                    onFavoriteUpdate?.(auctionId, false);
-                } else {
-                    await dispatch(addToFavorite(auctionId)).unwrap();
-                    toast.success('Added to favorites successfully!');
-    
-                    // Notify parent component about the change
-                    onFavoriteUpdate?.(auctionId, true);
-                }
-            } catch (error) {
-                // Revert optimistic update on error
-                setIsFavorite(previousState);
-                console.error('Favorite toggle error:', error);
-                toast.error(error?.message || 'Something went wrong. Please try again!');
-            } finally {
-                setIsUpdating(false);
-            }
-        };
-    
 
     // Format bids count
     const bidsCount = auction.totalbids ?? auction.total_bids ?? 0;
@@ -203,33 +159,16 @@ const BuyerAuctionCard = ({ auction, onClick, onFavoriteUpdate }) => {
                     </span>
                 )}
 
-                {isFavorite ? (
-                    <button
-                        onClick={(e) => favoriteAuctionToggle(e, auction?.id)}
-                        className='right-icon'
-                        title='Remove From Favorite'
-                        disabled={isUpdating}
-                        style={{ opacity: isUpdating ? 0.6 : 1 }}
-                    >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill='currentColor' className="heart-icon heart-icon-filled">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="0"
-                                d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
-                        </svg>
-                    </button>
-                ) : (
-                    <button
-                        onClick={(e) => favoriteAuctionToggle(e, auction?.id)}
-                        className='right-icon'
-                        title='Add to Favorite'
-                        disabled={isUpdating}
-                        style={{ opacity: isUpdating ? 0.6 : 1 }}
-                    >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d1d5db">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                    </button>
-                )}
+                {
+                    auction?.is_favourite && (
+                        <button className='right-icon' title='Remove From Favorite'>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill='currentColor' className="heart-icon heart-icon-filled">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="0"
+                                    d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                            </svg>
+                        </button>
+                    ) 
+                }
 
             </div>
 
@@ -266,4 +205,4 @@ const BuyerAuctionCard = ({ auction, onClick, onFavoriteUpdate }) => {
     );
 };
 
-export default BuyerAuctionCard;
+export default FavoriteAuctionCard;

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { placeBid, fetchAuctionBids } from '../store/actions/buyerActions';
 import { getMediaUrl } from '../config/api.config';
 import './BuyerAuctionDetails.css';
+import { fetchProfile } from '../store/actions/profileActions';
 
 // ==================== MEMOIZED COMPONENTS ====================
 
@@ -81,8 +82,8 @@ const Breadcrumbs = memo(({ auction }) => (
     <Link to="/buyer/auctions">Auctions</Link>
     <span>/</span>
     <span>{auction?.category_name || 'Category'}</span>
-    <span>/</span>
-    <span>Lot #{auction?.id || 'N/A'}</span>
+    {/* <span>/</span>
+    <span>Lot #{auction?.id || 'N/A'}</span> */}
   </nav>
 ));
 
@@ -229,12 +230,32 @@ const BuyerAuctionDetails = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
   const location = useLocation();
+  const { profile } = useSelector(state => state.profile)
   const auctionObj = location.state?.listing;
-  const { auctionBids } = useSelector(state => state.buyer);
+  const { auctionBids, isPlacingBid } = useSelector(state => state.buyer);
+  const buyerProfile = profile?.buyer_profile
+
+
+  console.log(buyerProfile); // this is an object, in this object I am getting points value in points key in numbers
+
 
   useEffect(() => {
     dispatch(fetchAuctionBids(id));
   }, [id, dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchProfile())
+  }, dispatch)
+
+  // const [state, setState] = useState({
+  //   selectedAuction: auctionObj || null,
+  //   activeTab: 'description',
+  //   customBidAmount: '',
+  //   selectedImage: 0,
+  //   timeRemaining: { hours: 0, minutes: 0, seconds: 0 },
+  //   isLoading: !auctionObj,
+  //   error: null,
+  // });
 
   const [state, setState] = useState({
     selectedAuction: auctionObj || null,
@@ -244,7 +265,20 @@ const BuyerAuctionDetails = () => {
     timeRemaining: { hours: 0, minutes: 0, seconds: 0 },
     isLoading: !auctionObj,
     error: null,
+    showPointsWarning: false,
   });
+
+  // Calculate required points (50% of bid amount)
+  const requiredPoints = useMemo(() => {
+    const bidAmount = parseFloat(state.customBidAmount) || 0;
+    return Math.ceil(bidAmount * 0.5); // 50% of bid amount
+  }, [state.customBidAmount]);
+
+  // Check if user has enough points
+  const hasEnoughPoints = useMemo(() => {
+    const userPoints = buyerProfile?.points || 0;
+    return userPoints >= requiredPoints;
+  }, [buyerProfile?.points, requiredPoints]);
 
   // Memoized computed values
   const auction = state.selectedAuction;
@@ -275,24 +309,84 @@ const BuyerAuctionDetails = () => {
     setState(prev => ({ ...prev, activeTab: tab }));
   }, []);
 
+  // const handleCustomBidChange = useCallback((e) => {
+  //   setState(prev => ({ ...prev, customBidAmount: e.target.value }));
+  // }, []);
+
   const handleCustomBidChange = useCallback((e) => {
-    setState(prev => ({ ...prev, customBidAmount: e.target.value }));
+    const value = e.target.value;
+    setState(prev => ({
+      ...prev,
+      customBidAmount: value,
+      showPointsWarning: false
+    }));
   }, []);
+
+  // const handleCustomBidSubmit = useCallback((e) => {
+  //   e.preventDefault();
+  //   if (auction && state.customBidAmount) {
+  //     dispatch(placeBid({
+  //       auction_id: auction.id,
+  //       amount: parseFloat(state.customBidAmount)
+  //     }));
+  //     setState(prev => ({ ...prev, customBidAmount: '' }));
+  //     navigate('/buyer/auctions', { replace: true })
+  //   }
+
+  // }, [auction, state.customBidAmount, dispatch]);
+
+  // Timer effect
+
 
   const handleCustomBidSubmit = useCallback((e) => {
     e.preventDefault();
-    if (auction && state.customBidAmount) {
-      dispatch(placeBid({
-        auction_id: auction.id,
-        amount: parseFloat(state.customBidAmount)
-      }));
-      setState(prev => ({ ...prev, customBidAmount: '' }));
-      navigate('/buyer/auctions', {replace: true})
+
+    if (!auction || !state.customBidAmount) {
+      return;
     }
 
-  }, [auction, state.customBidAmount, dispatch]);
+    const bidAmount = parseFloat(state.customBidAmount);
+    const minBidAmount = parseFloat(auction?.initial_price || 0) + 1;
 
-  // Timer effect
+    // Validate bid amount
+    if (bidAmount < minBidAmount) {
+      setState(prev => ({
+        ...prev,
+        showPointsWarning: false
+      }));
+      return;
+    }
+
+    // Check if user has enough points
+    if (!hasEnoughPoints) {
+      setState(prev => ({
+        ...prev,
+        showPointsWarning: true
+      }));
+      return;
+    }
+
+    // Place bid if validation passes
+    dispatch(placeBid({
+      auction_id: auction.id,
+      amount: bidAmount
+    })).then((result) => {
+      if (result.type === 'buyer/placeBid/fulfilled') {
+        setState(prev => ({
+          ...prev,
+          customBidAmount: '',
+          showPointsWarning: false
+        }));
+        // Refresh bids and profile
+        dispatch(fetchAuctionBids(id));
+        dispatch(fetchProfile());
+      }
+    });
+
+    navigate('/buyer/auctions', { replace: true })
+  }, [auction, state.customBidAmount, hasEnoughPoints, dispatch, id]);
+
+
   useEffect(() => {
     if (isLive && auction?.end_date) {
       setState(prev => ({
@@ -358,10 +452,10 @@ const BuyerAuctionDetails = () => {
 
           <div className="buyer-details-info">
             <div className="buyer-details-auction-meta">
-              <div className="buyer-details-meta-item">
+              {/* <div className="buyer-details-meta-item">
                 <span className="buyer-details-meta-label">Lot Number</span>
                 <span className="buyer-details-meta-value">#{auction?.id || 'N/A'}</span>
-              </div>
+              </div> */}
               <div className="buyer-details-meta-item">
                 <span className="buyer-details-meta-label">Category</span>
                 <span className="buyer-details-meta-value">{auction?.category_name || 'N/A'}</span>
@@ -375,14 +469,14 @@ const BuyerAuctionDetails = () => {
             <div className="buyer-details-price-section">
               <div className="buyer-details-price-item">
                 <div className='flex justify-between items-center'>
-                <span className="buyer-details-price-label">Starting Price</span>
-                <span className="buyer-details-price-value">{formatCurrency(parseFloat(auction?.initial_price || 0))}</span>
+                  <span className="buyer-details-price-label">Starting Price</span>
+                  <span className="buyer-details-price-value">{formatCurrency(parseFloat(auction?.initial_price || 0))}</span>
 
                 </div>
-                <div  className='flex justify-between items-center'>
+                <div className='flex justify-between items-center'>
 
-                <span className="buyer-details-price-label">Highest Bid</span>
-                <span className="buyer-details-price-value">{formatCurrency(parseFloat(auctionBids?.[0]?.amount || 0))}</span>
+                  <span className="buyer-details-price-label">Highest Bid</span>
+                  <span className="buyer-details-price-value">{formatCurrency(parseFloat(auctionBids?.[0]?.amount || 0))}</span>
                 </div>
               </div>
               {auction?.is_buy_now_enabled && auction?.buy_now_price && (
@@ -448,7 +542,7 @@ const BuyerAuctionDetails = () => {
               </div>
             )}
 
-            {isLive && (
+            {/* {isLive && (
               <form className="buyer-details-bidding-form" onSubmit={handleCustomBidSubmit}>
                 <input
                   type="number"
@@ -461,6 +555,99 @@ const BuyerAuctionDetails = () => {
                 />
                 <button type="submit" className="buyer-details-bid-button">Place Bid</button>
               </form>
+            )} */}
+
+            {isLive && (
+              <>
+                {/* Points Information Notice */}
+                <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mb-4">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div className="flex-1">
+                      <h4 className="text-blue-300 font-semibold mb-1">Points Required</h4>
+                      <p className="text-blue-200 text-sm">
+                        You must have at least <strong>50% of your bid amount</strong> in points to place a bid.
+
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <form className="buyer-details-bidding-form" onSubmit={handleCustomBidSubmit}>
+                  <div className="space-y-3 w-full">
+                    <input
+                      type="number"
+                      className="buyer-details-bid-input"
+                      placeholder="Enter your bid amount"
+                      value={state.customBidAmount}
+                      onChange={handleCustomBidChange}
+                      // min={parseFloat(auction?.initial_price || 0) + 1}
+                      // step="0.01"
+                      disabled={isPlacingBid}
+                    />
+
+                    {/* Dynamic Points Calculation */}
+                    {state.customBidAmount && (
+                      <div className={`p-3 mt-2 w-full rounded-lg border ${hasEnoughPoints ? 'bg-green-700/10 border-green-500/30' : 'bg-amber-500/10 border-amber-500/30'}`}>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className={hasEnoughPoints ? 'text-green-300' : 'text-amber-300'}>
+                            Points Required:
+                          </span>
+                          <span className={`font-semibold ${hasEnoughPoints ? 'text-green-200' : 'text-amber-200'}`}>
+                            {requiredPoints}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm mt-1">
+                          <span className={hasEnoughPoints ? 'text-green-300' : 'text-amber-300'}>
+                            Your Points:
+                          </span>
+                          <span className={`font-semibold ${hasEnoughPoints ? 'text-green-200' : 'text-amber-200'}`}>
+                            {buyerProfile?.points || 0}
+                          </span>
+                        </div>
+                        {!hasEnoughPoints && (
+                          <div className="mt-2 pt-2 border-t border-amber-500/20">
+                            <p className="text-amber-200 text-xs">
+                              You need {requiredPoints - (buyerProfile?.points || 0)} more points
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Insufficient Points Warning */}
+                    {state.showPointsWarning && !hasEnoughPoints && (
+                      <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+                        <div className="flex items-start gap-2">
+                          <svg className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                          <div className="flex-1">
+                            <h4 className="text-red-300 font-semibold mb-1">Insufficient Points</h4>
+                            <p className="text-red-200 text-sm mb-2">
+                              You do not have enough points to place this bid. Please try one of the following:
+                            </p>
+                            <ul className="text-red-200 text-sm space-y-1 list-disc list-inside">
+                              <li>Lower your bid amount</li>
+                              <li>Purchase more points</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      className="buyer-details-bid-button w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={isPlacingBid || !state.customBidAmount || !hasEnoughPoints}
+                    >
+                      {isPlacingBid ? 'Placing Bid...' : 'Place Bid'}
+                    </button>
+                  </div>
+                </form>
+              </>
             )}
 
             <div className="buyer-details-location-info">

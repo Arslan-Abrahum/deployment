@@ -205,6 +205,17 @@ const BuyerAuctions = () => {
   const hasNextPage = page < totalPages;
   const hasPrevPage = page > 1;
 
+  // Handle favorite update from AuctionCard
+  const handleFavoriteUpdate = useCallback((auctionId, isFavorite) => {
+    setAllAuctions(prevAuctions =>
+      prevAuctions.map(auction =>
+        auction.id === auctionId
+          ? { ...auction, is_favourite: isFavorite }
+          : auction
+      )
+    );
+  }, []);
+
   return (
     <div className="auctions-page pb-5">
       {/* Sticky Filter Bar */}
@@ -399,7 +410,8 @@ const BuyerAuctions = () => {
                       totalbids: auction.total_bids,
                       status: auction.status
                     }}
-                    onClick={() => navigate(`/buyer/auction/${auction.id}`, { state: { from: 'buyer-auctions',  listing: auction } })}
+                    onClick={() => navigate(`/buyer/auction/${auction.id}`, { state: { from: 'buyer-auctions', listing: auction } })}
+                    onFavoriteUpdate={handleFavoriteUpdate}
                   />))}
               </Suspense>
             </div>

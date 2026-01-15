@@ -30,6 +30,7 @@ const ManagerInspection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // New fields for approval section
+  const [overallRatingRejection, setOverallRatingRejection] = useState("");
   const [overallRating, setOverallRating] = useState("");
   const [initialPrice, setInitialPrice] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -223,8 +224,8 @@ const ManagerInspection = () => {
   const handleReject = async () => {
     if (isSubmitting) return; // Prevent multiple submissions
 
-    if (!auctionData?.id) {
-      toast.error("Auction ID is missing. Cannot submit inspection.");
+    if (!auctionData?.id || !overallRatingRejection) {
+      toast.error("");
       return;
     }
 
@@ -250,11 +251,12 @@ const ManagerInspection = () => {
         decision: "REJECTED",
         admin_feedback: finalNotes || "Inspection rejected by manager.",
         checklist_data: checklistData,
-        inspection_images: files
+        inspection_images: files,
+        overall_rating: parseFloat(overallRatingRejection),
       };
 
       // Submit inspection rejection
-      const response = await managerService.performInspection(auctionData.id, inspectionData);
+      const response = await managerService.performInspection(auctionData?.id, inspectionData);
       toast.success("Inspection rejected successfully!");
 
       // Navigate after a short delay to allow toast to be visible
@@ -294,7 +296,7 @@ const ManagerInspection = () => {
               {
                 isStart ? (
                   <div className="inspection-actions">
-                    {/* <button
+                    <button
                       type="button"
                       className="action-button secondary"
                       onClick={handleReject}
@@ -304,7 +306,7 @@ const ManagerInspection = () => {
                         <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                       {isSubmitting ? "Submitting..." : "Reject"}
-                    </button> */}
+                    </button>
                     <button
                       type="button"
                       className="action-button primary"
@@ -585,6 +587,22 @@ const ManagerInspection = () => {
                               </div>
                             )}
                           </div>
+                          <div className="approval-form-group">
+                            <label className="approval-form-label">
+                              Overall Rating For Rejection <span className="required">*</span>
+                            </label>
+                            <input
+                              type="number"
+                              className="approval-form-input"
+                              placeholder="e.g., 8.5"
+                              min="0"
+                              max="10"
+                              step="0.1"
+                              value={overallRatingRejection}
+                              onChange={(e) => setOverallRatingRejection(e.target.value)}
+                              required
+                            />
+                          </div>
                         </div>
                       ) : (
                         <div style={{ padding: '2rem', textAlign: 'center', color: '#8CC63F' }}>
@@ -638,7 +656,7 @@ const ManagerInspection = () => {
                   <div className="approval-form-grid">
                     <div className="approval-form-group">
                       <label className="approval-form-label">
-                        Overall Rating <span className="required">*</span>
+                        Overall Rating For Approval <span className="required">*</span>
                       </label>
                       <input
                         type="number"

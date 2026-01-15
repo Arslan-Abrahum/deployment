@@ -57,6 +57,36 @@
     animation: pulse 2s infinite;
 }
 
+.right-icon {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(20px);
+    /* color: #fff; */
+    padding: 0.3rem 0.7rem;
+    border-radius: 5px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: pulse 2s infinite;
+}
+
+.heart-icon {
+    stroke: #ff0000;
+}
+
+.heart-icon-outline {
+    fill: none;
+    stroke-width: 2;
+}
+
+.heart-icon-filled {
+    fill: #ff0000;
+    stroke-width: 0;
+}
+
 .status-live {
     background: rgba(34, 197, 94, 0.9) !important;
     box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
@@ -199,6 +229,7 @@
     margin-top: auto;
     color: white;
 }
+
 .auctions-view-btn:hover {
     background: #8CC63F;
     color: #000;
