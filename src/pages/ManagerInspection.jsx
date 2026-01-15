@@ -225,7 +225,7 @@ const ManagerInspection = () => {
     if (isSubmitting) return; // Prevent multiple submissions
 
     if (!auctionData?.id || !overallRatingRejection) {
-      toast.error("");
+      toast.error("All checklist fields and overall Rating are required.");
       return;
     }
 

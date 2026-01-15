@@ -8,6 +8,7 @@ import './FavoriteAuctions.css';
 import { toast } from 'react-toastify';
 import { getMyFavoriteAuctions } from '../store/actions/buyerActions';
 
+
 const FavoriteAuctionCard = lazy(() => import('../components/FavoriteAuctionCard'));
 
 const FavoriteAuctions = () => {
@@ -96,12 +97,25 @@ const FavoriteAuctions = () => {
   const hasNextPage = page < totalPages;
   const hasPrevPage = page > 1;
 
+    // Handle favorite update from AuctionCard
+    const handleFavoriteUpdate = useCallback((auctionId, isFavorite) => {
+      setAllAuctions(prevAuctions =>
+        prevAuctions.map(auction =>
+          auction.id === auctionId
+            ? { ...auction, is_favourite: isFavorite }
+            : auction
+        )
+      );
+    }, []);
+
+
   // Cleanup
   useEffect(() => {
     return () => {
       dispatch(clearBuyerError());
     };
   }, [dispatch]);
+
 
   return (
     <div className="buyer-dashboard-page">
@@ -185,6 +199,7 @@ const FavoriteAuctions = () => {
                           handleCheckAuth();
                         }
                       }}
+                       onFavoriteUpdate={handleFavoriteUpdate}
                     />
                   ))}
                 </Suspense>

@@ -53,14 +53,14 @@ function BuyerHeader() {
               className={`buyer-header__nav-link ${location.pathname === '/buyer/won-items' ? 'active' : ''
                 }`}
             >
-              Won Items
+              Won Auctions
             </Link>
             <Link
               to="/buyer/favorite-items"
               className={`buyer-header__nav-link ${location.pathname === '/buyer/favorite-items' ? 'active' : ''
                 }`}
             >
-              Favorite Items
+              Favorite Auctions
             </Link>
           </nav>
 
@@ -149,7 +149,7 @@ function BuyerHeader() {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
               </svg>
-              Won Items
+              Won Auctions
             </Link>
             <Link
               to="/buyer/favorite-items"
@@ -160,7 +160,7 @@ function BuyerHeader() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
                   d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
-              Favorite Items
+              Favorite Auctions
             </Link>
           </nav>
         </div>

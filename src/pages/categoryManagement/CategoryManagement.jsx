@@ -34,6 +34,8 @@ export default function CategoryManagement() {
 
   const handleStatusToggle = async (id) => {
     const category = categories.find(cat => cat.id === id);
+    console.log("category: ", category);
+    
     if (!category) return;
 
     // Prevent multiple toggles
@@ -74,7 +76,8 @@ export default function CategoryManagement() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this category? This action cannot be undone.')) {
+    if (window.confirm('Are you sure you want to delete this category?\n\nThis will permanently remove the category and all associated products and auctions.'
+)) {
       try {
         await dispatch(deleteCategory(id)).unwrap();
         // Refresh categories list after successful deletion

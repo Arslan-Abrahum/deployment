@@ -436,7 +436,7 @@ const BuyerAuctionDetails = () => {
           <h1 className="buyer-details-title">{auction?.title || 'Auction'}</h1>
           <div className="buyer-details-status-badge" data-status={auction?.status}>
             {auction?.status === 'ACTIVE' && 'ACTIVE'}
-            {auction?.status === 'APPROVED' && 'Upcoming'}
+            {auction?.status === 'APPROVED' && 'UPCOMING'}
             {auction?.status === 'CLOSED' && 'Closed'}
             {auction?.status === 'AWAITING_PAYMENT' && 'Awaiting Payment'}
           </div>
