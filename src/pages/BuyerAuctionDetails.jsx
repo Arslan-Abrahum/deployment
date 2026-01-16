@@ -584,14 +584,14 @@ const BuyerAuctionDetails = () => {
             {isLive && (
               <>
                 {/* Points Information Notice */}
-                <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mb-4">
+                <div className="buyer-details-notice rounded-lg p-4 mb-4">
                   <div className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <div className="flex-1">
-                      <h4 className="text-blue-300 font-semibold mb-1">Points Required</h4>
-                      <p className="text-blue-200 text-sm">
+                      <h4 className="text-white font-semibold mb-1">Points Required</h4>
+                      <p className="text-sm ">
                         You must have at least <strong>50% of your bid amount</strong> in points to place a bid.
 
                       </p>
@@ -654,7 +654,7 @@ const BuyerAuctionDetails = () => {
                               You do not have enough points to place this bid. Please try one of the following:
                             </p>
                             <ul className="text-red-200 text-sm space-y-1 list-disc list-inside">
-                              <li>Lower your bid amount</li>
+                              {/* <li>Lower your bid amount</li> */}
                               <li>Purchase more points</li>
                             </ul>
                           </div>
