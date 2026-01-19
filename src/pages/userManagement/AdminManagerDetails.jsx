@@ -25,11 +25,38 @@ const AdminManagerDetails = () => {
     imagePreview: null,
   });
   const [formErrors, setFormErrors] = useState({});
+  const [allUsers, setAllUsers] = useState([]);
+  const [isFetchingUsers, setIsFetchingUsers] = useState(true);
 
-  // Fetch users on component mount
+  // Fetch users on component mount - fetch all pages to find user
   useEffect(() => {
-    dispatch(fetchUsersList());
-  }, [dispatch]);
+    const fetchAllUsers = async () => {
+      setIsFetchingUsers(true);
+      let allResults = [];
+      let currentPage = 1;
+      let hasMore = true;
+
+      while (hasMore) {
+        const result = await dispatch(fetchUsersList({ page: currentPage })).unwrap();
+        if (result?.results) {
+          allResults = [...allResults, ...result.results];
+          // Check if the user is found in current results
+          const foundUser = allResults.find(user => user.id === parseInt(id));
+          if (foundUser) {
+            // User found, no need to fetch more pages
+            break;
+          }
+        }
+        hasMore = result?.has_next || false;
+        currentPage++;
+      }
+      
+      setAllUsers(allResults);
+      setIsFetchingUsers(false);
+    };
+
+    fetchAllUsers();
+  }, [dispatch, id]);
 
   // Refresh users list after successful action
   useEffect(() => {
@@ -39,11 +66,11 @@ const AdminManagerDetails = () => {
     }
   }, [actionSuccess, dispatch]);
 
-  // Find the selected manager by ID
+  // Find the selected manager by ID from all fetched users
   const selectedManager = useMemo(() => {
-    if (!users?.results) return null;
-    return users.results.find((user) => user.id === parseInt(id));
-  }, [users, id]);
+    if (!allUsers || allUsers.length === 0) return null;
+    return allUsers.find((user) => user.id === parseInt(id));
+  }, [allUsers, id]);
 
   // Initialize form data when manager is loaded
   useEffect(() => {
@@ -199,7 +226,7 @@ const AdminManagerDetails = () => {
   };
 
   // Loading state
-  if (isLoading) {
+  if (isLoading || isFetchingUsers) {
     return (
       <div className="manager-details-page">
         <div className="manager-details-loading">

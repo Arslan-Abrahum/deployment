@@ -27,10 +27,38 @@ const AdminManagerKYC = () => {
   const dispatch = useDispatch();
   const { users, isLoading, isPerformingAction, actionSuccess } = useSelector((state) => state.admin);
 
-  // Fetch users on component mount
+  const [allUsers, setAllUsers] = useState([]);
+  const [isFetchingUsers, setIsFetchingUsers] = useState(true);
+
+  // Fetch users on component mount - fetch all pages to find user
   useEffect(() => {
-    dispatch(fetchUsersList());
-  }, [dispatch]);
+    const fetchAllUsers = async () => {
+      setIsFetchingUsers(true);
+      let allResults = [];
+      let currentPage = 1;
+      let hasMore = true;
+
+      while (hasMore) {
+        const result = await dispatch(fetchUsersList({ page: currentPage })).unwrap();
+        if (result?.results) {
+          allResults = [...allResults, ...result.results];
+          // Check if the user is found in current results
+          const foundUser = allResults.find(user => user.id === parseInt(id));
+          if (foundUser) {
+            // User found, no need to fetch more pages
+            break;
+          }
+        }
+        hasMore = result?.has_next || false;
+        currentPage++;
+      }
+      
+      setAllUsers(allResults);
+      setIsFetchingUsers(false);
+    };
+
+    fetchAllUsers();
+  }, [dispatch, id]);
 
   // Keyboard shortcuts for fullscreen viewer
   useEffect(() => {
@@ -65,11 +93,11 @@ const AdminManagerKYC = () => {
     }
   }, [actionSuccess, dispatch]);
 
-  // Find the selected user by ID
+  // Find the selected user by ID from all fetched users
   const selectedUser = useMemo(() => {
-    if (!users?.results) return null;
-    return users.results.find((user) => user.id === parseInt(id));
-  }, [users, id]);
+    if (!allUsers || allUsers.length === 0) return null;
+    return allUsers.find((user) => user.id === parseInt(id));
+  }, [allUsers, id]);
 
 
   console.log("selectedUser: ", selectedUser);
@@ -260,7 +288,7 @@ const AdminManagerKYC = () => {
   ], [selectedUser]);
 
   // Loading state
-  if (isLoading) {
+  if (isLoading || isFetchingUsers) {
     return (
       <div className="kyc-page">
         <div className="kyc-loading">
