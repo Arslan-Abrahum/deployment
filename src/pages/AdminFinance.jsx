@@ -45,7 +45,7 @@ const AdminFinance = () => {
       change: 'No change',
       trend: 'neutral',
       icon: 'entries',
-      navigation: '/admin/finance/manual/payments-authorization'
+      navigation: ''
     }
   ]
 

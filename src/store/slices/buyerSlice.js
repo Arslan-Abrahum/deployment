@@ -6,6 +6,7 @@ const initialState = {
   auctions: null,
   browseAuctionsList: [],
   auctionBids: [],
+  allBids: {},
   myBids: [],
   categories: [],
   isLoading: false,
@@ -102,7 +103,11 @@ const buyerSlice = createSlice({
       })
       .addCase(fetchAuctionBids.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.auctionBids = action.payload;
+        // state.auctionBids = action.payload;
+        const { auctionId, bids } = action.payload;
+        state.auctionBids = bids;
+
+        state.allBids[auctionId] = bids;
 
       })
       .addCase(fetchAuctionBids.rejected, (state, action) => {
@@ -119,7 +124,7 @@ const buyerSlice = createSlice({
       .addCase(fetchMyBids.fulfilled, (state, action) => {
         state.isLoading = false;
         state.myBids = action.payload;
-        
+
         state.totalCount = action?.payload?.count ?? 0;
         state.nextPage = action?.payload?.next;
         state.prevPage = action?.payload?.previous;

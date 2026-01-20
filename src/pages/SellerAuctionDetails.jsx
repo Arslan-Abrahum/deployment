@@ -472,13 +472,13 @@ const SellerAuctionDetails = () => {
         <div className="seller-details-header">
           <div className="seller-details-header-content">
             <h1 className="seller-details-title">{selectedAuction?.title || 'Untitled Auction'}</h1>
-            <p className="seller-details-subtitle">
+            {/* <p className="seller-details-subtitle">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ display: 'inline', marginRight: '6px' }}>
                 <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               {selectedAuction?.pickup_address || 'N/A'}
-            </p>
+            </p> */}
           </div>
           <div
             className="seller-details-status-badge"
@@ -540,13 +540,13 @@ const SellerAuctionDetails = () => {
 
             {/* Title and Location */}
             <h2 className="seller-details-panel-title">{selectedAuction?.title || 'Untitled'}</h2>
-            <div className="seller-details-location">
+            {/* <div className="seller-details-location">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               <span>{selectedAuction?.pickup_address || 'N/A'}</span>
-            </div>
+            </div> */}
 
             {/* Quick Info Cards - DYNAMIC */}
             <div className="seller-details-quick-info">
@@ -856,7 +856,7 @@ const SellerAuctionDetails = () => {
                     {formatCurrency(parseFloat(selectedAuction?.seller_expected_price || 0))}
                   </span>
                 </div>
-                <div className="seller-details-info-row">
+                {/* <div className="seller-details-info-row">
                   <span className="seller-details-info-label">Handover Type</span>
                   <span className="seller-details-info-value">{selectedAuction?.handover_type || 'N/A'}</span>
                 </div>
@@ -871,7 +871,7 @@ const SellerAuctionDetails = () => {
                       ? `${selectedAuction?.pickup_latitude}, ${selectedAuction?.pickup_longitude}`
                       : 'N/A'}
                   </span>
-                </div>
+                </div> */}
               </div>
             )}
 
@@ -954,7 +954,7 @@ const SellerAuctionDetails = () => {
                       <div key={bid.id} className="seller-details-bid-item">
                         <div className="seller-details-bid-rank">#{index + 1}</div>
                         <div className="seller-details-bid-info">
-                          <div className="seller-details-bid-name">{bid.bidder_name || 'Anonymous'}</div>
+                          {/* <div className="seller-details-bid-name">{bid.bidder_name || 'Anonymous'}</div> */}
                           <div className="seller-details-bid-time">{formatDate(bid.created_at)}</div>
                         </div>
                         <div className="seller-details-bid-amount">

@@ -1,10 +1,10 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useCountdownTimer } from '../hooks/useCountdownTimer';
 import { formatPrice } from '../utils/auctionUtils';
 import { getMediaUrl } from '../config/api.config';
 import './BuyerAuctionCard.css';
-import { addToFavorite, deleteFavorite } from '../store/actions/buyerActions';
-import { useDispatch } from 'react-redux';
+import { addToFavorite, deleteFavorite, fetchAuctionBids } from '../store/actions/buyerActions';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 
@@ -19,6 +19,32 @@ const BuyerAuctionCard = ({ auction, onClick, onFavoriteUpdate }) => {
     const [isUpdating, setIsUpdating] = useState(false);
 
     let currentStatus, timerLabel, targetDate, isClickable;
+
+
+    const bids = useSelector(
+        state => state.buyer.allBids[auction?.id]
+    );
+
+
+
+    // const highestBid = bids?.length
+    //     ? Math.max(...bids.map(b => Number(b.amount)))
+    //     : null;
+
+    // console.log(highestBid);
+
+    const highestBid = useMemo(() => {
+        if (!bids?.length) return null;
+
+        const max = Math.max(...bids.map(b => Number(b.amount || 0)));
+        return isFinite(max) && max > 0 ? max : null;
+    }, [bids]);
+
+    useEffect(() => {
+        if (!bids) {
+            dispatch(fetchAuctionBids(auction?.id));
+        }
+    }, [bids, dispatch, auction.id]);
 
     // Sync local state with prop changes
     useEffect(() => {
@@ -142,43 +168,43 @@ const BuyerAuctionCard = ({ auction, onClick, onFavoriteUpdate }) => {
         auction.currency || 'USD'
     );
 
-    
-        const favoriteAuctionToggle = async (e, auctionId) => {
-            // Prevent event bubbling to card click
-            e.preventDefault();
-            e.stopPropagation();
-    
-            if (!auctionId || isUpdating) return;
-    
-            // Optimistic UI update
-            const previousState = isFavorite;
-            setIsFavorite(!isFavorite);
-            setIsUpdating(true);
-    
-            try {
-                if (isFavorite) {
-                    await dispatch(deleteFavorite(auctionId)).unwrap();
-                    toast.success('Removed from favorites successfully!');
-    
-                    // Notify parent component about the change
-                    onFavoriteUpdate?.(auctionId, false);
-                } else {
-                    await dispatch(addToFavorite(auctionId)).unwrap();
-                    toast.success('Added to favorites successfully!');
-    
-                    // Notify parent component about the change
-                    onFavoriteUpdate?.(auctionId, true);
-                }
-            } catch (error) {
-                // Revert optimistic update on error
-                setIsFavorite(previousState);
-                console.error('Favorite toggle error:', error);
-                toast.error(error?.message || 'Something went wrong. Please try again!');
-            } finally {
-                setIsUpdating(false);
+
+    const favoriteAuctionToggle = async (e, auctionId) => {
+        // Prevent event bubbling to card click
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!auctionId || isUpdating) return;
+
+        // Optimistic UI update
+        const previousState = isFavorite;
+        setIsFavorite(!isFavorite);
+        setIsUpdating(true);
+
+        try {
+            if (isFavorite) {
+                await dispatch(deleteFavorite(auctionId)).unwrap();
+                toast.success('Removed from favorites successfully!');
+
+                // Notify parent component about the change
+                onFavoriteUpdate?.(auctionId, false);
+            } else {
+                await dispatch(addToFavorite(auctionId)).unwrap();
+                toast.success('Added to favorites successfully!');
+
+                // Notify parent component about the change
+                onFavoriteUpdate?.(auctionId, true);
             }
-        };
-    
+        } catch (error) {
+            // Revert optimistic update on error
+            setIsFavorite(previousState);
+            console.error('Favorite toggle error:', error);
+            toast.error(error?.message || 'Something went wrong. Please try again!');
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
 
     // Format bids count
     const bidsCount = auction.totalbids ?? auction.total_bids ?? 0;
@@ -242,11 +268,23 @@ const BuyerAuctionCard = ({ auction, onClick, onFavoriteUpdate }) => {
                 <h3 className="auction-card-title" title={auction.title}>
                     {auction.title || 'Untitled Auction'}
                 </h3>
-
-                <div className="auction-price-display">
+                <div className="dashboard-auction-price-display">
+                    <span className="auction-price-label">Starting Bid</span>
+                    <span className="dashboard-auction-price-value">{displayPrice}</span>
+                </div>
+                <div className="dashboard-auction-price-display">
+                    <span className="auction-price-label">Highest Bid</span>
+                    {/* <span className="dashboard-auction-price-value">  {highestBid ? `${highestBid}` : 'No bids yet'}</span> */}
+                    <span className="dashboard-auction-price-value">
+                        {highestBid
+                            ? formatPrice(highestBid, auction.currency || 'USD')
+                            : 'No bids yet'}
+                    </span>
+                </div>
+                {/* <div className="auction-price-display">
                     <span className="auction-price-label">Starting Price</span>
                     <span className="auction-price-value">{displayPrice}</span>
-                </div>
+                </div> */}
 
                 <div className="auction-bid-info">
                     <span className="auction-bid-label">Total Bids</span>

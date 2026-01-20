@@ -177,24 +177,24 @@ const DescriptionTab = memo(({ auction, formatCurrency }) => (
           <strong>{key.replace(/_/g, ' ').toUpperCase()}:</strong> {value}
         </div>
       ))}
-      {auction?.pickup_address && (
+      {/* {auction?.pickup_address && (
         <div className="buyer-details-detail-item">
           <strong>Pickup Location:</strong> {auction.pickup_address}
         </div>
-      )}
+      )} */}
       {auction?.category_name && (
         <div className="buyer-details-detail-item">
           <strong>Category:</strong> {auction.category_name}
         </div>
       )}
-      {auction?.handover_type && (
+      {/* {auction?.handover_type && (
         <div className="buyer-details-detail-item">
           <strong>Handover Type:</strong> {auction.handover_type}
         </div>
-      )}
+      )} */}
       {auction?.initial_price && (
         <div className="buyer-details-detail-item">
-          <strong>Starting Price:</strong> {formatCurrency(parseFloat(auction.initial_price))}
+          <strong>Starting Bid:</strong> {formatCurrency(parseFloat(auction.initial_price))}
         </div>
       )}
       {auction?.is_buy_now_enabled && auction?.buy_now_price && (
@@ -236,9 +236,8 @@ const BuyerAuctionDetails = () => {
   const { auctionBids, isPlacingBid, error } = useSelector(state => state.buyer);
   const buyerProfile = profile?.buyer_profile
 
-
+  console.log(auctionBids);
   console.log(buyerProfile); // this is an object, in this object I am getting points value in points key in numbers
-
 
   useEffect(() => {
     dispatch(fetchAuctionBids(id));
@@ -493,7 +492,7 @@ const BuyerAuctionDetails = () => {
             <div className="buyer-details-price-section">
               <div className="buyer-details-price-item">
                 <div className='flex justify-between items-center'>
-                  <span className="buyer-details-price-label">Starting Price</span>
+                  <span className="buyer-details-price-label">Starting Bid</span>
                   <span className="buyer-details-price-value">{formatCurrency(parseFloat(auction?.initial_price || 0))}</span>
 
                 </div>
@@ -501,6 +500,16 @@ const BuyerAuctionDetails = () => {
 
                   <span className="buyer-details-price-label">Highest Bid</span>
                   <span className="buyer-details-price-value">{formatCurrency(parseFloat(auctionBids?.[0]?.amount || 0))}</span>
+                </div>
+                <div className='flex justify-between items-center'>
+
+                  {
+                    auctionBids?.[0]?.bidder_name &&
+                    <>
+                      <span className="buyer-details-price-label">Highest Bidder</span>
+                      <span className="buyer-details-name-value">{auctionBids?.[0]?.bidder_name}</span>
+                    </>
+                  }
                 </div>
               </div>
               {auction?.is_buy_now_enabled && auction?.buy_now_price && (
@@ -590,9 +599,9 @@ const BuyerAuctionDetails = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <div className="flex-1">
-                      <h4 className="text-white font-semibold mb-1">Points Required</h4>
+                      <h4 className="text-white font-semibold mb-1">Funds Required</h4>
                       <p className="text-sm ">
-                        You must have at least <strong>50% of your bid amount</strong> in points to place a bid.
+                        You must have at least <strong>50% of your bid amount</strong> in your funds balance to place a bid.
 
                       </p>
                     </div>
@@ -649,13 +658,13 @@ const BuyerAuctionDetails = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                           </svg>
                           <div className="flex-1">
-                            <h4 className="text-red-300 font-semibold mb-1">Insufficient Points</h4>
+                            <h4 className="text-red-300 font-semibold mb-1">Insufficient Funds</h4>
                             <p className="text-red-200 text-sm mb-2">
-                              You do not have enough points to place this bid. Please try one of the following:
+                              You do not have enough funds to place this bid. Please try one of the following:
                             </p>
                             <ul className="text-red-200 text-sm space-y-1 list-disc list-inside">
                               {/* <li>Lower your bid amount</li> */}
-                              <li>Purchase more points</li>
+                              <li>Purchase more funds</li>
                             </ul>
                           </div>
                         </div>
@@ -674,7 +683,7 @@ const BuyerAuctionDetails = () => {
               </>
             )}
 
-            <div className="buyer-details-location-info">
+            {/* <div className="buyer-details-location-info">
               <h4>Pickup Information</h4>
               <div className="buyer-details-location-item">
                 <span className="buyer-details-location-label">Handover Type:</span>
@@ -684,7 +693,7 @@ const BuyerAuctionDetails = () => {
                 <span className="buyer-details-location-label">Location:</span>
                 <span className="buyer-details-location-value">{auction?.pickup_address || 'N/A'}</span>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 

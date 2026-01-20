@@ -50,6 +50,7 @@ export const fetchAuctionBids = createAsyncThunk(
     try {
       const response = await buyerService.getAuctionBids(auctionId);
       console.log("response: ", response);
+      
       return response;
       
     } catch (error) {

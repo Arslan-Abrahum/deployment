@@ -25,8 +25,11 @@ export const buyerService = {
         `${API_ROUTES.GET_AUCTION_BIDS}${auctionId}/bids/`
       );
       console.log(data, "data");
-      
-      return data;
+      // return data;
+       return {
+        auctionId,
+        bids: data
+      };
     } catch (error) {
       console.log(error);
       

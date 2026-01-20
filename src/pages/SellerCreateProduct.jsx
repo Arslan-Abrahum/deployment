@@ -31,7 +31,7 @@ const SellerCreateProduct = () => {
     pickup_address: '',
     pickup_latitude: '',
     pickup_longitude: '',
-    seller_expected_price: '',
+    // seller_expected_price: '',
     delivery_datetime: "2026-01-10T14:30:00.000Z"
   });
   const [specificData, setSpecificData] = useState({});
@@ -127,7 +127,7 @@ const SellerCreateProduct = () => {
         pickup_address: selectedAuction?.pickup_address || '',
         pickup_latitude: selectedAuction?.pickup_latitude?.toString() || '',
         pickup_longitude: selectedAuction?.pickup_longitude?.toString() || '',
-        seller_expected_price: selectedAuction?.seller_expected_price?.toString() || '',
+        // seller_expected_price: selectedAuction?.seller_expected_price?.toString() || '',
         delivery_datetime: selectedAuction?.delivery_datetime
           ? new Date(selectedAuction?.delivery_datetime).toISOString().slice(0, 16)
           : new Date(Date.now() + 10 * 60000).toISOString().slice(0, 16),
@@ -311,13 +311,13 @@ const SellerCreateProduct = () => {
           }
         }
         break;
-      case 'seller_expected_price':
-        if (!value || value.trim() === '') {
-          error = 'Starting price is required';
-        } else if (isNaN(value) || parseFloat(value) <= 0) {
-          error = 'Starting price must be a positive number';
-        }
-        break;
+      // case 'seller_expected_price':
+      //   if (!value || value.trim() === '') {
+      //     error = 'Starting price is required';
+      //   } else if (isNaN(value) || parseFloat(value) <= 0) {
+      //     error = 'Starting price must be a positive number';
+      //   }
+      //   break;
       case 'delivery_datetime':
         if (!value) {
           error = 'Auction start time is required';
@@ -396,18 +396,18 @@ const SellerCreateProduct = () => {
       isValid = false;
     }
 
-    if (!formData.
-      seller_expected_price
-      || isNaN(formData.
-        seller_expected_price
-      ) || parseFloat(formData.
-        seller_expected_price
-      ) <= 0) {
-      newErrors.
-        seller_expected_price
-        = 'Starting price must be a positive number';
-      isValid = false;
-    }
+    // if (!formData.
+    //   seller_expected_price
+    //   || isNaN(formData.
+    //     seller_expected_price
+    //   ) || parseFloat(formData.
+    //     seller_expected_price
+    //   ) <= 0) {
+    //   newErrors.
+    //     seller_expected_price
+    //     = 'Starting price must be a positive number';
+    //   isValid = false;
+    // }
 
     if (!formData.delivery_datetime || isNaN(formData.delivery_datetime) ||
       parseInt(formData.delivery_datetime) < 1 || parseInt(formData.delivery_datetime) > 30) {
@@ -808,9 +808,9 @@ const SellerCreateProduct = () => {
           media_labels: newMediaLabels,
         }),
 
-        ...(formData.seller_expected_price && {
-          seller_expected_price: parseFloat(formData.seller_expected_price),
-        }),
+        // ...(formData.seller_expected_price && {
+        //   seller_expected_price: parseFloat(formData.seller_expected_price),
+        // }),
 
         ...(formData.delivery_datetime && {
           delivery_datetime: new Date(formData.delivery_datetime).toISOString(),
@@ -853,7 +853,7 @@ const SellerCreateProduct = () => {
         pickup_address: '',
         pickup_latitude: '',
         pickup_longitude: '',
-        seller_expected_price: '',
+        // seller_expected_price: '',
         delivery_datetime: "2026-01-10T14:30:00.000Z"
       });
 
@@ -1009,7 +1009,7 @@ const SellerCreateProduct = () => {
                     </div>
 
                     {/* Starting Price */}
-                    <div className="create-auction-form-group">
+                    {/* <div className="create-auction-form-group">
                       <label className="create-auction-form-label">
                         Expected Price <span className="create-auction-required-mark">*</span>
                       </label>
@@ -1034,7 +1034,7 @@ const SellerCreateProduct = () => {
                         && <span className="create-auction-error-text">{errors.
                           seller_expected_price
                         }</span>}
-                    </div>
+                    </div> */}
 
 
                     {/* Handover Type */}

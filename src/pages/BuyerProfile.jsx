@@ -556,7 +556,7 @@ const BuyerProfile = () => {
                       )}
                     </div>
                     <div className="info-item">
-                      <label>Bid Points</label>
+                      <label>Bid Funds</label>
                       {/* {isEditing ? (
                         <input
                           type="tel"

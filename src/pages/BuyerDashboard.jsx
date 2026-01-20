@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAuctionsList } from '../store/actions/AuctionsActions';
+import { fetchAuctionBids } from '../store/actions/buyerActions';
 import { clearBuyerError } from '../store/slices/buyerSlice';
 import './BuyerDashboard.css';
 import { toast } from 'react-toastify';
@@ -16,7 +17,7 @@ const BuyerDashboard = () => {
   // Redux state
   const { auctions, error } = useSelector(state => state.buyer);
   const { token } = useSelector(state => state.auth);
-
+  
   // Local state for complete dataset
   const [allAuctions, setAllAuctions] = useState([]);
   const [isLoadingAllPages, setIsLoadingAllPages] = useState(false);

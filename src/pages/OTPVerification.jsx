@@ -9,7 +9,7 @@ const OTPVerification = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
-  const [timer, setTimer] = useState(600) // 10 minutes in seconds
+  const [timer, setTimer] = useState(300) // 5 minutes in seconds
   const [canResend, setCanResend] = useState(false)
   const inputRefs = useRef([])
   const dispatch = useDispatch()
@@ -144,7 +144,7 @@ const OTPVerification = () => {
           <h1 className="otp-title">Verify Your Account</h1>
 
           <p className="otp-instructions">
-            We've sent a 6-digit code to <strong>{maskedEmail}</strong>. The code is valid for 10 minutes.
+            We've sent a 6-digit code to <strong>{maskedEmail}</strong>. The code is valid for 5 minutes.
           </p>
 
           <form className="otp-form" onSubmit={handleVerify}>

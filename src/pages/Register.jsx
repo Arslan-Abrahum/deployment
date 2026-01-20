@@ -596,6 +596,7 @@ const Register = () => {
               </div>
             </div>
 
+                  {  formData.role == 'seller' && 
             <div className="register-form-section">
               <div className="form-grid">
                 <div className="form-group">
@@ -645,6 +646,7 @@ const Register = () => {
                 </div>
               </div>
             </div>
+            }
 
             <div className="register-form-section">
               <div className="form-group">

@@ -1,9 +1,9 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useCountdownTimer } from '../hooks/useCountdownTimer';
 import { formatPrice } from '../utils/auctionUtils';
 import { getMediaUrl } from '../config/api.config';
-import { addToFavorite, deleteFavorite } from '../store/actions/buyerActions';
-import { useDispatch } from 'react-redux';
+import { addToFavorite, deleteFavorite, fetchAuctionBids } from '../store/actions/buyerActions';
+import { useDispatch, useSelector } from 'react-redux';
 import './AuctionCard.css';
 import { toast } from 'react-toastify';
 
@@ -16,6 +16,31 @@ const AuctionCard = ({ auction, onClick, onFavoriteUpdate }) => {
     const endDate = new Date(auction.enddate || auction.end_date);
     const [isFavorite, setIsFavorite] = useState(auction?.is_favourite || false);
     const [isUpdating, setIsUpdating] = useState(false);
+
+    const bids = useSelector(
+        state => state.buyer.allBids[auction?.id]
+    );
+
+
+    // const highestBid = bids?.length
+    //     ? Math.max(...bids.map(b => Number(b.amount)))
+    //     : null;
+
+    // console.log(highestBid);
+
+    const highestBid = useMemo(() => {
+        if (!bids?.length) return null;
+
+        const max = Math.max(...bids.map(b => Number(b.amount || 0)));
+        return isFinite(max) && max > 0 ? max : null;
+    }, [bids]);
+
+
+    useEffect(() => {
+        if (!bids) {
+            dispatch(fetchAuctionBids(auction?.id));
+        }
+    }, [bids, dispatch, auction.id]);
 
     // Sync local state with prop changes
     useEffect(() => {
@@ -245,9 +270,18 @@ const AuctionCard = ({ auction, onClick, onFavoriteUpdate }) => {
                     {auction.title || 'Untitled Auction'}
                 </h3>
 
-                <div className="auction-price-display">
-                    <span className="auction-price-label">Starting Price</span>
-                    <span className="auction-price-value">{displayPrice}</span>
+                <div className="dashboard-auction-price-display">
+                    <span className="auction-price-label">Starting Bid</span>
+                    <span className="dashboard-auction-price-value">{displayPrice}</span>
+                </div>
+                <div className="dashboard-auction-price-display">
+                    <span className="auction-price-label">Highest Bid</span>
+                    {/* <span className="dashboard-auction-price-value">  {highestBid ?  `${highestBid}` : 'No bids yet'}</span> */}
+                <span className="dashboard-auction-price-value">
+                    {highestBid
+                        ? formatPrice(highestBid, auction.currency || 'USD')
+                        : 'No bids yet'}
+                </span>
                 </div>
 
                 <div className="auction-bid-info">

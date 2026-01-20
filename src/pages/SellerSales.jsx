@@ -80,7 +80,7 @@ const SellerSales = () => {
                     <div className="sales-header">
                         <div className="sales-header-content">
                             <h1 className="sales-title">Sales</h1>
-                            <p className="sales-subtitle">Track your sold and unsold auction items</p>
+                            <p className="sales-subtitle">Track your sold and unsold auctions</p>
                         </div>
                     </div>
 
@@ -89,14 +89,14 @@ const SellerSales = () => {
                             className={`sales-tab ${activeTab === 'sold' ? 'active' : ''}`}
                             onClick={() => setActiveTab('sold')}
                         >
-                            <span>Sold Items</span>
+                            <span>Sold</span>
                             <span className="tab-count">{soldItems.length}</span>
                         </button>
                         <button
                             className={`sales-tab ${activeTab === 'unsold' ? 'active' : ''}`}
                             onClick={() => setActiveTab('unsold')}
                         >
-                            <span>Unsold Items</span>
+                            <span>Unsold</span>
                             <span className="tab-count">{unsoldItems.length}</span>
                         </button>
                     </div>
@@ -118,8 +118,8 @@ const SellerSales = () => {
                                     </div>
                                 ) : (
                                     <EmptyState
-                                        title="No Sold Items"
-                                        description="You haven't sold any items yet. Your sold items will appear here once you complete your first sale."
+                                        title="No Sold"
+                                        description="You haven't sold any auction yet. Your sold auction will appear here once you complete your first sale."
                                         actionText="View Active Listings"
                                         actionLink="/seller/auction-listings"
                                     />
@@ -143,8 +143,8 @@ const SellerSales = () => {
                                     </div>
                                 ) : (
                                     <EmptyState
-                                        title="No Unsold Items"
-                                        description="You don't have any unsold items at the moment. Items that don't sell will appear here."
+                                        title="No Unsold"
+                                        description="You don't have any unsold auction at the moment. Auctions that don't sell will appear here."
                                         actionText="Create New Listing"
                                         actionLink="/seller/product"
                                     />

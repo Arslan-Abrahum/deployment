@@ -150,7 +150,7 @@
   width: 100px;
   height: 75px;
   border-radius: 8px;
-  overflow: hidden;
+  /* overflow: hidden; */
   border: 2px solid transparent;
   cursor: pointer;
   transition: all 0.2s;
@@ -248,6 +248,13 @@
   color: #8CC63F;
 }
 
+.buyer-details-name-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #8CC63F;
+
+}
+
 .buyer-details-timeline {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -322,8 +329,15 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .buyer-details-timer-label-small {
@@ -359,11 +373,12 @@
   margin-top: 2px;
 }
 
-.buyer-details-upcoming-notice, .buyer-details-notice {
+.buyer-details-upcoming-notice,
+.buyer-details-notice {
   background-color: rgba(140, 198, 63, 0.1);
   border: 1px solid rgba(140, 198, 63, 0.5);
   /* color: #8CC63F; */
-    color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .buyer-details-upcoming-notice svg {
@@ -442,7 +457,7 @@
 
 .buyer-details-bid-button {
   padding: 0.875rem 2rem;
-  background: #8CC63F ;
+  background: #8CC63F;
   border: none;
   border-radius: 8px;
   color: black;
@@ -455,12 +470,13 @@
 }
 
 .buyer-details-bid-button:hover {
-  background:  '#7AB32';
+  background: '#7AB32';
 }
 
 .buyer-details-bid-button:active {
   transform: translateY(0);
 }
+
 .buyer-details-bid-button:disabled {
   cursor: not-allowed;
 }
@@ -845,13 +861,11 @@
   bottom: 0;
   left: 0;
   transform: translateX(-100%);
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0,
-    rgba(255, 255, 255, 0.05) 20%,
-    rgba(255, 255, 255, 0.1) 60%,
-    rgba(255, 255, 255, 0)
-  );
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.05) 20%,
+      rgba(255, 255, 255, 0.1) 60%,
+      rgba(255, 255, 255, 0));
   animation: shimmer 2s infinite;
 }
 
