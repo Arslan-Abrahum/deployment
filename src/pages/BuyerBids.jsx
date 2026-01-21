@@ -115,12 +115,6 @@ const BuyerBids = () => {
     }
   }
 
-  // const filteredBids = (myBids?.results?.filter(bid => {
-  //   const matchesSearch = searchQuery === '' ||
-  //     bid.auction_title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //     bid.id.toString().includes(searchQuery)
-  //   return matchesSearch
-  // }))
 
   const filteredBids = allBidss?.filter(bid => {
     const matchesSearch = searchQuery === '' ||
@@ -128,19 +122,6 @@ const BuyerBids = () => {
       bid.id.toString().includes(searchQuery);
     return matchesSearch;
   });
-
-  // const handlePageChange = (url) => {
-  //   if (url) {
-  //     setCurrentPageUrl(url)
-  //     dispatch(fetchMyBids(url))
-  //   }
-  // }
-
-  // const itemsPerPage = 10;
-  // const totalBidsCount = myBids?.count || 0;
-  // const totalPages = Math.ceil(totalBidsCount / itemsPerPage);
-  // const hasNextPage = page < totalPages;
-  // const hasPrevPage = page > 1;
 
   const itemsPerPage = 10;
   const totalFilteredCount = filteredBids.length;
@@ -235,11 +216,9 @@ const BuyerBids = () => {
             </div>
           </div>
 
-          <div className="bids-grid">
-            {/* {filteredBids?.length > 0 ? (
-              filteredBids?.map(bid => { */}
-            {paginatedBids?.length > 0 ? (
-              paginatedBids?.map(bid => {
+          {paginatedBids?.length > 0 ? (
+            <div className="bids-grid">
+              {paginatedBids?.map(bid => {
                 const statusDisplay = getStatusDisplay(bid?.status)
                 const imageUrl = getFirstImage(bid?.auction_media)
                 const bidStatus = getBidStatus(bid)
@@ -292,81 +271,18 @@ const BuyerBids = () => {
                     </div>
                   </div>
                 )
-              })
-            ) : (
-              <div className="buyer-details-empty-state">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                  <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <p>No bids found matching your search.</p>
-              </div>
-            )}
-          </div>
-
-          {/* {(nextPage || prevPage) && (
-            <div className="mybids-pagination">
-              <button
-                className="mybids-pagination-btn mybids-prev-btn"
-                onClick={() => handlePageChange(prevPage)}
-                disabled={!prevPage}
-                aria-label="Previous page"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                Previous
-              </button>
-
-              <div className="mybids-page-info">
-                <span>Showing {filteredBids?.length || 0} of {myBids?.count || 0} bids</span>
-              </div>
-
-              <button
-                className="mybids-pagination-btn mybids-next-btn"
-                onClick={() => handlePageChange(nextPage)}
-                disabled={!nextPage}
-                aria-label="Next page"
-              >
-                Next
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
+              })}
             </div>
-          )} */}
-          {/* {totalBidsCount > itemsPerPage && (
-            <div className="mybids-pagination">
-              <button
-                className="mybids-pagination-btn mybids-prev-btn"
-                onClick={handlePrevious}
-                disabled={!hasPrevPage}
-                aria-label="Previous page"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                Previous
-              </button>
-
-              <div className="mybids-page-info">
-                <button disabled className="page-indicator">
-                  <strong>{page} of {totalPages}</strong>
-                </button>
-              </div>
-
-              <button
-                className="mybids-pagination-btn mybids-next-btn"
-                onClick={handleNext}
-                disabled={!hasNextPage}
-                aria-label="Next page"
-              >
-                Next
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
+          ) : (
+            <div className="buyer-details-empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <p>No bids found matching your search.</p>
             </div>
-          )} */}
+          )}
+
+
 
           {totalFilteredCount > itemsPerPage && (
             <div className="mybids-pagination">

@@ -721,7 +721,7 @@ const ManagerProductFields = () => {
                   <div className="field-form">
                     <div className="form-grid">
                       <div className="form-group">
-                        <label className="form-label required">Field Name</label>
+                        <label className="form-label">Field Name <span className="required-asterisk">*</span></label>
                         <input
                           type="text"
                           name="name"
@@ -736,7 +736,7 @@ const ManagerProductFields = () => {
                       </div>
 
                       <div className="form-group">
-                        <label className="form-label required">Field Type</label>
+                        <label className="form-label">Field Type <span className="required-asterisk">*</span></label>
                         <div className="field-type-grid">
                           {fieldTypes.map((type) => (
                             <button
@@ -912,7 +912,7 @@ const ManagerProductFields = () => {
 
                 <div className="checklist-form">
                   <div className="form-group">
-                    <label className="form-label required">Checklist Description</label>
+                    <label className="form-label">Checklist Description <span className="required-asterisk">*</span></label>
                     <textarea
                       value={checklistDescription}
                       onChange={(e) => {
@@ -1009,7 +1009,7 @@ const ManagerProductFields = () => {
                       ) : (
                         <div className="category-form">
                           <div className="form-group">
-                            <label className="form-label required">Category Name</label>
+                            <label className="form-label">Category Name <span className="required-asterisk">*</span></label>
                             <input
                               type="text"
                               value={newCategoryName}

@@ -88,7 +88,7 @@ const ManagerCreateCategory = () => {
                             <div className="form-content">
                                 <div className="form-grid">
                                     <div>
-                                        <label className="form-label required">Category Name</label>
+                                        <label className="form-label">Category Name</label>
                                         <input
                                             type="text"
                                             name="name"
