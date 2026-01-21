@@ -521,9 +521,9 @@ const BuyerBidDetails = () => {
                           <span className="rank-number">#{index + 1}</span>
                         </div>
                         <div className="bid-history-content">
-                          <div className="bid-history-info">
+                          {/* <div className="bid-history-info">
                             <span className="bid-history-bidder">{bid.bidder_name || 'Anonymous'}</span>
-                          </div>
+                          </div> */}
                           {/* <span className="bid-history-relative">{formatRelativeTime(bid.created_at)}</span> */}
                           <span className="bid-history-time">{formatDate(bid.created_at)}</span>
                         </div>

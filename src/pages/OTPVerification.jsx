@@ -12,7 +12,7 @@ const OTPVerification = () => {
   const OTP_FIRST_VISIT_KEY = 'otp_first_visit'
   const OTP_DURATION = 300 // seconds
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
-  const [timer, setTimer] = useState(0)
+  const [timer, setTimer] = useState(300)
   const [canResend, setCanResend] = useState(true)
   const inputRefs = useRef([])
   const dispatch = useDispatch()

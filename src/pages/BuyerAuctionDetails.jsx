@@ -151,7 +151,7 @@ const BidHistoryPanel = memo(({ bids, formatCurrency }) => (
           <div key={bid.id} className="buyer-details-bid-item">
             <div className="buyer-details-bid-rank">#{index + 1}</div>
             <div className="buyer-details-bid-info">
-              <div className="buyer-details-bid-bidder">{bid.bidder_name}</div>
+              {/* <div className="buyer-details-bid-bidder">{bid.bidder_name}</div> */}
               <div className="buyer-details-bid-time">
                 {new Date(bid.created_at).toLocaleString()}
               </div>
